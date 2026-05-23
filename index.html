@@ -4002,7 +4002,12 @@ document.addEventListener('keydown', function(e) {
     <iframe id="videoFrame" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
   </div>
 </div>
-
+<div id="videoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="position:relative;width:min(960px,100%);aspect-ratio:16/9;">
+    <button onclick="closeVideo()" style="position:absolute;top:-44px;right:0;background:none;border:none;color:white;font-size:28px;cursor:pointer;">×</button>
+    <iframe id="videoFrame" width="100%" height="100%" src="" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+</div>
 <script>
 function openVideo(url) {
   document.getElementById('videoFrame').src = url + '?autoplay=1';
