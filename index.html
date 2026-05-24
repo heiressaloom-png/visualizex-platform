@@ -1536,6 +1536,82 @@ try {
   console.warn('Supabase client could not be initialized', e);
 }
 
+var VX_PROFILE_CACHE_KEY = 'vx_profile_supabase';
+
+function vxParseDateMs(value) {
+  if (!value) return 0;
+  var ms = Date.parse(value);
+  return Number.isFinite(ms) ? ms : 0;
+}
+function vxGetCachedSupabaseProfile() {
+  try {
+    var profile = JSON.parse(localStorage.getItem(VX_PROFILE_CACHE_KEY) || 'null');
+    if (!profile) return null;
+    if (vxUser && profile.id && vxUser.id && profile.id !== vxUser.id) return null;
+    return profile;
+  } catch(e) { return null; }
+}
+function vxCacheSupabaseProfile(profile) {
+  if (!profile) return;
+  try { localStorage.setItem(VX_PROFILE_CACHE_KEY, JSON.stringify(profile)); } catch(e) {}
+}
+function vxApplySupabaseProfile(profile) {
+  if (!profile) return;
+  vxCacheSupabaseProfile(profile);
+  if (profile.selected_access_path) vxPlan = profile.selected_access_path;
+  var first = profile.first_name || '';
+  var last = profile.last_name || '';
+  var email = profile.email || (vxUser && vxUser.email) || '';
+  var work = profile.work_environment || '';
+  var localProfile = { firstName:first, lastName:last, email:email, country:profile.country || '', city:profile.city || '', work:work };
+  try { localStorage.setItem(VX_PROFILE_KEY, JSON.stringify(localProfile)); } catch(e) {}
+  var startMs = vxParseDateMs(profile.trial_started_at);
+  var endMs = vxParseDateMs(profile.trial_ends_at);
+  if (startMs) { localStorage.setItem('vx_trial_start', String(startMs)); localStorage.setItem(VXK.t, String(startMs)); }
+  if (endMs) localStorage.setItem(VX_TRIAL_END_KEY, String(endMs));
+  if (profile.account_status === 'paid_active') {
+    localStorage.setItem('vx_access','paid');
+    localStorage.setItem('vx_payment_status','ok');
+  } else if (profile.account_status === 'trial_active') {
+    localStorage.removeItem('vx_access');
+    localStorage.setItem('vx_payment_status','trial_no_card');
+  }
+}
+async function vxFetchProfileFromSupabase(userId) {
+  if (!vxSupabase || !userId) return null;
+  try {
+    var result = await vxSupabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+    if (result.error) {
+      console.warn('Could not fetch Supabase profile:', result.error.message || result.error);
+      return null;
+    }
+    if (result.data) vxApplySupabaseProfile(result.data);
+    return result.data || null;
+  } catch(e) {
+    console.warn('Could not fetch Supabase profile:', e);
+    return null;
+  }
+}
+async function vxUpdateSupabaseProfileFields(fields) {
+  if (!vxSupabase) return false;
+  try {
+    var userResult = await vxSupabase.auth.getUser();
+    var user = userResult && userResult.data ? userResult.data.user : null;
+    if (!user) return false;
+    fields = Object.assign({ id:user.id }, fields || {});
+    var result = await vxSupabase.from('profiles').upsert(fields, { onConflict:'id' }).select().single();
+    if (result.error) {
+      console.warn('Supabase profile update failed:', result.error.message || result.error);
+      return false;
+    }
+    if (result.data) vxApplySupabaseProfile(result.data);
+    return true;
+  } catch(e) {
+    console.warn('Supabase profile update failed:', e);
+    return false;
+  }
+}
+
 function vxShowAuthMessage(message) {
   if (typeof showToast === 'function') showToast(message);
   else alert(message);
@@ -1556,17 +1632,20 @@ async function vxHydrateSupabaseUser() {
     var user = result && result.data ? result.data.user : null;
     if (!user) return;
     var meta = user.user_metadata || {};
-    var fullName = meta.full_name || ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || (user.email ? user.email.split('@')[0] : 'Member');
+    var profile = await vxFetchProfileFromSupabase(user.id);
+    var profileName = profile ? ((profile.first_name || '') + ' ' + (profile.last_name || '')).trim() : '';
+    var fullName = profileName || meta.full_name || ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || (user.email ? user.email.split('@')[0] : 'Member');
     var names = vxSplitName(fullName);
     vxUser = {
       id: user.id,
       name: fullName,
-      email: user.email,
+      email: (profile && profile.email) || user.email,
       initials: vxInitialsFromName(names.first, names.last, user.email),
-      plan: meta.selected_access_path || vxPlan || 'quarterly',
+      plan: (profile && profile.selected_access_path) || meta.selected_access_path || vxPlan || 'quarterly',
       supabase: true
     };
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    if (profile) vxApplySupabaseProfile(profile);
     showDashBtn();
   } catch(e) {
     console.warn('Could not hydrate Supabase user', e);
@@ -1600,8 +1679,15 @@ async function vxSyncProfileToSupabase() {
       console.warn('No authenticated Supabase user found for profile sync.');
       return false;
     }
+    var existing = await vxFetchProfileFromSupabase(user.id);
     var profile = {};
     try { profile = JSON.parse(localStorage.getItem(VX_PROFILE_KEY) || '{}'); } catch(e) {}
+    var seven = 7*24*60*60*1000;
+    var localStartMs = Number(localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t) || Date.now());
+    if (!Number.isFinite(localStartMs) || localStartMs <= 0) localStartMs = Date.now();
+    var existingStartMs = vxParseDateMs(existing && existing.trial_started_at);
+    var trialStartedAt = (existing && existing.trial_started_at) || new Date(localStartMs).toISOString();
+    var trialEndsAt = (existing && existing.trial_ends_at) || new Date((existingStartMs || localStartMs) + seven).toISOString();
     var payload = {
       id: user.id,
       email: profile.email || user.email || (vxUser && vxUser.email) || null,
@@ -1612,14 +1698,17 @@ async function vxSyncProfileToSupabase() {
       work_environment: profile.work || null,
       selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly',
       account_status: localStorage.getItem('vx_access') === 'paid' ? 'paid_active' : 'trial_active',
+      trial_started_at: trialStartedAt,
+      trial_ends_at: trialEndsAt,
       onboarding_answers: vxBuildOnboardingAnswersForSupabase()
     };
-    var sync = await vxSupabase.from('profiles').upsert(payload, { onConflict: 'id' });
+    var sync = await vxSupabase.from('profiles').upsert(payload, { onConflict: 'id' }).select().single();
     if (sync.error) {
       console.error('Profile sync failed:', sync.error);
       vxShowAuthMessage('Your account was created, but the profile did not sync yet: ' + sync.error.message);
       return false;
     }
+    vxApplySupabaseProfile(sync.data || payload);
     return true;
   } catch(e) {
     console.error('Profile sync error:', e);
@@ -2598,6 +2687,7 @@ async function doLogout() {
   if (vxSupabase) { try { await vxSupabase.auth.signOut(); } catch(e) { console.warn('Supabase signout failed', e); } }
   vxUser = null;
   localStorage.removeItem(VXK.u);
+  localStorage.removeItem(VX_PROFILE_CACHE_KEY);
   var vxApp = document.getElementById('vx-app');
   if (vxApp) { vxApp.classList.remove('show'); vxApp.style.display = 'none'; }
   var appShell = document.getElementById('app');
@@ -2704,6 +2794,17 @@ let recentSessions = JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
 
 function checkTrial() {
   if (localStorage.getItem(ACCESS_KEY) === 'paid') return {status:'paid'};
+  var profile = (typeof vxGetCachedSupabaseProfile === 'function') ? vxGetCachedSupabaseProfile() : null;
+  if (profile && profile.account_status === 'paid_active') return {status:'paid'};
+
+  var cachedEndMs = profile && profile.trial_ends_at ? vxParseDateMs(profile.trial_ends_at) : Number(localStorage.getItem(VX_TRIAL_END_KEY) || 0);
+  if (cachedEndMs) {
+    if (Date.now() >= cachedEndMs) return {status:'expired'};
+    var cachedDaysLeft = Math.ceil((cachedEndMs - Date.now())/(24*60*60*1000));
+    var cachedTrialEnd = new Date(cachedEndMs).toLocaleDateString('en-GB',{day:'numeric',month:'long'});
+    return {status:'active', daysLeft:cachedDaysLeft, trialEnd:cachedTrialEnd};
+  }
+
   let ts = localStorage.getItem(TRIAL_KEY);
   if (!ts) {
     var legacy = localStorage.getItem(VXK.t);
@@ -2728,6 +2829,7 @@ function logoutDash() {
   if (!confirm('Sign out of VisualizeX?')) return;
   vxUser = null;
   localStorage.removeItem(AUTH_KEY);
+  localStorage.removeItem(VX_PROFILE_CACHE_KEY);
   // auth handled by VX bridge
 }
 
@@ -2775,6 +2877,7 @@ function selectAccessPath(plan) {
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     updateSidebar();
   }
+  if (typeof vxUpdateSupabaseProfileFields === 'function') vxUpdateSupabaseProfileFields({ selected_access_path: vxPlan });
   showToast('Access path preference set to ' + getPlanMeta(vxPlan).label + '. You can still change it before payment.');
   try { renderAccount(); } catch(e) {}
 }
@@ -2851,6 +2954,9 @@ function simulatePaymentSuccess() {
   vxUser.accessMode = 'active_simulated';
   vxUser.justReactivated = true;
   localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  if (typeof vxUpdateSupabaseProfileFields === 'function') {
+    vxUpdateSupabaseProfileFields({ account_status:'paid_active', selected_access_path:vxUser.plan });
+  }
   closeSimulatedCheckout();
   updateSidebar();
   if (!vxHasCompletedVaultSetup()) {
@@ -2869,6 +2975,16 @@ function setTrialDaysLeft(daysLeft) {
   localStorage.setItem('vx_trial_start', String(start));
   localStorage.setItem(VXK.t, String(start));
   localStorage.setItem(VX_TRIAL_END_KEY, String(start + 7*24*60*60*1000));
+  if (typeof vxCacheSupabaseProfile === 'function') {
+    var cached = vxGetCachedSupabaseProfile() || {};
+    cached.trial_started_at = new Date(start).toISOString();
+    cached.trial_ends_at = new Date(start + 7*24*60*60*1000).toISOString();
+    cached.account_status = 'trial_active';
+    vxCacheSupabaseProfile(cached);
+  }
+  if (typeof vxUpdateSupabaseProfileFields === 'function') {
+    vxUpdateSupabaseProfileFields({ trial_started_at:new Date(start).toISOString(), trial_ends_at:new Date(start + 7*24*60*60*1000).toISOString(), account_status:'trial_active' });
+  }
   if (vxUser) {
     vxUser.accessMode = 'trial_no_card';
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
