@@ -188,7 +188,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;o
 .preview-play-btn:hover{transform:scale(1.08)}
 
 /* ── LIBRARY ── */
-#library{background:var(--bg3)}
+#vault{background:var(--bg3)}
 .lib-tabs{overflow-x:auto;border-bottom:1px solid var(--c08);-webkit-overflow-scrolling:touch}
 .lib-tabs-row{display:flex;min-width:max-content}
 .ltab{background:none;border:none;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;padding:14px 18px 12px;cursor:pointer;white-space:nowrap;color:var(--c35);transition:all .2s}
@@ -449,7 +449,24 @@ a{text-decoration:none;color:inherit}
 .sidebar{width:var(--sidebar);background:var(--bg4);border-right:1px solid var(--c08);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
 .sb-top{padding:24px 20px;border-bottom:1px solid var(--c08)}
 .sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:0}
-.sb-nav{padding:20px 12px;flex:1;overflow-y:auto}
+.sb-nav{padding:12px 10px;flex:1;overflow-y:auto}
+/* Compact sidebar: keeps the main navigation visible without forcing users to scroll in a tiny strip */
+.sidebar{--sidebar-row-py:8px}
+.sb-top{padding:18px 18px 14px}
+.sb-section{font-size:.54rem;margin:10px 0 4px;padding:0 8px}
+.sb-link{padding:var(--sidebar-row-py) 10px;font-size:.8rem;gap:9px;margin-bottom:1px;line-height:1.2}
+.sb-bottom{padding:10px 10px}
+.sb-user{padding:8px 10px}
+@media(min-height:760px){.sidebar{--sidebar-row-py:9px}}
+@media(max-height:700px){.sb-section{display:none}.sb-nav{padding-top:8px}.sb-link{padding:7px 10px}.sb-top{padding:14px 16px}.sb-bottom{padding:8px 10px}.sb-user{display:none}}
+.mobile-dash-fab{display:none;position:fixed;right:16px;bottom:18px;z-index:1200;background:linear-gradient(135deg,var(--tq),var(--tqM));color:var(--bg);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:999px;padding:12px 16px;box-shadow:0 14px 36px rgba(0,0,0,.45);cursor:pointer}
+@media(max-width:768px){.mobile-dash-fab.show{display:flex;align-items:center;gap:7px}}
+.trial-test-panel{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:rgba(0,180,160,.045);border:1px solid rgba(0,180,160,.14);border-radius:4px;padding:14px 16px;margin:0 0 22px}
+.trial-test-panel p:first-child{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--tq);margin-bottom:4px}
+.trial-test-panel p:last-child{font-size:.78rem;font-weight:300;color:var(--c55);line-height:1.5}
+.trial-test-actions{display:flex;gap:7px;flex-wrap:wrap}
+.trial-test-actions button{background:transparent;border:1px solid rgba(249,240,225,.1);color:var(--c55);font-family:'DM Sans',sans-serif;font-size:.68rem;border-radius:2px;padding:7px 10px;cursor:pointer;transition:all .2s}
+.trial-test-actions button:hover{border-color:rgba(0,180,160,.3);color:var(--tq)}
 .sb-section{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--c20);padding:0 8px;margin:16px 0 6px}
 .sb-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:3px;font-size:.82rem;font-weight:300;color:var(--c35);cursor:pointer;transition:all .2s;margin-bottom:2px;border:1px solid transparent}
 .sb-link:hover{background:rgba(249,240,225,.04);color:var(--creamW)}
@@ -488,7 +505,7 @@ a{text-decoration:none;color:inherit}
 
 /* Continue / Recent */
 .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.section-head h2{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--cream)}
+.section-head h2{font-family:Cormorant Garamond,serif;font-size:1.2rem;font-weight:400;color:var(--cream)}
 .see-all{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tq);cursor:pointer;transition:opacity .2s}
 .see-all:hover{opacity:.7}
 
@@ -525,7 +542,7 @@ a{text-decoration:none;color:inherit}
 .sit-name{font-size:.82rem;font-weight:400;color:var(--cream);line-height:1.35;margin-bottom:6px}
 .sit-count{font-size:.65rem;color:var(--tq);opacity:.8;letter-spacing:.06em}
 
-/* Session cards (library view) */
+/* Session cards (vault view) */
 .session-list{display:flex;flex-direction:column;gap:10px}
 .sess{background:var(--card2);border:1px solid var(--c08);border-radius:4px;overflow:hidden;transition:all .25s}
 .sess:hover{border-color:rgba(0,180,160,.2)}
@@ -600,13 +617,25 @@ a{text-decoration:none;color:inherit}
 @media(max-width:860px){
   .auth-left{display:none}
   .auth-right{width:100%}
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{width:min(86vw,340px);transform:translateX(-100%);z-index:1200;box-shadow:24px 0 70px rgba(0,0,0,.55)}
   .sidebar.mob-open{transform:translateX(0)}
-  .main{margin-left:0}
+  .main{margin-left:0;width:100%;min-width:0}
   .mob-toggle{display:block}
-  .content{padding:20px}
-  .topbar{padding:0 20px}
+  .content{padding:20px;overflow-x:hidden}
+  .topbar{padding:0 16px;gap:12px}
+  .topbar .search-bar{max-width:46vw;min-width:0}
+  #tb-right .back-site{display:flex!important;font-size:.68rem}
+  #mem-badge-top{display:inline-flex;font-size:.58rem;padding:4px 8px}
   .sit-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .mobile-scrim{display:none;position:fixed;inset:0;background:rgba(4,14,13,.58);backdrop-filter:blur(2px);z-index:1100}
+  .mobile-scrim.open{display:block}
+  body.sidebar-open{overflow:hidden}
+}
+@media(min-width:861px){.mobile-scrim{display:none!important}}
+@media(max-width:520px){
+  .topbar .search-bar{display:none}
+  .tb-title{font-size:1rem}
+  .content{padding:18px 14px}
 }
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn .4s ease both}
@@ -811,6 +840,14 @@ section{padding:100px 0}
 .back-site:hover{color:#00B4A0}
 #vx-site.hide{display:none!important}
 #vx-app.show{display:flex!important}
+body.vx-app-open > nav#nav,
+body.vx-app-open > #mob-menu,
+body.vx-app-open > section,
+body.vx-app-open > hr.s-divider,
+body.vx-app-open > footer,
+body.vx-app-open > #sticky-cta{display:none!important}
+body.vx-app-open #vx-app{display:flex!important;min-height:100vh}
+body.vx-app-open{overflow-x:hidden}
 
 /* ── STICKY CTA (bottom-fixed, scroll-triggered) ── */
 @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -884,6 +921,120 @@ section{padding:100px 0}
 .tb-inner p:last-child{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:400;color:var(--c55);line-height:1.5}
 .section-mood{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c20);margin-left:10px;font-weight:300}
 </style>
+
+<style>
+/* Dashboard home responsive refinements */
+.dashboard-home .feat-grid,
+.dashboard-home .sit-grid,
+.dashboard-home .recent-grid,
+.dashboard-home .saved-home-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:32px;
+}
+.dashboard-home .momentum-rail{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:12px;
+  overflow:visible;
+  padding-bottom:0;
+  margin-bottom:32px;
+}
+.dashboard-home .momen-card{
+  flex:none;
+  width:100%;
+}
+@media(max-width:700px){
+  .dashboard-home .feat-grid,
+  .dashboard-home .sit-grid,
+  .dashboard-home .recent-grid,
+  .dashboard-home .saved-home-grid,
+  .dashboard-home .momentum-rail{
+    grid-template-columns:1fr;
+  }
+  .continue-card{align-items:flex-start;gap:16px;padding:20px}
+}
+</style>
+
+<style>
+/* ── MVP TOPBAR SEARCH FIX ──
+   Search is now the single source of navigation search.
+   Membership/access status is kept at the far right so it never crowds the input. */
+.topbar{
+  display:grid!important;
+  grid-template-columns:auto minmax(260px,520px) auto;
+  column-gap:18px;
+  align-items:center;
+}
+.topbar > div:first-child{min-width:0;white-space:nowrap}
+.topbar .search-bar{
+  width:100%;
+  max-width:none!important;
+  min-width:0;
+  justify-self:center;
+}
+#tb-right{
+  justify-self:end;
+  margin-left:auto;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+#mem-badge-top{
+  max-width:170px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#nav-search{display:none!important}
+@media(max-width:860px){
+  .topbar{
+    grid-template-columns:auto 1fr auto;
+    column-gap:10px;
+    padding:0 14px!important;
+  }
+  .topbar .search-bar{display:flex!important;max-width:none!important;padding:8px 10px}
+  .search-shortcut{display:none!important}
+  #tb-right .back-site span:last-child{display:none}
+  #mem-badge-top{display:none!important}
+}
+@media(max-width:520px){
+  .topbar{height:auto;min-height:58px;grid-template-columns:auto 1fr auto}
+  .topbar .search-bar{display:flex!important;max-width:none!important}
+  .tb-title{display:none}
+}
+</style>
+
+<style>
+/* ── MVP TOPBAR MEMBERSHIP LABEL FIX ──
+   Keep plan details inside Membership page/sidebar. Topbar only shows compact status. */
+.topbar{
+  grid-template-columns:auto minmax(280px,1fr) auto!important;
+}
+#tb-right{
+  max-width:260px;
+  overflow:visible;
+}
+#mem-badge-top{
+  max-width:none!important;
+  min-width:max-content;
+  padding:6px 10px!important;
+  font-size:.66rem!important;
+  letter-spacing:.12em!important;
+}
+.sb-user-info span{
+  display:block;
+  max-width:125px;
+  white-space:normal!important;
+  line-height:1.55!important;
+}
+@media(max-width:980px){
+  #tb-right .back-site{display:none!important}
+}
+@media(max-width:860px){
+  #mem-badge-top{display:none!important}
+}
+</style>
 </head>
 <body>
 
@@ -896,7 +1047,7 @@ section{padding:100px 0}
     <span class="logo-name fd">Visualize<span class="logo-x">X</span></span>
   </div>
   <div class="nav-links hide-mob">
-    <span class="nl" onclick="document.getElementById('s-library')?.scrollIntoView({behavior:'smooth'})">Library</span>
+    <span class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'})">The Vault</span>
     <span class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'})">How It Works</span>
     <span class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</span>
     <span class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'})">FAQ</span>
@@ -908,7 +1059,7 @@ section{padding:100px 0}
 
 <!-- MOB MENU -->
 <div id="mob-menu" style="display:none;position:fixed;top:60px;left:0;right:0;z-index:998;background:rgba(12,35,33,.99);padding:28px 24px;border-bottom:1px solid var(--c08)">
-  <a class="nl" onclick="document.getElementById('s-library')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">Library</a>
+  <a class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">The Vault</a>
   <a class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">How It Works</a>
   <a class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">Pricing</a>
   <a class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:28px;font-size:.95rem" onclick="closeMob()">FAQ</a>
@@ -916,6 +1067,7 @@ section{padding:100px 0}
   <a onclick="openVXAuth('login');closeMob()" style="display:block;text-align:center;margin-top:10px;color:rgba(249,240,225,.5);font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(249,240,225,.15);border-radius:2px;padding:11px;cursor:pointer">Sign In</a>
   <button id="mob-dash-btn" onclick="goDashboard();closeMob()" style="display:none;width:100%;text-align:center;margin-top:10px;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.28);color:#00B4A0;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:11px;border-radius:2px;cursor:pointer;box-sizing:border-box">&#x25C8; My Dashboard</button>
 </div>
+<button id="mobile-dash-fab" class="mobile-dash-fab" onclick="goDashboard()">◈ Dashboard</button>
 
 <!-- HERO -->
 <section id="s-hero">
@@ -940,7 +1092,7 @@ section{padding:100px 0}
     <p class="hero-whisper au d4">Under 7 minutes. Use before, during, or after difficult moments.</p>
 
     <div class="hero-btns au d5">
-      <a class="btn-tq" onclick="document.getElementById('s-previews')?.scrollIntoView({behavior:'smooth'})" style="font-size:.8rem;padding:14px 34px">Experience a Free Session</a>
+      <a class="btn-tq" onclick="document.getElementById('s-previews')?.scrollIntoView({behavior:'smooth'})" style="font-size:.8rem;padding:14px 34px">Enter a Free Pressure Session</a>
     </div>
   </div>
 </section>
@@ -1007,7 +1159,7 @@ section{padding:100px 0}
     <div class="tc">
       <span class="tag-tq">What VisualizeX Is</span>
       <h2 class="fd" style="font-size:clamp(2rem,5vw,3.2rem);font-weight:400;line-height:1.15;margin-bottom:16px">Most people already know<br><em style="color:var(--goldB);font-style:italic">what they should do.</em></h2>
-      <p style="font-size:.98rem;font-weight:300;color:var(--c55);max-width:620px;margin:0 auto;line-height:1.85">VisualizeX is a growing library of short immersive guided experiences designed for difficult, emotionally charged, and high-pressure moments.</p>
+      <p style="font-size:.98rem;font-weight:300;color:var(--c55);max-width:620px;margin:0 auto;line-height:1.85">VisualizeX is a growing vault of short immersive guided experiences designed for difficult, emotionally charged, and high-pressure moments.</p>
     </div>
     <div style="max-width:760px;margin:52px auto 0;display:flex;flex-direction:column;gap:24px">
       <p style="font-size:.98rem;font-weight:300;color:var(--creamW);line-height:1.95">Rather than offering generic motivation, passive listening, or self-help advice, the experiences place users inside realistic situations many professionals, founders, entrepreneurs, and individuals already navigate in real life.</p>
@@ -1016,7 +1168,7 @@ section{padding:100px 0}
     </div>
     <div class="notyis reveal-stagger" style="margin-top:52px">
       <div class="not-box"><h3 class="fd" style="font-size:1.2rem;font-weight:400;color:var(--c35);margin-bottom:20px">What it is not</h3><div class="is-row"><span class="is-dia" style="color:var(--c20)">×</span><span>Generic meditation or relaxation audio</span></div><div class="is-row"><span class="is-dia" style="color:var(--c20)">×</span><span>Passive motivational content</span></div><div class="is-row"><span class="is-dia" style="color:var(--c20)">×</span><span>Productivity hacks or frameworks</span></div><div class="is-row"><span class="is-dia" style="color:var(--c20)">×</span><span>Corporate compliance training</span></div><div class="is-row"><span class="is-dia" style="color:var(--c20)">×</span><span>Something that only works in calm moments</span></div></div>
-      <div class="is-box"><h3 class="fd" style="font-size:1.2rem;font-weight:400;color:var(--cream);margin-bottom:20px">What it is</h3><div class="is-row"><span class="is-dia">◆</span><span>Immersive experiences for the moments that actually test you</span></div><div class="is-row"><span class="is-dia">◆</span><span>Grounded in real professional, relational, and human dynamics</span></div><div class="is-row"><span class="is-dia">◆</span><span>Under 7 minutes — accessible inside your actual life</span></div><div class="is-row"><span class="is-dia">◆</span><span>Available before, during, and after difficult moments</span></div><div class="is-row"><span class="is-dia">◆</span><span>Built to reconnect people to clarity under pressure</span></div><div class="is-row"><span class="is-dia">◆</span><span>A growing library people can return to again and again</span></div></div>
+      <div class="is-box"><h3 class="fd" style="font-size:1.2rem;font-weight:400;color:var(--cream);margin-bottom:20px">What it is</h3><div class="is-row"><span class="is-dia">◆</span><span>Immersive experiences for the moments that actually test you</span></div><div class="is-row"><span class="is-dia">◆</span><span>Grounded in real professional, relational, and human dynamics</span></div><div class="is-row"><span class="is-dia">◆</span><span>Under 7 minutes — accessible inside your actual life</span></div><div class="is-row"><span class="is-dia">◆</span><span>Available before, during, and after difficult moments</span></div><div class="is-row"><span class="is-dia">◆</span><span>Built to reconnect people to clarity under pressure</span></div><div class="is-row"><span class="is-dia">◆</span><span>A growing vault people can return to again and again</span></div></div>
     </div>
   </div>
 </section>
@@ -1048,7 +1200,7 @@ section{padding:100px 0}
     <div class="tc">
       <span class="tag-tq">Free Experience</span>
       <h2 class="fd" style="font-size:clamp(2rem,5vw,3.4rem);font-weight:400;line-height:1.15;margin-bottom:16px">Most people understand the difference<br><em style="color:var(--goldB);font-style:italic">once they experience one session.</em></h2>
-      <p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:400px;margin:0 auto;line-height:1.85">Start with a free experience.<br>No account needed.</p>
+      <p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:400px;margin:0 auto;line-height:1.85">Unlock a free pressure session.<br>No account needed.</p>
     </div>
     <div class="reveal-stagger vid-grid" id="site-preview-grid">
       <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 1 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/LK1NSddk4xU','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Room Tests the Limits of an Idea</p><p class="vi-d">Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.</p><span class="vi-free">Free · No account needed</span></div></div>
@@ -1057,7 +1209,7 @@ section{padding:100px 0}
       <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 4 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/RYz_4qTmRR8','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Decision Isn't Made in the Room</p><p class="vi-d">Interest is high but authority sits elsewhere. Learn to uncover the real decision path.</p><span class="vi-free">Free · No account needed</span></div></div>
       <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">6 min</div><div class="va-n">Preview 5 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/PJxJ4zpQ-Cg','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Self-Regulation Under Pressure</span><p class="vi-t">Let the Moment Pass Without Entering It</p><p class="vi-d">Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.</p><span class="vi-free">Free · No account needed</span></div></div>
     </div>
-    <div style="padding:52px 40px;border:1px solid rgba(0,180,160,.15);border-radius:4px;text-align:center;background:rgba(0,180,160,.03);margin-top:12px"><p class="fd" style="font-size:clamp(1.3rem,3vw,2rem);font-weight:400;color:var(--cream);margin-bottom:12px">Explore the full library of immersive guided experiences</p><p style="font-size:.9rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto 28px;line-height:1.85">Access experiences designed for difficult conversations, workplace pressure, emotional regulation, leadership visibility, strategic thinking, and high-pressure moments.</p><a class="btn-primary" onclick="openVXAuth('signup')" style="font-size:.8rem;padding:15px 36px">Explore the Library</a></div>
+    <div style="padding:52px 40px;border:1px solid rgba(0,180,160,.15);border-radius:4px;text-align:center;background:rgba(0,180,160,.03);margin-top:12px"><p class="fd" style="font-size:clamp(1.3rem,3vw,2rem);font-weight:400;color:var(--cream);margin-bottom:12px">Unlock the full vault of immersive guided experiences</p><p style="font-size:.9rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto 28px;line-height:1.85">Your next pressure moment may not give you time to prepare. Open the members vault now and keep the right session close before the room changes.</p><a class="btn-primary" onclick="unlockVaultPrototype()" style="font-size:.8rem;padding:15px 36px">Unlock the Full Vault</a></div>
   </div>
 </section>
 
@@ -1070,9 +1222,9 @@ section{padding:100px 0}
 </section>
 
 <!-- LIBRARY CATEGORIES -->
-<section id="s-library" style="padding:90px 0;background:var(--bg3)">
+<section id="s-vault" style="padding:90px 0;background:var(--bg3)">
   <div class="wrap">
-    <div class="tc" style="margin-bottom:52px"><span class="tag-tq">Inside the Library</span><h2 class="fd reveal-head" style="font-size:clamp(1.9rem,4.5vw,3rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:16px">Different kinds of pressure require<br><em style="color:var(--goldB);font-style:italic">different kinds of support.</em></h2><p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto;line-height:1.85">400+ guided experiences across 10 pressure-based categories, designed for real moments of pressure.</p></div>
+    <div class="tc" style="margin-bottom:52px"><span class="tag-tq">Scenario Pods</span><h2 class="fd reveal-head" style="font-size:clamp(1.9rem,4.5vw,3rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:16px">Browse the vault by<br><em style="color:var(--goldB);font-style:italic">scenario pods.</em></h2><p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto;line-height:1.85">Scenario pods help members move through the vault by the kinds of situations they want to prepare for, process, or revisit.</p></div>
     <div class="reveal-stagger cat-grid">
       <div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Workplace pressure &amp; visibility</p></div><div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Difficult conversations</p></div><div class="cat-item gold"><span class="cat-dot" style="background:var(--goldB)"></span><p>Human dynamics &amp; power</p></div><div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Confidence under scrutiny</p></div><div class="cat-item gold"><span class="cat-dot" style="background:var(--goldB)"></span><p>Strategic thinking</p></div><div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Emotional regulation</p></div><div class="cat-item gold"><span class="cat-dot" style="background:var(--goldB)"></span><p>Leadership presence</p></div><div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Communication under pressure</p></div><div class="cat-item gold"><span class="cat-dot" style="background:var(--goldB)"></span><p>Identity &amp; self-worth</p></div><div class="cat-item"><span class="cat-dot" style="background:var(--tq)"></span><p>Recovery after overload</p></div>
     </div>
@@ -1082,8 +1234,8 @@ section{padding:100px 0}
 <!-- GROWING LIBRARY STATS -->
 <section style="padding:88px 0;background:#081C1B">
   <div class="wrap">
-    <div class="tc" style="margin-bottom:44px"><span class="tag">Library Depth</span><h2 class="fd reveal-head" style="font-size:clamp(1.9rem,4.5vw,3rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:16px">The library keeps expanding around the moments<br><em style="color:var(--goldB);font-style:italic">people struggle to navigate clearly.</em></h2><p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:560px;margin:0 auto;line-height:1.85">VisualizeX gives members access to immersive guided experiences built around the moments where pressure changes how people think, communicate, decide, and respond.</p></div>
-    <div class="hero-stats" style="margin-top:0;padding-top:0;border-top:none"><div><p class="hs-n gold-g">400+</p><p class="hs-l">Guided Experiences</p></div><div><p class="hs-n" style="color:var(--tq)">10</p><p class="hs-l">Pressure Categories</p></div><div><p class="hs-n gold-g">&lt;7</p><p class="hs-l">Minute Window</p></div><div><p class="hs-n" style="color:var(--tq)">+</p><p class="hs-l">New Experiences Added</p></div></div>
+    <div class="tc" style="margin-bottom:44px"><span class="tag">Vault Depth</span><h2 class="fd reveal-head" style="font-size:clamp(1.9rem,4.5vw,3rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:16px">The vault keeps expanding around the moments<br><em style="color:var(--goldB);font-style:italic">people struggle to navigate clearly.</em></h2><p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:560px;margin:0 auto;line-height:1.85">VisualizeX gives members access to immersive guided experiences built around the moments where pressure changes how people think, communicate, decide, and respond.</p></div>
+    <div class="hero-stats" style="margin-top:0;padding-top:0;border-top:none"><div><p class="hs-n gold-g">400+</p><p class="hs-l">Guided Experiences</p></div><div><p class="hs-n" style="color:var(--tq)">10</p><p class="hs-l">Scenario Pods</p></div><div><p class="hs-n gold-g">&lt;7</p><p class="hs-l">Minute Window</p></div><div><p class="hs-n" style="color:var(--tq)">+</p><p class="hs-l">New Experiences Added</p></div></div>
   </div>
 </section>
 
@@ -1091,16 +1243,76 @@ section{padding:100px 0}
 <section style="padding:80px 0;background:var(--bg3)"><div class="wrap"><div class="tc" style="margin-bottom:48px"><span class="tag">Audience</span><h2 class="fd" style="font-size:clamp(1.9rem,4.5vw,3rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:16px">Built for people<br><em style="color:var(--goldB);font-style:italic">navigating pressure regularly.</em></h2></div><div class="reveal-stagger" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:780px;margin:0 auto"><div class="audience-pill"><p>Founders</p></div><div class="audience-pill"><p>Entrepreneurs</p></div><div class="audience-pill"><p>Professionals</p></div><div class="audience-pill"><p>Leaders</p></div><div class="audience-pill"><p>Teams</p></div></div></div></section>
 
 <!-- PRICING -->
-<section id="s-pricing"><div class="wrap"><div class="tc"><span class="tag">Membership</span><h2 class="fd" style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;margin-bottom:12px">Access everything.<br><em style="color:var(--goldB)">Whenever you need it.</em></h2><p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:360px;margin:0 auto;line-height:1.85">Full library access across all tiers. Pick the commitment that works for you.</p></div><div class="price-grid reveal-stagger"><div class="pc"><span class="pc-name">Monthly</span><div><span class="pc-price" style="color:var(--cream)">$14</span><span class="pc-per">/month</span></div><p class="pc-note">Billed monthly · Cancel anytime</p><div class="pc-feats"><div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences</div><div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div><div class="pc-feat"><span class="pc-ck">✓</span>New experiences added regularly</div><div class="pc-feat"><span class="pc-ck">✓</span>Mobile + desktop</div><div class="pc-feat"><span class="pc-ck">✓</span>Cancel anytime</div></div><a class="btn-secondary" href="#" data-plan="monthly" onclick="openVXAuth('signup','monthly')" style="width:100%;text-align:center;display:block">Start Free Trial</a></div><div class="pc feat"><div class="pc-badge">Most Popular</div><span class="pc-name" style="margin-top:16px">Quarterly</span><div><span class="pc-price" style="color:var(--goldB)">$39</span><span class="pc-per">/quarter</span></div><p class="pc-note">~$13/month · Best for building the habit</p><div class="pc-feats"><div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences</div><div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div><div class="pc-feat"><span class="pc-ck">✓</span>New experiences added regularly</div><div class="pc-feat"><span class="pc-ck">✓</span>Mobile + desktop</div><div class="pc-feat"><span class="pc-ck">✓</span>Cancel anytime</div></div><div style="background:rgba(0,180,160,.1);border:1px solid rgba(0,180,160,.2);color:var(--tq);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:2px;display:inline-block;margin-bottom:10px">7 days free — no card needed</div><a class="btn-primary" href="#" data-plan="quarterly" onclick="openVXAuth('signup','quarterly')" style="width:100%;text-align:center;display:block">Start Free Trial</a></div><div class="pc"><span class="pc-name">Annual</span><div><span class="pc-price" style="color:var(--cream)">$140</span><span class="pc-per">/year</span></div><p class="pc-note">~$11.67/month · Save 17%</p><div class="pc-feats"><div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences</div><div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div><div class="pc-feat"><span class="pc-ck">✓</span>New experiences added regularly</div><div class="pc-feat"><span class="pc-ck">✓</span>Mobile + desktop</div><div class="pc-feat"><span class="pc-ck">✓</span>Priority access to new releases</div></div><a class="btn-secondary" href="#" data-plan="annual" onclick="openVXAuth('signup','annual')" style="width:100%;text-align:center;display:block">Start Free Trial</a></div></div><p class="price-note">No long contracts. No penalty for cancelling. Access ends at end of billing period.</p><div class="trust-row"><div class="trust-item"><span>✓</span><span>7-day free trial</span></div><div class="trust-item"><span>✓</span><span>No card to start</span></div><div class="trust-item"><span>✓</span><span>Cancel in 2 taps</span></div><div class="trust-item"><span>✓</span><span>History stays if you return</span></div><div class="trust-item"><span>✓</span><span>Full refund first 7 days</span></div></div></div></section>
+<section id="s-pricing">
+  <div class="wrap">
+    <div class="tc">
+      <span class="tag">Membership</span>
+      <h2 class="fd" style="font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;margin-bottom:12px">Unlock the vault before<br><em style="color:var(--goldB)">the next pressure moment arrives.</em></h2>
+      <p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:470px;margin:0 auto;line-height:1.85">Start with 7 days of full access. No card needed. Choose the access path you want to keep active if VisualizeX becomes part of how you prepare, reset, and respond.</p>
+    </div>
+    <div class="price-grid reveal-stagger">
+      <div class="pc">
+        <span class="pc-name">Monthly Access</span>
+        <div><span class="pc-price" style="color:var(--cream)">$14</span><span class="pc-per">/month</span></div>
+        <p class="pc-note">For trying VisualizeX in your own rhythm</p>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="pc-ck">✓</span>7-day Vault Pass — no card needed</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences unlocked</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>Mobile + desktop</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>Cancel anytime</div>
+        </div>
+        <a class="btn-secondary" href="#" data-plan="monthly" onclick="unlockVaultPrototype('monthly');return false" style="width:100%;text-align:center;display:block">Unlock Monthly Access</a>
+      </div>
+      <div class="pc feat">
+        <div class="pc-badge">Most Chosen</div>
+        <span class="pc-name" style="margin-top:16px">Quarterly Access</span>
+        <div><span class="pc-price" style="color:var(--goldB)">$39</span><span class="pc-per">/quarter</span></div>
+        <p class="pc-note">For building pressure-ready thinking over time</p>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="pc-ck">✓</span>7-day Vault Pass — no card needed</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences unlocked</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>New experiences added regularly</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>Best access path for habit-building</div>
+        </div>
+        <div style="background:rgba(0,180,160,.1);border:1px solid rgba(0,180,160,.2);color:var(--tq);font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border-radius:2px;display:inline-block;margin-bottom:10px">7 days unlocked — no card needed</div>
+        <a class="btn-primary" href="#" data-plan="quarterly" onclick="unlockVaultPrototype('quarterly');return false" style="width:100%;text-align:center;display:block">Unlock Quarterly Access</a>
+      </div>
+      <div class="pc">
+        <span class="pc-name">Annual Access</span>
+        <div><span class="pc-price" style="color:var(--cream)">$140</span><span class="pc-per">/year</span></div>
+        <p class="pc-note">For keeping the vault close whenever pressure appears</p>
+        <div class="pc-feats">
+          <div class="pc-feat"><span class="pc-ck">✓</span>7-day Vault Pass — no card needed</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 400+ experiences unlocked</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>All 10 pressure-based categories</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>Priority access to new releases</div>
+          <div class="pc-feat"><span class="pc-ck">✓</span>Best value — save 17%</div>
+        </div>
+        <a class="btn-secondary" href="#" data-plan="annual" onclick="unlockVaultPrototype('annual');return false" style="width:100%;text-align:center;display:block">Unlock Annual Access</a>
+      </div>
+    </div>
+    <p class="price-note">No card to start. Your access window closes after 7 days unless you secure your selected path.</p>
+    <div class="trust-row">
+      <div class="trust-item"><span>✓</span><span>7-day Vault Pass</span></div>
+      <div class="trust-item"><span>✓</span><span>No card to start</span></div>
+      <div class="trust-item"><span>✓</span><span>Full vault unlocked</span></div>
+      <div class="trust-item"><span>✓</span><span>Progress stays if you return</span></div>
+      <div class="trust-item"><span>✓</span><span>Secure access anytime</span></div>
+    </div>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,2.3vw,1.35rem);font-weight:400;color:var(--creamW);line-height:1.65;text-align:center;max-width:620px;margin:36px auto 0">The moments you need this for rarely give you time to prepare. <span style="color:var(--tq)">Keep the vault close before the next one arrives.</span></p>
+  </div>
+</section>
 
 <!-- FINAL CTA -->
-<hr class="s-divider"><section style="padding:120px 0;background:linear-gradient(155deg,#081C1B 0%,#0C2321 40%,#0E3230 70%,#133332 100%);position:relative;overflow:hidden"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,160,.06) 0%,rgba(185,147,66,.03) 50%,transparent 70%);pointer-events:none"></div><div class="wrap-sm" style="position:relative;z-index:1;text-align:center"><p style="font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:var(--tq);margin-bottom:24px">VisualizeX</p><h2 class="fd reveal-head" style="font-size:clamp(2rem,5vw,3.6rem);font-weight:400;line-height:1.15;color:var(--cream);margin-bottom:20px">The moment is already coming.<br><em style="color:var(--goldB)">Most people do not realise how much it changes them.</em></h2><p style="font-size:.98rem;font-weight:300;color:var(--c55);max-width:540px;margin:0 auto 48px;line-height:1.95">A growing library of immersive guided experiences designed to help professionals reconnect to clarity during difficult, emotionally charged, and high-pressure situations.</p><a class="btn-tq" onclick="openVXAuth('signup')" style="font-size:.82rem;padding:17px 42px">Start with a free experience</a><p style="margin-top:16px;font-size:.78rem;font-weight:300;color:var(--c35)">No account needed to start · Full library from $14/month</p></div></section>
+<hr class="s-divider"><section style="padding:120px 0;background:linear-gradient(155deg,#081C1B 0%,#0C2321 40%,#0E3230 70%,#133332 100%);position:relative;overflow:hidden"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,160,.06) 0%,rgba(185,147,66,.03) 50%,transparent 70%);pointer-events:none"></div><div class="wrap-sm" style="position:relative;z-index:1;text-align:center"><p style="font-size:.65rem;letter-spacing:.24em;text-transform:uppercase;color:var(--tq);margin-bottom:24px">VisualizeX</p><h2 class="fd reveal-head" style="font-size:clamp(2rem,5vw,3.6rem);font-weight:400;line-height:1.15;color:var(--cream);margin-bottom:20px">The moment is already coming.<br><em style="color:var(--goldB)">Most people do not realise how much it changes them.</em></h2><p style="font-size:.98rem;font-weight:300;color:var(--c55);max-width:540px;margin:0 auto 48px;line-height:1.95">A growing vault of immersive guided experiences designed to help professionals reconnect to clarity during difficult, emotionally charged, and high-pressure situations.</p><a class="btn-tq" onclick="unlockVaultPrototype()" style="font-size:.82rem;padding:17px 42px">Unlock a free pressure session</a><p style="margin-top:16px;font-size:.78rem;font-weight:300;color:var(--c35)">No account needed to start · Full vault from $14/month</p></div></section>
 
 <!-- FAQ -->
 <section id="s-faq"><div class="wrap-sm"><div class="tc" style="margin-bottom:52px"><span class="tag">Questions</span><h2 class="fd" style="font-size:clamp(1.8rem,4vw,3rem);font-weight:400;line-height:1.15">What people ask<br><em style="color:var(--goldB);font-style:italic">before they start.</em></h2></div><div id="site-faq-list" class="reveal"></div></div></section>
 
 <!-- FOOTER -->
-<footer><div class="wrap"><div class="foot-top"><div class="foot-brand"><div class="logo"><div class="logo-orb">◎</div><span class="logo-name fd">Visualize<span class="logo-x">X</span></span></div><p>Guided experiences for complex situations.</p></div><div class="foot-links"><div class="foot-col"><span class="fc-h">Explore</span><a onclick="document.getElementById('s-library')?.scrollIntoView({behavior:'smooth'});closeMob()">Library</a><a onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'});closeMob()">How It Works</a><a onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'});closeMob()">Pricing</a><a onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'});closeMob()">FAQ</a></div><div class="foot-col"><span class="fc-h">Legal</span><a href="#" onclick="openPrivacyPolicy();return false">Privacy Policy</a><a href="#" onclick="openTerms();return false">Terms of Service</a><a href="#" onclick="showToast('Refund Policy: full refund within 7 days')">Refund Policy</a></div></div></div><div class="foot-bot"><p>© 2026 VisualizeX. Operated by ICONIC CONNEX. All rights reserved.</p><a href="mailto:visualizex.support@gmail.com">Partner Inquiry →</a></div></div></footer>
+<footer><div class="wrap"><div class="foot-top"><div class="foot-brand"><div class="logo"><div class="logo-orb">◎</div><span class="logo-name fd">Visualize<span class="logo-x">X</span></span></div><p>Guided experiences for complex situations.</p></div><div class="foot-links"><div class="foot-col"><span class="fc-h">Explore</span><a onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'});closeMob()">The Vault</a><a onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'});closeMob()">How It Works</a><a onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'});closeMob()">Pricing</a><a onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'});closeMob()">FAQ</a></div><div class="foot-col"><span class="fc-h">Legal</span><a href="#" onclick="openPrivacyPolicy();return false">Privacy Policy</a><a href="#" onclick="openTerms();return false">Terms of Service</a><a href="#" onclick="showToast('Refund Policy: full refund within 7 days')">Refund Policy</a></div></div></div><div class="foot-bot"><p>© 2026 VisualizeX. Operated by ICONIC CONNEX. All rights reserved.</p><a href="mailto:visualizex.support@gmail.com">Partner Inquiry →</a></div></div></footer>
 
 <!-- ═══════════════ AUTH OVERLAY ═══════════════ -->
 <div id="vx-auth-overlay" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(4,14,13,.95);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:20px">
@@ -1109,7 +1321,7 @@ section{padding:100px 0}
     <div style="padding:24px 30px 18px;border-bottom:1px solid rgba(249,240,225,.08);text-align:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:8px">
         <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00B4A0,#006B5E);display:flex;align-items:center;justify-content:center;font-size:10px;color:#0C2321">◎</div>
-        <span style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:500;letter-spacing:.04em;color:#F9F0E1">Visualize<span style="color:#C9A84C">X</span></span>
+        <span style="font-family:Cormorant Garamond,serif;font-size:1.2rem;font-weight:500;letter-spacing:.04em;color:#F9F0E1">Visualize<span style="color:#C9A84C">X</span></span>
       </div>
     </div>
     <div style="padding:22px 30px 30px" id="vx-auth-body"></div>
@@ -1162,14 +1374,14 @@ section{padding:100px 0}
     <div class="sb-nav">
       <span class="sb-section">Core</span>
       <div class="sb-link active" onclick="showView('dashboard')" id="nav-dashboard"><span class="sb-icon">◈</span> Home</div>
-      <div class="sb-link" onclick="showView('situations')" id="nav-situations"><span class="sb-icon">◎</span> Situations</div>
-      <div class="sb-link" onclick="showView('library')" id="nav-library"><span class="sb-icon">▤</span> Library</div>
-      <div class="sb-link" onclick="focusSearch()" id="nav-search"><span class="sb-icon">&#x2315;</span> Search <span style="margin-left:auto;font-size:.62rem;color:var(--c20)">&#8984;K</span></div>
+      <div class="sb-link" onclick="showView('situations')" id="nav-situations"><span class="sb-icon">◎</span> Scenario Pods</div>
+      <div class="sb-link" onclick="showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
+      <!-- Search now lives only in the top bar to keep the sidebar compact. -->
       <div class="sb-link" onclick="showView('saved')" id="nav-saved"><span class="sb-icon">♡</span> Saved Sessions</div>
       <div class="sb-link" onclick="showView('recent')" id="nav-recent"><span class="sb-icon">↺</span> Recent Sessions</div>
 
       <span class="sb-section" style="margin-top:16px">Account</span>
-      <div class="sb-link" onclick="showView('account')" id="nav-account"><span class="sb-icon">◇</span> Membership</div>
+      <div class="sb-link" onclick="showView(\'account\')" id="nav-account"><span class="sb-icon">◇</span> Membership</div>
       <div class="sb-link" onclick="showView('billing')" id="nav-billing"><span class="sb-icon">▣</span> Billing History</div>
       <div class="sb-link" onclick="showView('settings')" id="nav-settings"><span class="sb-icon">⚙</span> Settings</div>
       <div class="sb-link" onclick="showView('support')" id="nav-support"><span class="sb-icon">?</span> Help & Support</div>
@@ -1182,7 +1394,10 @@ section{padding:100px 0}
           <span id="sb-plan">—</span>
         </div>
       </div>
-      <div class="sb-link" onclick="showView('admin')" id="nav-admin" style="margin-top:6px;color:rgba(185,147,66,.45)">
+      <div class="sb-link" onclick="backToSite()" id="nav-site" style="margin-top:6px;color:rgba(0,180,160,.65)">
+        <span class="sb-icon">&#x2190;</span> Back to Landing Page
+      </div>
+      <div class="sb-link" onclick="showView('admin')" id="nav-admin" style="margin-top:2px;color:rgba(185,147,66,.45)">
         <span class="sb-icon">&#x2699;</span> Admin
       </div>
       <div class="sb-link" onclick="doLogout()" style="margin-top:2px;color:rgba(249,240,225,.2)">
@@ -1190,6 +1405,7 @@ section{padding:100px 0}
       </div>
     </div>
   </nav>
+  <div id="sidebar-scrim" class="mobile-scrim" onclick="closeMobileSidebar()"></div>
 
   <!-- MAIN -->
   <div class="main">
@@ -1202,12 +1418,12 @@ section{padding:100px 0}
     <!-- Topbar -->
     <div class="topbar">
       <div style="display:flex;align-items:center;gap:14px">
-        <button class="mob-toggle" onclick="document.getElementById('sidebar').classList.toggle('mob-open')">☰</button>
+        <button class="mob-toggle" onclick="toggleMobileSidebar()">☰</button>
         <span class="tb-title fd" id="topbar-title">Dashboard</span>
       </div>
       <div class="search-bar" id="search-bar">
         <span class="search-icon">&#x2315;</span>
-        <input type="text" placeholder="Find the exact situation you are in&#8230;" id="search-input"
+        <input type="text" placeholder="Search sessions…" id="search-input"
           oninput="handleSearch(this.value)"
           onfocus="showSearchPrompts()"
           onblur="setTimeout(closeSearchDropdown,220)"
@@ -1215,6 +1431,9 @@ section{padding:100px 0}
         <span class="search-shortcut">&#8984;K</span>
       </div>
       <div id="tb-right" style="display:flex;align-items:center;gap:12px">
+        <button onclick="backToSite()" class="back-site" style="background:none;border:none;padding:0;font-family:'DM Sans',sans-serif">
+          <span>&#x2190;</span><span>View Site</span>
+        </button>
         <span class="mem-badge" id="mem-badge-top">Trial</span>
       </div>
     </div>
@@ -1291,6 +1510,57 @@ section{padding:100px 0}
 // ═══════════════════════════════════
 var vxUser = null, vxAuthMode = 'signup', vxPlan = 'quarterly';
 var VXK = {u:'vx_u',t:'vx_t',a:'vx_a',s:'vx_s',r:'vx_r',p:'vx_p'};
+var VX_TRIAL_USED_KEY = 'vx_trial_used';
+var VX_TRIAL_EMAILS_KEY = 'vx_trial_emails';
+var VX_TRIAL_END_KEY = 'vx_trial_end';
+var VX_PLAN_LOCK_KEY = 'vx_plan_locked_until';
+
+function vxNormalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+function vxGetTrialEmailClaims() {
+  try { return JSON.parse(localStorage.getItem(VX_TRIAL_EMAILS_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function vxSaveTrialEmailClaim(email) {
+  var clean = vxNormalizeEmail(email);
+  if (!clean) return;
+  var claims = vxGetTrialEmailClaims();
+  if (claims.indexOf(clean) === -1) claims.push(clean);
+  localStorage.setItem(VX_TRIAL_EMAILS_KEY, JSON.stringify(claims));
+}
+function vxHasTrialBeenUsed(email) {
+  var clean = vxNormalizeEmail(email);
+  var deviceUsed = localStorage.getItem(VX_TRIAL_USED_KEY) === '1';
+  var emailUsed = clean && vxGetTrialEmailClaims().indexOf(clean) !== -1;
+  return !!(deviceUsed || emailUsed);
+}
+function vxMarkTrialUsed(email) {
+  localStorage.setItem(VX_TRIAL_USED_KEY, '1');
+  vxSaveTrialEmailClaim(email);
+}
+function vxGetCurrentPlan() {
+  var stored = localStorage.getItem(VXK.u);
+  var user = vxUser;
+  if (!user && stored) { try { user = JSON.parse(stored); } catch(e) {} }
+  return (user && user.plan) || vxPlan || 'quarterly';
+}
+function vxIsPlanLocked() {
+  // Flex rule: trial and expired users can choose freely. Paid users keep their selected access path until the current paid period ends.
+  return localStorage.getItem('vx_access') === 'paid' && localStorage.getItem('vx_allow_path_change') !== '1';
+}
+function vxBlockPlanSwitch(requestedPlan) {
+  var currentPlan = vxGetCurrentPlan();
+  if (currentPlan && requestedPlan && currentPlan !== requestedPlan && vxIsPlanLocked()) {
+    showToast('Your current paid access path stays active until this billing period ends. You can move up or down when the period renews.');
+    openMemberDashboard('account');
+    return true;
+  }
+  return false;
+}
+function vxTrialExpiredStart() {
+  return String(Date.now() - (8*24*60*60*1000));
+}
 
 function vxInit() {
   var stored = localStorage.getItem(VXK.u);
@@ -1450,6 +1720,8 @@ function showDashBtn() {
   if (db)  { db.style.display  = 'flex'; }
   if (mdb) { mdb.style.display = 'block'; }
   if (cb)  { cb.style.display  = 'none'; }
+  var fab = document.getElementById('mobile-dash-fab');
+  if (fab) fab.classList.add('show');
 }
 function hideDashBtn() {
   var db  = document.getElementById('dash-btn');
@@ -1458,9 +1730,58 @@ function hideDashBtn() {
   if (db)  { db.style.display  = 'none'; }
   if (mdb) { mdb.style.display = 'none'; }
   if (cb)  { cb.style.display  = ''; }
+  var fab = document.getElementById('mobile-dash-fab');
+  if (fab) fab.classList.remove('show');
+}
+
+
+function unlockVaultPrototype(plan) {
+  // MVP testing helper: makes the public "Unlock Vault" CTAs reliable while Supabase/payment are not connected yet.
+  vxPlan = plan || vxPlan || 'quarterly';
+  var stored = localStorage.getItem(VXK.u);
+  if (stored && !vxUser) {
+    try { vxUser = JSON.parse(stored); } catch(e) {}
+  }
+  if (!vxUser) {
+    openVXAuth('signup', vxPlan);
+    return;
+  }
+  if (localStorage.getItem('vx_access') === 'paid') {
+    openMemberDashboard('dashboard');
+    showToast('Your paid vault access is already active.');
+    return;
+  }
+  vxUser.plan = vxPlan;
+  vxUser.accessMode = 'trial_no_card';
+  localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  setTrialDaysLeft(7);
+  openMemberDashboard('dashboard');
+  showToast('Your 7-day Vault Pass has started — Day 1 is active. You can choose an access path later.');
 }
 
 function openVXAuth(mode, plan) {
+  var stored = localStorage.getItem(VXK.u);
+  if (stored) {
+    try { vxUser = JSON.parse(stored); } catch(e) {}
+  }
+  if (vxUser && mode === 'signup') {
+    var requestedPlan = plan || vxUser.plan || vxPlan || 'quarterly';
+    if (vxBlockPlanSwitch(requestedPlan)) return;
+
+    // Testing + live UX rule:
+    // If the user is already inside an active no-card Vault Pass, do not push them into checkout
+    // when they click homepage access CTAs. Take them back into the trial dashboard instead.
+    var trialState = (typeof checkTrial === 'function') ? checkTrial() : {status:'active'};
+    if (trialState.status === 'active') {
+      openMemberDashboard('dashboard');
+      showToast('Your 7-day Vault Pass is active. You can choose or change your access path anytime before payment.');
+      return;
+    }
+
+    // Expired or paid users can enter the checkout/reclaim flow deliberately.
+    openSimulatedCheckout(vxUser.plan || requestedPlan || vxPlan || 'quarterly');
+    return;
+  }
   vxAuthMode = mode||'signup'; if(plan) vxPlan = plan;
   const ov = document.getElementById('vx-auth-overlay');
   ov.style.display = 'flex'; document.body.style.overflow='hidden';
@@ -1475,9 +1796,9 @@ document.addEventListener('DOMContentLoaded',function(){var ov=document.getEleme
 
 function renderVXAuth() {
   var isSU = vxAuthMode === 'signup';
-  var trialHtml = isSU ? '<div style="background:rgba(0,180,160,.07);border:1px solid rgba(0,180,160,.18);border-radius:3px;padding:10px 14px;margin-bottom:14px;font-size:.79rem;color:#ECDAC4;line-height:1.65"><strong style=\"color:#00B4A0\">7-day free trial.</strong> Full access immediately. Card charged after Day 7 only.</div>' : '';
+  var trialHtml = isSU ? '<div style="background:rgba(0,180,160,.07);border:1px solid rgba(0,180,160,.18);border-radius:3px;padding:10px 14px;margin-bottom:14px;font-size:.79rem;color:#ECDAC4;line-height:1.65"><strong style=\"color:#00B4A0\">7-day Vault Pass.</strong> Full vault unlocked immediately. No card needed today. Secure your selected access path before Day 7 to keep the vault open.</div>' : '';
   var nameHtml = isSU ? '<div style="margin-bottom:12px"><label style="display:block;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(249,240,225,.35);margin-bottom:5px">Full Name</label><input type="text" id="vf-name" placeholder="Your full name" style="width:100%;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.1);border-radius:3px;padding:10px 12px;color:#F9F0E1;font-family:\'DM Sans\',sans-serif;font-size:.87rem;outline:none;transition:border-color .2s" onfocus="this.style.borderColor=\'#00B4A0\'" onblur="this.style.borderColor=\'rgba(249,240,225,.1)\'"></div>' : '';
-  var submitLabel = isSU ? 'Create Account &amp; Start Trial' : 'Sign In to My Dashboard';
+  var submitLabel = isSU ? 'Create Account &amp; Unlock Vault' : 'Sign In to My Dashboard';
   var submitFn = isSU ? 'vxSignup()' : 'vxLogin()';
   var passPlaceholder = isSU ? 'Min 8 characters' : 'Your password';
   var loginTabColor = !isSU ? '#00B4A0' : 'rgba(249,240,225,.35)';
@@ -1542,12 +1863,278 @@ function vxShake(id){
   setTimeout(function(){el.style.borderColor='rgba(249,240,225,.1)';el.style.animation='';},600);
 }
 function vxFinish(u,isNew){
-  vxUser=u;
-  localStorage.setItem(VXK.u,JSON.stringify(u));
-  if(isNew&&!localStorage.getItem(VXK.t))localStorage.setItem(VXK.t,Date.now().toString());
+  vxUser = u || {};
+  vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
+  var email = vxNormalizeEmail(vxUser.email);
+  var now = Date.now();
+  var seven = 7*24*60*60*1000;
+  var paidAlready = localStorage.getItem('vx_access') === 'paid' || vxUser.accessMode === 'active_simulated';
+
+  // Paid members never get pushed back into trial.
+  if (paidAlready) {
+    vxUser.accessMode = 'active_simulated';
+    localStorage.setItem('vx_payment_status','ok');
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    closeVXAuth();
+    showDashBtn();
+    setTimeout(function(){ openMemberDashboard('dashboard'); }, 180);
+    return;
+  }
+
+  var trialStart = localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t);
+  var trialUsed = vxHasTrialBeenUsed(email);
+
+  // MVP testing mode: allow a new signup click to reopen the Vault Pass while we test trial-to-paid.
+  // Remove this once Supabase owns trial enforcement.
+  var VX_ALLOW_TRIAL_RETEST = true;
+  if (VX_ALLOW_TRIAL_RETEST && isNew) {
+    trialStart = null;
+    trialUsed = false;
+    localStorage.removeItem(VX_TRIAL_USED_KEY);
+  }
+
+  var activeTrial = false;
+
+  if (trialStart) {
+    var elapsed = now - parseInt(trialStart, 10);
+    activeTrial = elapsed >= 0 && elapsed < seven;
+    localStorage.setItem('vx_trial_start', String(trialStart));
+    localStorage.setItem(VXK.t, String(trialStart));
+  }
+
+  if (!trialStart && !trialUsed) {
+    // First genuine access claim: unlock the 7-day Vault Pass and mark it used.
+    localStorage.setItem('vx_trial_start', String(now));
+    localStorage.setItem(VXK.t, String(now));
+    localStorage.setItem(VX_TRIAL_END_KEY, String(now + seven));
+    vxMarkTrialUsed(email);
+    vxUser.accessMode = 'trial_no_card';
+    localStorage.setItem('vx_payment_status','trial_no_card');
+  } else if (activeTrial) {
+    // Returning during the same access window: keep the pass open, do not restart it.
+    vxMarkTrialUsed(email);
+    vxUser.accessMode = 'trial_no_card';
+    localStorage.setItem('vx_payment_status','trial_no_card');
+  } else {
+    // Trial has already been used or expired: do not allow a second free Vault Pass.
+    if (!trialStart) {
+      localStorage.setItem('vx_trial_start', vxTrialExpiredStart());
+      localStorage.setItem(VXK.t, vxTrialExpiredStart());
+    }
+    vxMarkTrialUsed(email);
+    vxUser.accessMode = 'trial_expired';
+    localStorage.setItem('vx_payment_status','trial_expired');
+  }
+
+  localStorage.removeItem('vx_access');
+  localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+
   closeVXAuth();
-  // Small delay so auth overlay fades before redirect
-  setTimeout(function(){ window.location.href='VisualizeX_Dashboard.html'; }, 320);
+  showDashBtn();
+  setTimeout(function(){
+    if (!vxHasCompletedVaultSetup()) {
+      launchVaultSetupFlow({source: isNew ? 'trial' : 'return'});
+      return;
+    }
+    openMemberDashboard('dashboard');
+    var tr = (typeof checkTrial === 'function') ? checkTrial() : {status:'active'};
+    if (tr.status === 'active') showToast('Your 7-Day Vault Pass is active. The full vault is unlocked.');
+    else showToast('This account has already used its Vault Pass. Your saved sessions are waiting — secure access to continue.');
+  }, 220);
+}
+
+
+// ═══════════════════════════════════
+// VAULT PATHWAY SETUP — trial/payment personalization flow
+// ═══════════════════════════════════
+var VX_PROFILE_KEY = 'vx_profile_details';
+var VX_SETUP_KEY = 'vx_setup_completed';
+var VX_SETUP_ANSWERS_KEY = 'vx_pathway_answers';
+var vxSetupStep = 0;
+var vxSetupAnswers = {};
+var VX_SETUP_QUESTIONS = [
+  {key:'currentPressure', label:'Current Pressure', heading:'What are you navigating most right now?', options:['High-pressure decisions','Difficult people or manipulation dynamics','Emotional control under pressure','Leadership or workplace tension','Identity and confidence shifts','Mental overload or burnout','Relationship conflict','Strategic communication challenges']},
+  {key:'accessMoment', label:'Access Moment', heading:'When do you most often need access to the Vault?', options:['Before important conversations','During emotional pressure','After conflict or destabilization','During workplace stress','When overthinking takes over','When confidence drops','During difficult relationship dynamics','When I need mental clarity quickly']},
+  {key:'guidanceStyle', label:'Guidance Style', heading:'What kind of guidance helps you most when pressure builds?', options:['Clear and strategic thinking','Direct perspective shifts','Understanding people and behavior better','Regaining emotional control quickly','Confidence during difficult situations','Seeing situations more objectively','Stronger communication and responses','Breaking cycles of overthinking']},
+  {key:'desiredShift', label:'Desired Shift', heading:'What change would make the biggest difference for you right now?', options:['Thinking more clearly under pressure','Responding instead of reacting','Feeling more emotionally in control','Better decision-making','Stronger confidence and certainty','Reduced mental overwhelm','Better boundaries with people','Sharper communication']},
+  {key:'thinkingStyle', label:'Thinking Style', heading:'Which description feels closest to how you process situations?', options:['I analyze situations deeply before responding','I notice patterns other people miss','I stay calm externally but absorb pressure internally','I overthink interactions afterward','I adapt constantly to different personalities','I prefer strategy over emotional reactions','I carry pressure quietly','I struggle when situations feel psychologically unclear']},
+  {key:'energyDrain', label:'Energy Drain', heading:'What type of situations drain your mental energy the fastest?', options:['Manipulative behavior','Workplace politics','Constant conflict','Emotional unpredictability','Feeling misunderstood','High expectations from others','Overthinking conversations afterward','Lack of clarity or direction']},
+  {key:'strengthTarget', label:'Strength Target', heading:'What are you ultimately trying to strengthen?', options:['Emotional control','Strategic clarity','Confidence','Self-trust','Communication','Boundaries','Leadership presence','Mental resilience']}
+];
+function vxHasCompletedVaultSetup(){ return localStorage.getItem(VX_SETUP_KEY) === '1'; }
+function launchVaultSetupFlow(opts){
+  opts = opts || {};
+  vxSetupStep = 0;
+  try { vxSetupAnswers = JSON.parse(localStorage.getItem(VX_SETUP_ANSWERS_KEY) || '{}'); } catch(e) { vxSetupAnswers = {}; }
+  closeVXAuth();
+  closeSimulatedCheckout();
+  var existing = document.getElementById('vx-setup-overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'vx-setup-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7600;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto';
+  document.body.appendChild(overlay);
+  renderVaultSetupStep();
+}
+function renderVaultSetupStep(){
+  var overlay = document.getElementById('vx-setup-overlay');
+  if (!overlay) return;
+  var total = 10;
+  var progress = Math.max(8, Math.round(((vxSetupStep+1)/total)*100));
+  var shellStart = '<div style="width:100%;max-width:720px;background:#0A1F1D;border:1px solid rgba(0,180,160,.18);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden">' +
+    '<div style="padding:24px 32px 18px;border-bottom:1px solid rgba(249,240,225,.07)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px"><span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#00B4A0">Aligning Your Vault Pathways</span><span style="font-size:.7rem;color:rgba(249,240,225,.32)">' + progress + '%</span></div>' +
+      '<div style="height:3px;background:rgba(249,240,225,.08);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + progress + '%;background:linear-gradient(90deg,#00B4A0,#C9A84C)"></div></div>' +
+    '</div><div style="padding:30px 34px 34px">';
+  var shellEnd = '</div></div>';
+  if (vxSetupStep === 0) { overlay.innerHTML = shellStart + renderSetupAccessPath() + shellEnd; return; }
+  if (vxSetupStep === 1) { overlay.innerHTML = shellStart + renderSetupDetails() + shellEnd; return; }
+  if (vxSetupStep >= 2 && vxSetupStep <= 8) { overlay.innerHTML = shellStart + renderSetupQuestion(VX_SETUP_QUESTIONS[vxSetupStep-2]) + shellEnd; return; }
+  overlay.innerHTML = shellStart + renderVaultActivationScreen() + shellEnd;
+}
+function setupButtons(nextLabel){
+  return '<div style="display:flex;justify-content:space-between;gap:12px;margin-top:26px"><button onclick="vxSetupBack()" style="background:transparent;border:1px solid rgba(249,240,225,.12);color:rgba(249,240,225,.45);font-family:DM Sans,sans-serif;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;padding:12px 18px;cursor:pointer"' + (vxSetupStep===0?' disabled style="opacity:.25"':'') + '>Back</button><button onclick="vxSetupNext()" style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;font-family:DM Sans,sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;padding:13px 24px;cursor:pointer">' + (nextLabel || 'Continue') + '</button></div>';
+}
+function renderSetupAccessPath(){
+  var selected = (vxUser && vxUser.plan) || vxPlan || 'quarterly';
+  var cards = ['monthly','quarterly','annual'].map(function(k){
+    var m = getPlanMeta(k), active = selected===k;
+    var name = k==='monthly'?'Flexible Access':k==='quarterly'?'Deep Immersion Access':'Full Vault Continuity';
+    return '<button onclick="vxSetupSelectPlan(\''+k+'\')" style="text-align:left;background:'+(active?'rgba(0,180,160,.1)':'rgba(249,240,225,.025)')+';border:1px solid '+(active?'rgba(0,180,160,.35)':'rgba(249,240,225,.09)')+';border-radius:5px;padding:18px 18px;cursor:pointer;color:#F9F0E1"><span style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:'+(active?'#00B4A0':'rgba(249,240,225,.35)')+';display:block;margin-bottom:8px">'+m.label+'</span><span style="font-family:Cormorant Garamond,serif;font-size:1.22rem;display:block;margin-bottom:7px">'+name+'</span><span style="font-size:.8rem;color:rgba(249,240,225,.5);line-height:1.6;display:block">'+m.price+m.per+' · '+m.note+'</span></button>';
+  }).join('');
+  return '<h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;margin-bottom:8px">Choose your Access Path.</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75;margin-bottom:22px">This is your preferred path if you continue after the 7-day Vault Pass. You can still change it before payment.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">'+cards+'</div>'+setupButtons('Continue');
+}
+function vxSetupSelectPlan(plan){ vxPlan = plan; if(vxUser){vxUser.plan=plan;localStorage.setItem(VXK.u,JSON.stringify(vxUser));} renderVaultSetupStep(); }
+function renderSetupDetails(){
+  var profile = {}; try { profile = JSON.parse(localStorage.getItem(VX_PROFILE_KEY)||'{}'); } catch(e){}
+  var nameParts = (vxUser && vxUser.name ? vxUser.name.split(' ') : []);
+  var first = profile.firstName || nameParts[0] || '';
+  var last = profile.lastName || nameParts.slice(1).join(' ') || '';
+  var email = profile.email || (vxUser && vxUser.email) || '';
+  function field(id,label,val,type){ return '<div><label style="display:block;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(249,240,225,.35);margin-bottom:7px">'+label+'</label><input id="'+id+'" type="'+(type||'text')+'" value="'+String(val||'').replace(/"/g,'&quot;')+'" style="width:100%;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.11);border-radius:3px;padding:12px 13px;color:#F9F0E1;font-family:DM Sans,sans-serif;font-size:.88rem;outline:none"></div>'; }
+  return '<h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;margin-bottom:8px">Set up your Vault profile.</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75;margin-bottom:22px">These details help us understand who the Vault is serving and improve future scenario pathways. Billing address is collected later by the payment gateway when you pay.</p><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">'+field('vx-prof-first','First name',first)+field('vx-prof-last','Surname',last)+field('vx-prof-email','Email',email,'email')+field('vx-prof-country','Country',profile.country||'')+field('vx-prof-city','City',profile.city||'')+field('vx-prof-work','Work environment / industry',profile.work||'')+'</div>'+setupButtons('Continue');
+}
+function saveSetupDetails(){
+  var ids=['first','last','email','country','city','work'];
+  var vals={};
+  ids.forEach(function(k){ var el=document.getElementById('vx-prof-'+k); vals[k]=el?el.value.trim():''; });
+  if(!vals.first || !vals.last || !vals.email || !vals.email.includes('@') || !vals.country || !vals.city || !vals.work){ showToast('Please complete all profile fields before continuing.'); return false; }
+  var profile={firstName:vals.first,lastName:vals.last,email:vals.email,country:vals.country,city:vals.city,work:vals.work};
+  localStorage.setItem(VX_PROFILE_KEY, JSON.stringify(profile));
+  if(vxUser){ vxUser.name=vals.first+' '+vals.last; vxUser.email=vals.email; vxUser.initials=(vals.first[0]+vals.last[0]).toUpperCase(); localStorage.setItem(VXK.u,JSON.stringify(vxUser)); }
+  return true;
+}
+function renderSetupQuestion(q){
+  var current = vxSetupAnswers[q.key] || '';
+  var opts = q.options.map(function(o){ var active=current===o; return '<button onclick="vxSetupChoose(\''+q.key+'\',\''+o.replace(/\'/g,'&apos;')+'\')" style="text-align:left;background:'+(active?'rgba(0,180,160,.1)':'rgba(249,240,225,.025)')+';border:1px solid '+(active?'rgba(0,180,160,.35)':'rgba(249,240,225,.08)')+';border-radius:4px;padding:13px 15px;color:'+(active?'#F9F0E1':'rgba(249,240,225,.58)')+';font-family:DM Sans,sans-serif;font-size:.86rem;line-height:1.45;cursor:pointer">'+o+'</button>'; }).join('');
+  return '<span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">'+q.label+'</span><h2 style="font-family:Cormorant Garamond,serif;font-size:1.85rem;font-weight:400;color:#F9F0E1;margin-bottom:8px;line-height:1.25">'+q.heading+'</h2><p style="font-size:.88rem;color:rgba(249,240,225,.5);line-height:1.7;margin-bottom:20px">Choose the closest fit. This shapes your recommended scenario pathways.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:10px">'+opts+'</div>'+setupButtons('Continue');
+}
+function vxSetupChoose(key,val){ vxSetupAnswers[key]=val; localStorage.setItem(VX_SETUP_ANSWERS_KEY,JSON.stringify(vxSetupAnswers)); renderVaultSetupStep(); }
+function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep(); } }
+function vxSetupNext(){
+  if(vxSetupStep===1 && !saveSetupDetails()) return;
+  if(vxSetupStep>=2 && vxSetupStep<=8){ var q=VX_SETUP_QUESTIONS[vxSetupStep-2]; if(!vxSetupAnswers[q.key]){ showToast('Select the option that fits closest.'); return; } }
+  vxSetupStep++;
+  if(vxSetupStep>9){ completeVaultSetup(); return; }
+  renderVaultSetupStep();
+}
+function renderVaultActivationScreen(){
+  var tr = typeof checkTrial==='function'?checkTrial():{status:'active',daysLeft:7};
+  var title = localStorage.getItem('vx_access')==='paid' ? 'Your Vault Access Is Active' : 'Your 7-Day Vault Pass Is Now Active';
+  var sub = localStorage.getItem('vx_access')==='paid' ? 'Your access path is active and your guided scenarios are aligned to your current focus.' : 'Your full Vault access is open now. Your guided scenarios and strategic visualizations are aligned to your current focus for the next 7 days.';
+  return '<div style="text-align:center;padding:10px 0 4px"><div style="width:64px;height:64px;border-radius:50%;border:1px solid rgba(0,180,160,.35);background:rgba(0,180,160,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#00B4A0;font-size:1.5rem">◎</div><span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#00B4A0;display:block;margin-bottom:12px">Vault Ready</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2.2rem;font-weight:400;color:#F9F0E1;line-height:1.2;margin-bottom:12px">'+title+'</h2><p style="font-size:.92rem;color:rgba(249,240,225,.58);line-height:1.8;max-width:500px;margin:0 auto 26px">'+sub+'</p><button onclick="completeVaultSetup()" style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;padding:15px 30px;cursor:pointer">Enter The Vault</button></div>';
+}
+function completeVaultSetup(){
+  localStorage.setItem(VX_SETUP_KEY,'1');
+  var o=document.getElementById('vx-setup-overlay'); if(o) o.remove();
+  openMemberDashboard('dashboard');
+  var tr = typeof checkTrial==='function'?checkTrial():{status:'active'};
+  showToast(tr.status==='paid' ? 'Vault access active.' : 'Your 7-Day Vault Pass is active.');
+}
+
+
+function ensureDashboardShell() {
+  document.body.classList.add('vx-app-open');
+  var site = document.getElementById('vx-site');
+  if (site) site.classList.add('hide');
+  var vxApp = document.getElementById('vx-app');
+  if (vxApp) { vxApp.style.display = 'flex'; vxApp.classList.add('show'); }
+  var authScreen = document.getElementById('auth-screen');
+  if (authScreen) authScreen.classList.add('hide');
+  var app = document.getElementById('app');
+  if (app) app.classList.add('show');
+  document.body.style.background = '#0A1F1D';
+}
+
+function restoreMemberSidebar() {
+  var views = ['dashboard','situations','vault','saved','recent','account','billing','settings','support','admin'];
+  views.forEach(function(v){
+    var el = document.getElementById('nav-' + v);
+    if (!el) return;
+    el.style.opacity = '';
+    el.style.cursor = '';
+    el.style.display = '';
+    el.onclick = function(){ showView(v); };
+  });
+  var search = document.getElementById('nav-search');
+  if (search) search.onclick = function(){ focusSearch(); };
+}
+
+function migrateTrialKeysForPrototype() {
+  var paid = localStorage.getItem('vx_access') === 'paid';
+  if (paid) return;
+  var trialStart = localStorage.getItem('vx_trial_start');
+  var legacyStart = localStorage.getItem(VXK.t);
+  var email = vxUser ? vxNormalizeEmail(vxUser.email) : '';
+  if (!trialStart && legacyStart) {
+    localStorage.setItem('vx_trial_start', legacyStart);
+  } else if (!trialStart && vxUser && !vxHasTrialBeenUsed(email)) {
+    var now = Date.now().toString();
+    localStorage.setItem('vx_trial_start', now);
+    localStorage.setItem(VXK.t, now);
+    localStorage.setItem(VX_TRIAL_END_KEY, String(parseInt(now,10) + 7*24*60*60*1000));
+    vxMarkTrialUsed(email);
+  } else if (!trialStart && vxUser && vxHasTrialBeenUsed(email)) {
+    var expired = vxTrialExpiredStart();
+    localStorage.setItem('vx_trial_start', expired);
+    localStorage.setItem(VXK.t, expired);
+    vxUser.accessMode = 'trial_expired';
+  }
+}
+
+
+function openMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('sidebar-scrim');
+  if (sidebar) sidebar.classList.add('mob-open');
+  if (scrim) scrim.classList.add('open');
+  document.body.classList.add('sidebar-open');
+}
+function closeMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var scrim = document.getElementById('sidebar-scrim');
+  if (sidebar) sidebar.classList.remove('mob-open');
+  if (scrim) scrim.classList.remove('open');
+  document.body.classList.remove('sidebar-open');
+}
+function toggleMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  if (sidebar && sidebar.classList.contains('mob-open')) closeMobileSidebar();
+  else openMobileSidebar();
+}
+
+function openMemberDashboard(defaultView) {
+  var stored = localStorage.getItem(VXK.u);
+  if (stored) { try { vxUser = JSON.parse(stored); } catch(e) {} }
+  if (!vxUser) { showGuestDashboard(); return; }
+  vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
+  migrateTrialKeysForPrototype();
+  localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  ensureDashboardShell();
+  restoreMemberSidebar();
+  updateSidebar();
+  showView(defaultView || 'dashboard');
+  if (typeof renderNotifBar === 'function') renderNotifBar();
 }
 
 /* ══════════════════════════════
@@ -1556,9 +2143,7 @@ function vxFinish(u,isNew){
    Create aspiration not aggression.
 ══════════════════════════════ */
 function showGuestDashboard() {
-  document.getElementById('vx-site').classList.add('hide');
-  document.getElementById('vx-app').classList.add('show');
-  document.body.style.background = '#0A1F1D';
+  ensureDashboardShell();
   var sbAvatar=document.getElementById('sb-avatar');
   var sbName=document.getElementById('sb-name');
   var sbPlan=document.getElementById('sb-plan');
@@ -1621,7 +2206,7 @@ function renderGuestDashboard() {
       return '<div class="sit-card" style="opacity:.4;cursor:pointer" onclick="showMembershipPrompt(\'soft\')">' +
         '<div class="sit-icon" style="opacity:.3">' + s.icon + '</div>' +
         '<p class="sit-name" style="color:rgba(249,240,225,.4)">' + s.name + '</p>' +
-        '<p style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,180,160,.45)">Members only</p></div>';
+        '<p style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,180,160,.45)">Locked vault</p></div>';
     }
     return '<div class="sit-card" style="cursor:pointer" onclick="showGuestCategory(\'' + s.cat + '\')">' +
       '<div class="sit-icon">' + s.icon + '</div>' +
@@ -1644,27 +2229,27 @@ function renderGuestDashboard() {
 
   el.innerHTML =
     '<div style="padding:24px 26px;background:linear-gradient(135deg,rgba(0,180,160,.07),rgba(185,147,66,.04));border:1px solid rgba(0,180,160,.14);border-radius:5px;margin-bottom:28px;position:relative;overflow:hidden">' +
-      '<span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--tq);margin-bottom:10px;display:block">VisualizeX &mdash; Guest Preview</span>' +
+      '<span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--tq);margin-bottom:10px;display:block">VisualizeX &mdash; Access Preview</span>' +
       '<h1 style="font-family:\'Cormorant Garamond\',serif;font-size:clamp(1.35rem,3vw,1.85rem);font-weight:400;color:#F9F0E1;line-height:1.35;margin-bottom:10px">Navigate the moment<br><em style="color:#C9A84C">differently.</em></h1>' +
-      '<p style="font-size:.85rem;font-weight:300;color:rgba(249,240,225,.55);line-height:1.75;margin-bottom:18px;max-width:440px">3 free experiences below. 400+ inside. Built for the exact moments when your thinking needs to shift &mdash; fast.</p>' +
+      '<p style="font-size:.85rem;font-weight:300;color:rgba(249,240,225,.55);line-height:1.75;margin-bottom:18px;max-width:440px">3 pressure sessions are open. 400+ sit behind the gate. Unlock the vault when you are ready to keep the right session close.</p>' +
       '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-        '<button style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="openVXAuth(\'signup\')">Start 7-Day Free Trial</button>' +
+        '<button style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="openVXAuth(\'signup\')">Start 7-Day Vault Pass</button>' +
         '<button style="background:transparent;color:rgba(249,240,225,.5);font-family:\'DM Sans\',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(249,240,225,.18);border-radius:2px;padding:10px 18px;cursor:pointer" onclick="openVXAuth(\'login\')">Sign In</button>' +
       '</div>' +
     '</div>' +
 
-    '<div class="section-head"><h2 class="fd">Free Experiences</h2>' +
-    '<span style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tq);background:rgba(0,180,160,.08);border:1px solid rgba(0,180,160,.2);padding:3px 9px;border-radius:2px">No sign-in needed</span></div>' +
+    '<div class="section-head"><h2 class="fd">Free Guided Experiences</h2>' +
+    '<span style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tq);background:rgba(0,180,160,.08);border:1px solid rgba(0,180,160,.2);padding:3px 9px;border-radius:2px">Open now</span></div>' +
     '<div style="margin-bottom:28px">' + freeHtml + '</div>' +
 
-    '<div class="section-head"><h2 class="fd">What Are You Navigating?</h2></div>' +
+    '<div class="section-head"><h2 class="fd">Explore Scenario Pods</h2></div>' +
     '<div class="sit-grid" style="margin-bottom:8px">' + sitHtml + '</div>' +
     '<div style="text-align:center;padding:16px;border:1px dashed rgba(249,240,225,.06);border-radius:4px;margin-bottom:28px">' +
-      '<p style="font-family:\'Cormorant Garamond\',serif;font-size:.95rem;color:rgba(249,240,225,.4);margin-bottom:4px">4 more categories inside the full library</p>' +
+      '<p style="font-family:\'Cormorant Garamond\',serif;font-size:.95rem;color:rgba(249,240,225,.4);margin-bottom:4px">4 more categories inside the full vault</p>' +
       '<p style="font-size:.74rem;color:rgba(249,240,225,.25)">Emotional regulation &middot; Commercial decisions &middot; Executive thinking &middot; Recovery</p>' +
     '</div>' +
 
-    '<div class="section-head"><h2 class="fd">Inside the Full Library</h2><span style="font-size:.7rem;color:var(--c35)">Members only</span></div>' +
+    '<div class="section-head"><h2 class="fd">Inside the Full Vault</h2><span style="font-size:.7rem;color:var(--c35)">Locked vault</span></div>' +
     lockedHtml +
     '<div style="text-align:center;padding:16px;border:1px dashed rgba(249,240,225,.06);border-radius:4px;margin-bottom:28px">' +
       '<p style="font-family:\'Cormorant Garamond\',serif;font-size:.95rem;color:rgba(249,240,225,.4);margin-bottom:4px">400+ experiences &mdash; every pressure moment covered</p>' +
@@ -1672,10 +2257,10 @@ function renderGuestDashboard() {
     '</div>' +
 
     '<div style="padding:24px;background:rgba(185,147,66,.05);border:1px solid rgba(185,147,66,.18);border-radius:5px;text-align:center">' +
-      '<p style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:400;color:#F9F0E1;line-height:1.5;margin-bottom:8px">Membership unlocks everything.</p>' +
-      '<p style="font-size:.82rem;font-weight:300;color:rgba(249,240,225,.5);line-height:1.75;margin-bottom:18px">7 days free &mdash; no card required. Cancel anytime. Your history stays if you return.</p>' +
+      '<p style="font-family:\'Cormorant Garamond\',serif;font-size:1.2rem;font-weight:400;color:#F9F0E1;line-height:1.5;margin-bottom:8px">The full vault unlocks when your access path is active.</p>' +
+      '<p style="font-size:.82rem;font-weight:300;color:rgba(249,240,225,.5);line-height:1.75;margin-bottom:18px">7 days unlocked &mdash; no card required. Your history and saved sessions stay if you return.</p>' +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
-        '<button style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="openVXAuth(\'signup\')">Start Free Trial</button>' +
+        '<button style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="unlockVaultPrototype()">Unlock My Vault Pass</button>' +
         '<button style="background:transparent;color:rgba(249,240,225,.35);font-family:\'DM Sans\',sans-serif;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(249,240,225,.12);border-radius:2px;padding:10px 18px;cursor:pointer" onclick="backToSite()">Back to site</button>' +
       '</div>' +
     '</div>';
@@ -1683,16 +2268,33 @@ function renderGuestDashboard() {
 
 
 function vxLaunchDash() {
-  // Redirect to the standalone dashboard
-  window.location.href = 'VisualizeX_Dashboard.html';
+  var stored = localStorage.getItem(VXK.u);
+  if (stored) {
+    try { vxUser = JSON.parse(stored); } catch(e) {}
+    openMemberDashboard('dashboard');
+  } else {
+    showGuestDashboard();
+    try { showView('dashboard'); } catch(e) {}
+  }
 }
 
 function backToSite() {
-  var app = document.getElementById('vx-app');
-  if (app) { app.classList.remove('show'); app.style.display = 'none'; }
+  var vxApp = document.getElementById('vx-app');
+  if (vxApp) { vxApp.classList.remove('show'); vxApp.style.display = 'none'; }
+  var appShell = document.getElementById('app');
+  if (appShell) appShell.classList.remove('show');
+  closeMobileSidebar();
+  var sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.remove('mob-open');
+  var authScreen = document.getElementById('auth-screen');
+  if (authScreen) authScreen.classList.add('hide');
   var site = document.getElementById('vx-site');
   if (site) site.classList.remove('hide');
+  var searchResults = document.getElementById('search-results');
+  if (searchResults) searchResults.classList.remove('open');
   document.body.style.background = '';
+  document.body.style.overflow = '';
+  document.body.classList.remove('vx-app-open');
   window.scrollTo(0, 0);
   if (vxUser) showDashBtn(); else hideDashBtn();
 }
@@ -1700,8 +2302,8 @@ function backToSite() {
 function goDashboard() {
   var stored = localStorage.getItem(VXK.u);
   if (stored) {
-    // Already logged in — go straight to dashboard
-    window.location.href = 'VisualizeX_Dashboard.html';
+    try { vxUser = JSON.parse(stored); } catch(e) {}
+    openMemberDashboard('dashboard');
   } else {
     showGuestDashboard();
   }
@@ -1711,11 +2313,16 @@ function doLogout() {
   if (!confirm('Sign out of VisualizeX?')) return;
   vxUser = null;
   localStorage.removeItem(VXK.u);
-  var app = document.getElementById('vx-app');
-  if (app) { app.classList.remove('show'); app.style.display = 'none'; }
+  var vxApp = document.getElementById('vx-app');
+  if (vxApp) { vxApp.classList.remove('show'); vxApp.style.display = 'none'; }
+  var appShell = document.getElementById('app');
+  if (appShell) appShell.classList.remove('show');
+  var authScreen = document.getElementById('auth-screen');
+  if (authScreen) authScreen.classList.remove('hide');
   var site = document.getElementById('vx-site');
   if (site) site.classList.remove('hide');
   document.body.style.background = '';
+  document.body.classList.remove('vx-app-open');
   var db = document.getElementById('dash-btn');
   if (db) db.style.display = 'none';
   var cb = document.getElementById('cta-main');
@@ -1812,13 +2419,18 @@ let recentSessions = JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
 
 function checkTrial() {
   if (localStorage.getItem(ACCESS_KEY) === 'paid') return {status:'paid'};
-  const ts = localStorage.getItem(TRIAL_KEY);
+  let ts = localStorage.getItem(TRIAL_KEY);
+  if (!ts) {
+    var legacy = localStorage.getItem(VXK.t);
+    if (legacy) { localStorage.setItem(TRIAL_KEY, legacy); ts = legacy; }
+  }
+  if (!ts && vxHasTrialBeenUsed(vxUser && vxUser.email)) return {status:'expired'};
   if (!ts) return {status:'none'};
-  const elapsed = Date.now() - parseInt(ts);
+  const elapsed = Date.now() - parseInt(ts,10);
   const seven = 7*24*60*60*1000;
   if (elapsed >= seven) return {status:'expired'};
   const daysLeft = Math.ceil((seven - elapsed)/(24*60*60*1000));
-  const trialEnd = new Date(parseInt(ts)+seven).toLocaleDateString('en-GB',{day:'numeric',month:'long'});
+  const trialEnd = new Date(parseInt(ts,10)+seven).toLocaleDateString('en-GB',{day:'numeric',month:'long'});
   return {status:'active', daysLeft, trialEnd};
 }
 
@@ -1839,26 +2451,207 @@ function updateSidebar() {
   document.getElementById('sb-name').textContent = vxUser.name;
   document.getElementById('sb-avatar').textContent = vxUser.initials || vxUser.name[0].toUpperCase();
   const trial = checkTrial();
-  const planText = trial.status==='paid' ? 'Active Member' : trial.status==='active' ? `Trial · ${trial.daysLeft}d left` : 'Trial Expired';
+  const meta = getPlanMeta((vxUser && vxUser.plan) || vxPlan || 'quarterly');
+  const planText = trial.status==='paid'
+    ? 'Member · Active'
+    : trial.status==='active'
+      ? 'Trial · ' + trial.daysLeft + 'd left'
+      : 'Pass Closed';
   document.getElementById('sb-plan').textContent = planText;
-  document.getElementById('mem-badge-top').textContent = trial.status==='paid' ? 'Member' : trial.status==='active' ? `Trial — ${trial.daysLeft} days` : 'Expired';
+  document.getElementById('mem-badge-top').textContent = trial.status==='paid'
+    ? 'MEMBER'
+    : trial.status==='active'
+      ? 'TRIAL · ' + trial.daysLeft + 'D LEFT'
+      : 'PASS CLOSED';
 }
 
-function showUpgradePrompt() {
-  alert('Upgrade flow — connect to Payfast checkout here (integration pending).');
+function showUpgradePrompt(plan) {
+  openSimulatedCheckout(plan || (vxUser && vxUser.plan) || vxPlan || 'quarterly');
+}
+
+
+// ═══════════════════════════════════
+// SIMULATED CHECKOUT — prototype only
+// Replace this with PayFast/Stripe checkout once Supabase + billing are connected.
+// ═══════════════════════════════════
+var VX_PLAN_META = {
+  monthly:   {label:'Monthly Access',   price:'$14',  per:'/month',   note:'Flexible monthly access after your Vault Pass'},
+  quarterly: {label:'Quarterly Access', price:'$39',  per:'/quarter', note:'Most chosen for continuity and momentum'},
+  annual:    {label:'Annual Access',    price:'$140', per:'/year',    note:'Best value for year-round access'}
+};
+function getPlanMeta(plan) { return VX_PLAN_META[plan] || VX_PLAN_META.quarterly; }
+function selectAccessPath(plan) {
+  plan = plan || 'quarterly';
+  if (vxBlockPlanSwitch(plan)) return;
+  vxPlan = plan;
+  if (vxUser) {
+    vxUser.plan = vxPlan;
+    vxUser.accessMode = localStorage.getItem('vx_access') === 'paid' ? 'active_simulated' : 'trial_no_card';
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    updateSidebar();
+  }
+  showToast('Access path preference set to ' + getPlanMeta(vxPlan).label + '. You can still change it before payment.');
+  try { renderAccount(); } catch(e) {}
+}
+function openSimulatedCheckout(plan) {
+  if (!vxUser) { openVXAuth('signup', plan || vxPlan || 'quarterly'); return; }
+  var requestedPlan = plan || vxUser.plan || vxPlan || 'quarterly';
+  if (vxBlockPlanSwitch(requestedPlan)) return;
+  vxPlan = vxUser.plan || requestedPlan || 'quarterly';
+  vxUser.plan = vxPlan;
+  localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  var meta = getPlanMeta(vxPlan);
+  var trial = checkTrial();
+  var daysText = trial.status === 'active' ? trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left in your Vault Pass' : 'Vault Pass ready to reactivate';
+  var existing = document.getElementById('vx-checkout-overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'vx-checkout-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7000;background:rgba(4,14,13,.96);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:22px';
+  overlay.innerHTML =
+    '<div style="width:100%;max-width:470px;background:#0A1F1D;border:1px solid rgba(185,147,66,.25);border-radius:6px;box-shadow:0 24px 80px rgba(0,0,0,.55);position:relative;overflow:hidden">' +
+      '<button onclick="closeSimulatedCheckout()" style="position:absolute;top:15px;right:17px;background:none;border:none;color:rgba(249,240,225,.35);font-size:1rem;cursor:pointer">✕</button>' +
+      '<div style="padding:30px 34px 22px;border-bottom:1px solid rgba(249,240,225,.07)">' +
+        '<span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#00B4A0;display:block;margin-bottom:10px">Simulated Checkout</span>' +
+        '<h2 style="font-family:\'Cormorant Garamond\',serif;font-size:1.7rem;font-weight:400;color:#F9F0E1;line-height:1.25;margin-bottom:8px">Choose the access path that fits you best.</h2>' +
+        '<p style="font-size:.85rem;font-weight:300;color:rgba(249,240,225,.52);line-height:1.7">This is a prototype payment screen. Use it to test the trial-to-member journey. No real card is charged, and trial users can change access path before payment.</p>' +
+      '</div>' +
+      '<div style="padding:26px 34px 32px">' +
+        '<div style="border:1px solid rgba(0,180,160,.18);background:rgba(0,180,160,.05);border-radius:4px;padding:18px 20px;margin-bottom:16px">' +
+          '<p style="font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:7px">Access path you are reviewing</p>' +
+          '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px">' +
+            '<div><p style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;color:#F9F0E1;margin-bottom:3px">' + meta.label + '</p><p style="font-size:.75rem;color:rgba(249,240,225,.42)">' + meta.note + '</p></div>' +
+            '<p style="font-family:\'Cormorant Garamond\',serif;font-size:2rem;color:#C9A84C;line-height:1;white-space:nowrap">' + meta.price + '<span style="font-size:.75rem;color:rgba(249,240,225,.35)">' + meta.per + '</span></p>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">' +
+          ['monthly','quarterly','annual'].map(function(k){ var m=getPlanMeta(k); var active=k===vxPlan; return '<button onclick="selectAccessPath(\''+k+'\');closeSimulatedCheckout();openSimulatedCheckout(\''+k+'\')" style="background:'+(active?'rgba(0,180,160,.12)':'transparent')+';border:1px solid '+(active?'rgba(0,180,160,.35)':'rgba(249,240,225,.12)')+';color:'+(active?'#00B4A0':'rgba(249,240,225,.55)')+';font-family:DM Sans,sans-serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;padding:9px 8px;cursor:pointer">'+m.label.replace(' Access','')+'</button>'; }).join('') +
+        '</div>' +
+        '<p style="font-size:.8rem;color:rgba(249,240,225,.55);line-height:1.7;margin-bottom:18px"><strong style="color:#00B4A0">' + daysText + '.</strong> Choose an access path when you are ready to keep your saved sessions, progress, and the full vault open after Day 7.</p>' +
+        '<button onclick="simulatePaymentSuccess()" style="display:block;width:100%;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:\'DM Sans\',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border:none;border-radius:3px;padding:15px 18px;cursor:pointer">Simulate Payment Success</button>' +
+        '<button onclick="stayInTrial()" style="display:block;width:100%;background:transparent;color:rgba(249,240,225,.55);font-family:\'DM Sans\',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(249,240,225,.16);border-radius:3px;padding:12px 18px;cursor:pointer;margin-top:10px">Stay in Trial</button>' +
+        '<p style="font-size:.7rem;color:rgba(249,240,225,.25);line-height:1.55;margin-top:14px;text-align:center">Later: connect this button to PayFast/Stripe and write the subscription status back to Supabase.</p>' +
+      '</div>' +
+    '</div>';
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) closeSimulatedCheckout(); });
+  document.body.appendChild(overlay);
+}
+function closeSimulatedCheckout() {
+  var o = document.getElementById('vx-checkout-overlay');
+  if (o) o.remove();
+}
+function stayInTrial() {
+  closeSimulatedCheckout();
+  if (vxUser) {
+    var trialState = (typeof checkTrial === 'function') ? checkTrial() : {status:'active'};
+    if (trialState.status === 'active') {
+      openMemberDashboard('dashboard');
+      showToast('Trial mode active — you are back inside the Vault Pass dashboard.');
+    } else {
+      openMemberDashboard('account');
+      showToast('This Vault Pass has closed. Reclaim access when you are ready.');
+    }
+  } else {
+    backToSite();
+  }
+}
+function simulatePaymentSuccess() {
+  if (!vxUser) return;
+  localStorage.setItem('vx_access','paid');
+  localStorage.setItem('vx_payment_status','ok');
+  localStorage.setItem('vx_paid_date', Date.now().toString());
+  vxUser.plan = vxPlan || vxUser.plan || 'quarterly';
+  var cycleDays = vxUser.plan === 'annual' ? 365 : vxUser.plan === 'monthly' ? 30 : 90;
+  localStorage.setItem(VX_PLAN_LOCK_KEY, String(Date.now() + cycleDays*24*60*60*1000));
+  vxUser.accessMode = 'active_simulated';
+  vxUser.justReactivated = true;
+  localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  closeSimulatedCheckout();
+  updateSidebar();
+  if (!vxHasCompletedVaultSetup()) {
+    launchVaultSetupFlow({source:'paid'});
+    showToast('Simulated payment complete. Complete pathway setup to enter the Vault.');
+    return;
+  }
+  try { showView('dashboard'); } catch(e) {}
+  showToast('Simulated payment complete. ' + getPlanMeta(vxUser.plan).label + ' is now active.');
+}
+function setTrialDaysLeft(daysLeft) {
+  daysLeft = Math.max(0, Number(daysLeft) || 0);
+  localStorage.removeItem('vx_access');
+  localStorage.setItem('vx_payment_status','trial_no_card');
+  var start = Date.now() - ((7 - daysLeft) * 24*60*60*1000);
+  localStorage.setItem('vx_trial_start', String(start));
+  localStorage.setItem(VXK.t, String(start));
+  localStorage.setItem(VX_TRIAL_END_KEY, String(start + 7*24*60*60*1000));
+  if (vxUser) {
+    vxUser.accessMode = 'trial_no_card';
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+  }
+  updateSidebar();
+  try { showView('dashboard'); } catch(e) {}
+  showToast('Prototype trial set to ' + daysLeft + ' day' + (daysLeft===1?'':'s') + ' left.');
+}
+function renderTrialTestPanel() {
+  var trial = checkTrial();
+  var statusText = trial.status === 'paid' ? 'Paid member state is active.' : trial.status === 'active' ? trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left — notification bar changes based on this.' : trial.status === 'expired' ? 'Expired state — reclaim overlay and payment CTA should appear.' : 'No active trial state yet.';
+  return '<div class="trial-test-panel">' +
+    '<div><p>Trial tester</p><p>' + statusText + ' Use this while testing the trial-to-paid journey.</p></div>' +
+    '<div class="trial-test-actions">' +
+      '<button onclick="setTrialDaysLeft(7)">Day 1</button>' +
+      '<button onclick="setTrialDaysLeft(5)">Day 3</button>' +
+      '<button onclick="setTrialDaysLeft(3)">Day 5</button>' +
+      '<button onclick="setTrialDaysLeft(1)">Last Day</button>' +
+      '<button onclick="simulateTrialExpiry()">Expired</button>' +
+      '<button onclick="openSimulatedCheckout()">Paid Test</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function simulateTrialExpiry() {
+  var eightDaysAgo = Date.now() - (8*24*60*60*1000);
+  localStorage.setItem('vx_trial_start', String(eightDaysAgo));
+  localStorage.removeItem('vx_access');
+  if (vxUser) { vxUser.accessMode = 'trial_expired'; localStorage.setItem(VXK.u, JSON.stringify(vxUser)); }
+  updateSidebar();
+  renderNotifBar();
+  showToast('Dev: Vault Pass expired state activated.');
+}
+function resetSimulatedAccess() {
+  localStorage.removeItem('vx_access');
+  localStorage.removeItem('vx_paid_date');
+  localStorage.removeItem('vx_grace_start');
+  if (vxHasTrialBeenUsed(vxUser && vxUser.email)) {
+    localStorage.setItem('vx_payment_status','trial_expired');
+    if (!localStorage.getItem('vx_trial_start')) localStorage.setItem('vx_trial_start', vxTrialExpiredStart());
+    if (vxUser) { vxUser.accessMode = 'trial_expired'; localStorage.setItem(VXK.u, JSON.stringify(vxUser)); }
+    updateSidebar();
+    renderNotifBar();
+    showToast('Trial cannot be restarted for this account. Secure access to continue.');
+    return;
+  }
+  localStorage.setItem('vx_payment_status','trial_no_card');
+  localStorage.setItem('vx_trial_start', String(Date.now()));
+  vxMarkTrialUsed(vxUser && vxUser.email);
+  if (vxUser) { vxUser.accessMode = 'trial_no_card'; localStorage.setItem(VXK.u, JSON.stringify(vxUser)); }
+  updateSidebar();
+  renderNotifBar();
+  showToast('Fresh 7-day Vault Pass started.');
 }
 
 // ══════════════════════════════════════════════
 // VIEWS
 // ══════════════════════════════════════════════
 function showView(view) {
+  if (window.innerWidth <= 860) closeMobileSidebar();
+  closeSearchDropdown && closeSearchDropdown();
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
   const nav = document.getElementById(`nav-${view}`);
   if (nav) nav.classList.add('active');
 
   const titles = {
-    dashboard:'Home', library:'Full Library', saved:'Saved Sessions',
-    recent:'Recent Sessions', situations:'Situations',
+    dashboard:'Home', vault:'The Vault', saved:'Saved Sessions',
+    recent:'Recent Sessions', situations:'Scenario Pods',
     account:'Membership', billing:'Billing History',
     settings:'Account Settings', support:'Help & Support', admin:'Admin Dashboard'
   };
@@ -1868,7 +2661,7 @@ function showView(view) {
   el.className = 'content fade-in';
 
   if (view === 'dashboard')  renderDashboard();
-  else if (view === 'library')    renderLibrary();
+  else if (view === 'vault')    renderVault();
   else if (view === 'saved')      renderSaved();
   else if (view === 'recent')     renderRecent();
   else if (view === 'situations') renderSituations();
@@ -1893,7 +2686,7 @@ function renderRecent() {
 function renderSituations() {
   const el = document.getElementById("main-content");
   el.innerHTML = `
-    <div class="welcome-row"><h1 class="fd">What Are You Dealing With?</h1><p>Choose the situation that matches where you are right now.</p></div>
+    <div class="welcome-row"><h1 class="fd">Scenario Pods</h1><p>Browse curated entry points into the vault. Each pod groups guided experiences around a specific kind of situation, theme, or human dynamic.</p></div>
     <div class="sit-grid" style="margin-bottom:40px">
       ${SITUATION_CATS.map(s=>`
       <div class="sit-card" onclick="showCategory('${s.cat}')">
@@ -1947,7 +2740,7 @@ function renderSettings() {
     <div class="acc-section">
       <h2 class="fd acc-head">Notifications</h2>
       <div class="acc-card">
-        ${[{label:"Trial reminder (Day 6)",sub:"Email reminder before your trial ends",on:true},{label:"New experiences",sub:"When new content is added to your categories",on:true},{label:"Weekly digest",sub:"Recommended sessions each week",on:false}].map(n=>`
+        ${[{label:"Trial reminder (Day 6)",sub:"Email reminder before your trial ends",on:true},{label:"New experiences",sub:"When new experiences are added to the vault",on:true},{label:"Weekly digest",sub:"New vault releases",on:false}].map(n=>`
         <div class="notif-row">
           <div><p style="font-size:.88rem;color:var(--cream);margin-bottom:3px">${n.label}</p><p style="font-size:.75rem;color:var(--c35)">${n.sub}</p></div>
           <label class="toggle"><input type="checkbox" ${n.on?"checked":""}><span class="toggle-slider"></span></label>
@@ -1999,26 +2792,29 @@ function renderDashboard() {
   var hour = new Date().getHours();
   var greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   var contextLine = hour < 12
-    ? 'Set the tone before the day runs ahead of you.'
+    ? 'Start with one guided experience before the day starts making demands.'
     : hour < 17
-    ? 'A few minutes of clarity now changes how the next moment lands.'
-    : 'What are you carrying into tomorrow? You can put some of it down.';
+    ? 'Step back into the vault when the day starts pulling your attention in too many directions.'
+    : 'Return to the vault before the day closes. Keep what matters and release what does not.';
 
-  var lastRecent = recentSessions.length > 0 ? ALL_SESSIONS.find(function(s){return s.id===recentSessions[0];}) : null;
   var progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+  var lastRecent = recentSessions.length > 0 ? ALL_SESSIONS.find(function(s){return s.id===recentSessions[0];}) : null;
   var pct = lastRecent ? (progress[lastRecent.id] || 0) : 0;
+  var continueHeading = 'Start Here';
+  var continueSub = 'Begin your first guided experience';
 
-  // Momentum rail sessions
-  var momentumIds = [16,17,18,12,19,7];
-  var momentumSessions = momentumIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean);
-
-  // Featured — exclude recently played
-  var recentSet = {};
-  recentSessions.slice(0,3).forEach(function(id){recentSet[id]=true;});
-  var featuredToShow = (typeof FEATURED_MOMENTS !== 'undefined' ? FEATURED_MOMENTS : []).filter(function(f){return !recentSet[f.id];}).slice(0,3);
+  if (lastRecent) {
+    if (pct > 0 && pct < 100) {
+      continueHeading = 'Pick Up Where You Left Off';
+      continueSub = 'Resume — ' + pct + '% complete';
+    } else {
+      continueHeading = 'Continue From Recent Session';
+      continueSub = 'Return without searching again';
+    }
+  }
 
   var continueHtml = lastRecent
-    ? '<div class="section-head"><h2 class="fd">Pick Up Where You Left Off</h2></div>' +
+    ? '<div class="section-head"><h2 class="fd">' + continueHeading + '</h2></div>' +
       '<div class="continue-card" onclick="openPlayer(' + lastRecent.id + ')">' +
         '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
         '<div class="cc-info">' +
@@ -2026,10 +2822,10 @@ function renderDashboard() {
           '<p class="cc-title">' + lastRecent.title + '</p>' +
           '<p class="cc-sub">' + lastRecent.dur + '</p>' +
           '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div>' +
-          '<p class="cc-resume">' + (pct > 0 ? 'Resume \u2014 ' + pct + '% complete' : 'Continue listening') + '</p></div>' +
+          '<p class="cc-resume">' + continueSub + '</p></div>' +
         '</div>' +
       '</div>'
-    : '<div class="section-head"><h2 class="fd">Begin Here</h2></div>' +
+    : '<div class="section-head"><h2 class="fd">Start Here</h2></div>' +
       '<div class="continue-card" onclick="openPlayer(7)">' +
         '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
         '<div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span>' +
@@ -2038,14 +2834,14 @@ function renderDashboard() {
         '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div>' +
         '<p class="cc-resume">Begin your first guided experience</p></div></div></div>';
 
-  var featuredHtml = featuredToShow.map(function(f) {
-    var s = ALL_SESSIONS.find(function(x){return x.id===f.id;});
-    if (!s) return '';
-    return '<div class="feat-card' + (f.gold ? ' gold-accent' : '') + '" onclick="openPlayer(' + s.id + ')">' +
-      '<div class="feat-label">' + f.label + '</div>' +
+  var latestIds = [30,29,28,27,26,25];
+  var latestSessions = latestIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,3);
+  var latestHtml = latestSessions.map(function(s) {
+    return '<div class="feat-card" onclick="openPlayer(' + s.id + ')">' +
+      '<div class="feat-label">Recently Released</div>' +
       '<p class="feat-title">' + s.title + '</p>' +
-      '<p class="feat-sub">' + f.why + '</p>' +
-      '<div class="feat-meta"><span class="feat-dur">&#x231A; ' + s.dur + '</span>' +
+      '<p class="feat-sub">' + s.desc.slice(0,110) + '&hellip;</p>' +
+      '<div class="feat-meta"><span class="feat-dur">⌚ ' + s.dur + '</span>' +
         '<div class="feat-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:1px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
       '</div></div>';
   }).join('');
@@ -2057,13 +2853,28 @@ function renderDashboard() {
       '<p class="sit-count">' + s.hint + '</p></div>';
   }).join('');
 
-  var momentumHtml = momentumSessions.map(function(s) {
+  var oftenIds = [16,7,12,17,18];
+  var oftenSessions = oftenIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,5);
+  var oftenHtml = oftenSessions.map(function(s) {
     return '<div class="momen-card" onclick="openPlayer(' + s.id + ')">' +
       '<span class="momen-cat">' + s.cat + '</span>' +
       '<p class="momen-title">' + s.title + '</p>' +
       '<span class="momen-meta">' + s.dur + '</span>' +
-      '<span class="momen-replay">&#x25C8; Frequently replayed</span></div>';
+      '<span class="momen-replay">◈ Often revisited</span></div>';
   }).join('');
+
+  var savedPreview = savedSessions.length > 0
+    ? '<div class="section-head"><h2 class="fd">Saved for Revisit</h2><span class="see-all" onclick="showView(\'saved\')">All saved &rarr;</span></div>' +
+      '<div class="saved-home-grid">' +
+      savedSessions.slice(0,4).map(function(id) {
+        var s = ALL_SESSIONS.find(function(x){return x.id===id;});
+        if (!s) return '';
+        return '<div class="rc" onclick="openPlayer(' + s.id + ')">' +
+          '<span class="rc-cat">' + s.cat + '</span>' +
+          '<p class="rc-title">' + s.title + '</p>' +
+          '<span class="rc-meta">' + s.dur + ' · Saved</span></div>';
+      }).join('') + '</div>'
+    : '';
 
   var recentHtml = recentSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Recently Navigated</h2><span class="see-all" onclick="showView(\'recent\')">Full history &rarr;</span></div>' +
@@ -2078,32 +2889,25 @@ function renderDashboard() {
       }).join('') + '</div>'
     : '';
 
-  var recHtml = getRecommended().map(function(s) {
-    return '<div class="rec-card" onclick="openPlayer(' + s.id + ')">' +
-      '<span class="rec-tag">' + s.cat + '</span>' +
-      '<p class="rec-title fd">' + s.title + '</p>' +
-      '<p class="rec-why">' + s.desc.slice(0,80) + '&hellip;</p></div>';
-  }).join('');
-
-  var searchChips = (typeof SEARCH_PROMPTS_DASH !== 'undefined' ? SEARCH_PROMPTS_DASH : []).map(function(p) {
-    return '<span class="sp-chip" onclick="triggerSearch(\'' + p + '\')">' + p + '</span>';
-  }).join('');
-
+  el.className = 'content fade-in dashboard-home';
+  var trialState = checkTrial();
+  var trialIntro = trialState.status === 'active'
+    ? '<div style="background:linear-gradient(135deg,rgba(0,180,160,.08),rgba(185,147,66,.04));border:1px solid rgba(0,180,160,.18);border-radius:4px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tq);margin-bottom:6px">7-Day Vault Pass Started</p><p style="font-family:Cormorant Garamond,serif;font-size:1.2rem;color:var(--cream);line-height:1.45;margin-bottom:5px">Your trial has begun. Full vault access is open now.</p><p style="font-size:.82rem;font-weight:300;color:var(--c55);line-height:1.65">You have ' + trialState.daysLeft + ' day' + (trialState.daysLeft===1?'':'s') + ' left. Choose monthly, quarterly, or annual access only when you are ready to keep the vault open after the trial.</p></div><button class="btn-ghost-sm" onclick="showView(\'account\')">Review Access Paths</button></div>'
+    : '';
   el.innerHTML =
     '<div class="welcome-row" style="margin-bottom:20px"><h1 class="fd">' + greeting + ', ' + firstName + '.</h1></div>' +
-    '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>Right now</p><p>' + contextLine + '</p></div></div>' +
-    '<div class="section-head" style="margin-bottom:10px"><h2 class="fd" style="font-size:1rem;color:var(--c55);font-family:\'DM Sans\',sans-serif;font-weight:300">Find the exact situation you\'re in</h2></div>' +
-    '<div class="search-prompts">' + searchChips + '</div>' +
+    trialIntro +
+    renderTrialTestPanel() +
+    '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
     continueHtml +
-    '<div class="section-head"><h2 class="fd">Relevant Right Now <span class="section-mood">Curated situations</span></h2><span class="see-all" onclick="showView(\'situations\')">All situations &rarr;</span></div>' +
-    '<div class="feat-grid">' + featuredHtml + '</div>' +
-    '<div class="section-head"><h2 class="fd">What Are You Navigating?</h2></div>' +
+    savedPreview +
+    '<div class="section-head"><h2 class="fd">Recently Released <span class="section-mood">New in the vault</span></h2><span class="see-all" onclick="showView(\'vault\')">Open the vault &rarr;</span></div>' +
+    '<div class="feat-grid">' + latestHtml + '</div>' +
+    '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div>' +
     '<div class="sit-grid">' + sitHtml + '</div>' +
-    '<div class="section-head"><h2 class="fd">Often Revisited <span class="section-mood">High replay value</span></h2></div>' +
-    '<div class="momentum-rail">' + momentumHtml + '</div>' +
-    recentHtml +
-    '<div class="section-head"><h2 class="fd">Selected for You</h2><span class="see-all" onclick="showView(\'library\')">Full library &rarr;</span></div>' +
-    '<div class="rec-grid">' + recHtml + '</div>';
+    '<div class="section-head"><h2 class="fd">Often Revisited <span class="section-mood">Top 5 replay picks</span></h2></div>' +
+    '<div class="momentum-rail">' + oftenHtml + '</div>' +
+    recentHtml;
 }
 
 
@@ -2127,12 +2931,16 @@ function getRecommended() {
 }
 
 
-function renderLibrary() {
+function renderVault() {
   const cats = [...new Set(ALL_SESSIONS.map(s=>s.cat))];
   const el = document.getElementById('main-content');
-  el.innerHTML = cats.map(cat => `
+  el.innerHTML = `
+    <div class="welcome-row">
+      <h1 class="fd">The Vault</h1>
+      <p>Browse every unlocked guided experience in one place. Scenario Pods are guided entry points; The Vault is the complete archive.</p>
+    </div>` + cats.map(cat => `
     <div style="margin-bottom:40px">
-      <div class="section-head"><h2 class="fd">${cat}</h2><span class="see-all" onclick="showCategory('${cat}')">All ${cat} →</span></div>
+      <div class="section-head"><h2 class="fd">${cat}</h2><span class="see-all" onclick="showCategory('${cat}')">Open pod →</span></div>
       <div class="session-list">
         ${ALL_SESSIONS.filter(s=>s.cat===cat).slice(0,3).map(s=>sessionCard(s)).join('')}
       </div>
@@ -2207,7 +3015,16 @@ function toggleSave(id) {
 // ══════════════════════════════════════════════
 // PLAYER
 // ══════════════════════════════════════════════
+function hasVaultAccess() {
+  var trial = checkTrial();
+  return trial.status === 'paid' || trial.status === 'active';
+}
 function openPlayer(id) {
+  if (!hasVaultAccess()) {
+    showToast('Your Vault Pass has closed. Reclaim access to play full sessions.');
+    openSimulatedCheckout((vxUser && vxUser.plan) || vxPlan || 'quarterly');
+    return;
+  }
   const s = ALL_SESSIONS.find(x=>x.id===id);
   if (!s) return;
   currentSession = s;
@@ -2348,17 +3165,19 @@ document.head.appendChild(shakeStyle);
 // BILLING DATA (prototype — replace with real API)
 // ══════════════════════════════════════════════
 function getBillingHistory() {
-  const plan = {monthly:'Monthly · $14',quarterly:'Quarterly · $39',annual:'Annual · $140'};
+  if (localStorage.getItem(ACCESS_KEY) !== 'paid') return [];
+  const plan = {monthly:'Monthly Access · $14',quarterly:'Quarterly Access · $39',annual:'Annual Access · $140'};
   const amounts = {monthly:'$14.00',quarterly:'$39.00',annual:'$140.00'};
-  const p = vxUser?.plan || 'monthly';
-  const months = ['May 2026','April 2026','March 2026','February 2026'];
-  return months.map((m,i) => ({
-    date: m,
-    plan: plan[p] || 'Monthly · $14',
-    amount: amounts[p] || '$14.00',
-    status: 'Paid',
-    invoice: `VX-${2026}${String(5-i).padStart(2,'0')}-${1000+i}`
-  }));
+  const p = vxUser?.plan || 'quarterly';
+  const paidAt = parseInt(localStorage.getItem('vx_paid_date') || Date.now());
+  const date = new Date(paidAt).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  return [{
+    date: date,
+    plan: plan[p] || plan.quarterly,
+    amount: amounts[p] || amounts.quarterly,
+    status: 'Simulated Paid',
+    invoice: 'VX-SIM-' + new Date(paidAt).getFullYear() + '-' + String(new Date(paidAt).getMonth()+1).padStart(2,'0')
+  }];
 }
 
 // ── ACCOUNT VIEW ──
@@ -2367,16 +3186,24 @@ function renderAccount() {
   const el = document.getElementById('main-content');
   const trial = checkTrial();
   const billing = getBillingHistory();
-  const planName = trial.status==='paid' ? 'Active Member' : trial.status==='active' ? 'Free Trial' : 'Expired';
-  const planColor = trial.status==='active' ? 'var(--tq)' : trial.status==='paid' ? 'var(--goldB)' : '#E05B5B';
+  const currentPlan = vxUser?.plan || vxPlan || 'quarterly';
+  const meta = getPlanMeta(currentPlan);
+  const isPaid = trial.status === 'paid';
+  const isActiveTrial = trial.status === 'active';
+  const statusLabel = isPaid ? 'Active Member' : isActiveTrial ? '7-Day Vault Pass' : 'Vault Pass Closed';
+  const statusColor = isPaid ? 'var(--goldB)' : isActiveTrial ? 'var(--tq)' : '#E05B5B';
+  const statusCopy = isPaid
+    ? meta.label + ' secured · simulated billing active'
+    : isActiveTrial
+      ? 'Full vault unlocked · ' + trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left before sessions lock again'
+      : 'Your vault is paused · saved sessions and progress are waiting';
 
   el.innerHTML = `
   <div class="welcome-row">
-    <h1 class="fd">Account</h1>
-    <p>Manage your membership, billing, and preferences.</p>
+    <h1 class="fd">Vault Access</h1>
+    <p>Control your access path. During the Vault Pass, you can change your preference freely. Once payment starts, the selected access path stays active until that paid period ends.</p>
   </div>
 
-  <!-- PROFILE -->
   <div class="acc-section">
     <h2 class="fd acc-head">Profile</h2>
     <div class="acc-card">
@@ -2385,7 +3212,7 @@ function renderAccount() {
         <div>
           <p style="font-size:1rem;font-weight:400;color:var(--cream);margin-bottom:3px">${vxUser?.name||'—'}</p>
           <p style="font-size:.82rem;color:var(--c55)">${vxUser?.email||'—'}</p>
-          ${vxUser?.joinedViaGoogle ? '<span style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tq);background:rgba(0,180,160,.1);border:1px solid rgba(0,180,160,.2);padding:3px 9px;border-radius:2px;margin-top:5px;display:inline-block">Google Account</span>' : ''}
+          <span style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tq);background:rgba(0,180,160,.1);border:1px solid rgba(0,180,160,.2);padding:3px 9px;border-radius:2px;margin-top:5px;display:inline-block">${statusLabel}</span>
         </div>
       </div>
       <div class="acc-row"><span class="acc-label">Full Name</span><input class="acc-input" value="${vxUser?.name||''}" id="prof-name"></div>
@@ -2395,134 +3222,90 @@ function renderAccount() {
     </div>
   </div>
 
-  <!-- MEMBERSHIP -->
   <div class="acc-section">
-    <h2 class="fd acc-head">Membership</h2>
+    <h2 class="fd acc-head">Vault Access</h2>
     <div class="acc-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px">
         <div>
-          <p style="font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c35);margin-bottom:5px">Current Plan</p>
-          <p style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--cream)">${planName}</p>
-          <p style="font-size:.8rem;color:${planColor};margin-top:3px">
-            ${trial.status==='active' ? `Trial ends ${trial.trialEnd} · ${trial.daysLeft} days remaining` :
-              trial.status==='paid' ? 'Active · Renews automatically' : 'Trial expired · Upgrade to continue'}
-          </p>
+          <p style="font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c35);margin-bottom:5px">Current access path preference</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--cream)">${meta.label}</p>
+          <p style="font-size:.82rem;color:${statusColor};margin-top:4px">${statusCopy}</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-ghost-sm" onclick="showUpgradePlans()">Change Plan</button>
-          ${trial.status==='active'||trial.status==='none' ? '<button class="btn-primary-sm" onclick="showUpgradePlans()">Upgrade Now</button>' : ''}
+          <button class="btn-primary-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'View Current Access' : 'Choose Access Path'}</button>
+          <button class="btn-ghost-sm" onclick="resetSimulatedAccess()">Test Trial Restart Guard</button>
         </div>
       </div>
 
       <div class="acc-divider"></div>
-      <p style="font-size:.8rem;font-weight:500;color:var(--c55);margin-bottom:14px;margin-top:16px">Available Plans</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
-        ${[{n:'Monthly',p:'$14',per:'/month',note:'Billed monthly'},{n:'Quarterly',p:'$39',per:'/qtr',note:'~$13/month',featured:true},{n:'Annual',p:'$140',per:'/year',note:'Save 17%'}].map(pl=>`
-        <div style="padding:16px;border:1px solid ${pl.featured?'rgba(185,147,66,.4)':'var(--c08)'};border-radius:3px;background:${pl.featured?'rgba(185,147,66,.06)':'transparent'};position:relative">
-          ${pl.featured?'<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:0 0 3px 3px">Popular</div>':''}
+      <p style="font-size:.8rem;font-weight:500;color:var(--c55);margin-bottom:14px;margin-top:16px">Choose or review access path</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+        ${[
+          {key:'monthly',n:'Monthly Access',p:'$14',per:'/month',note:'Try it in your own rhythm'},
+          {key:'quarterly',n:'Quarterly Access',p:'$39',per:'/qtr',note:'Most chosen for momentum',featured:true},
+          {key:'annual',n:'Annual Access',p:'$140',per:'/year',note:'Best value — always close'}
+        ].map(pl=>`
+        <div style="padding:16px;border:1px solid ${pl.key===currentPlan?'rgba(0,180,160,.45)':pl.featured?'rgba(185,147,66,.4)':'var(--c08)'};border-radius:3px;background:${pl.key===currentPlan?'rgba(0,180,160,.06)':pl.featured?'rgba(185,147,66,.06)':'transparent'};position:relative">
+          ${pl.featured?'<div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:0 0 3px 3px">Most Chosen</div>':''}
           <p style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--c35);margin-bottom:6px;margin-top:${pl.featured?'8px':'0'}">${pl.n}</p>
           <p style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--cream);line-height:1">${pl.p}<span style="font-size:.75rem;color:var(--c35)">${pl.per}</span></p>
           <p style="font-size:.7rem;color:var(--c35);margin:4px 0 10px;font-style:italic">${pl.note}</p>
-          <button class="btn-ghost-sm" style="width:100%;font-size:.68rem" onclick="alert('Plan change: connecting to Payfast')">Select</button>
+          <button class="btn-ghost-sm" style="width:100%;font-size:.68rem" onclick="selectAccessPath('${pl.key}')">${pl.key===currentPlan?'Selected':(isPaid?'Available Next Period':'Choose This Path')}</button>
         </div>`).join('')}
       </div>
 
       <div class="acc-divider" style="margin-top:20px"></div>
-      <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between">
+      <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
         <div>
-          <p style="font-size:.82rem;font-weight:400;color:var(--cream);margin-bottom:3px">Payment Method</p>
-          <p style="font-size:.8rem;color:var(--c55)">•••• •••• •••• 4242 &nbsp;·&nbsp; Visa</p>
+          <p style="font-size:.82rem;font-weight:400;color:var(--cream);margin-bottom:3px">Payment State</p>
+          <p style="font-size:.8rem;color:var(--c55)">${isPaid ? 'Simulated payment active · no real card charged' : 'No card added · Vault Pass access only'}</p>
         </div>
-        <button class="btn-ghost-sm" onclick="alert('Update payment: connecting to Payfast')">Update Card</button>
+        <button class="btn-ghost-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'Open Checkout Test' : 'Choose Access Path Test'}</button>
       </div>
 
       <div class="acc-divider" style="margin-top:16px"></div>
-      <div style="margin-top:16px">
-        <button onclick="confirmCancel()" style="background:none;border:none;font-size:.78rem;color:rgba(249,240,225,.25);cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;padding:0" onmouseover="this.style.color='#E05B5B'" onmouseout="this.style.color='rgba(249,240,225,.25)'">Cancel Membership</button>
-        <span style="font-size:.72rem;color:var(--c20);margin-left:10px">· Access continues until end of billing period</span>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button onclick="setTrialDaysLeft(7)" class="btn-ghost-sm">Test: Fresh 7 Days</button>
+        <button onclick="setTrialDaysLeft(3)" class="btn-ghost-sm">Test: 3 Days Left</button>
+        <button onclick="setTrialDaysLeft(1)" class="btn-ghost-sm">Test: Last Day</button>
+        <button onclick="simulateTrialExpiry()" class="btn-ghost-sm">Simulate Trial Expiry</button>
+        <button onclick="simulatePaymentFailed()" class="btn-ghost-sm">Simulate Failed Payment</button>
+        <button onclick="clearPaymentFailed()" class="btn-ghost-sm">Clear Payment Warning</button>
       </div>
+      <p style="font-size:.72rem;color:var(--c35);line-height:1.6;margin-top:10px">Prototype-only controls so you can test the Vault Pass window, expiry state, flexible access-path choice, and payment journey without waiting seven days.</p>
     </div>
   </div>
 
-  <!-- BILLING HISTORY -->
   <div class="acc-section">
     <h2 class="fd acc-head">Billing History</h2>
     <div class="acc-card" style="padding:0;overflow:hidden">
       <table class="bill-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Plan</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Receipt</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${billing.map(b=>`
+        <thead><tr><th>Date</th><th>Access Path</th><th>Amount</th><th>Status</th><th>Receipt</th></tr></thead>
+        <tbody>${billing.map(b=>`
           <tr>
             <td style="color:var(--cream)">${b.date}</td>
             <td>${b.plan}</td>
             <td style="color:var(--goldB);font-weight:500">${b.amount}</td>
             <td><span class="paid-badge">✓ ${b.status}</span></td>
             <td><button class="dl-btn" onclick="downloadInvoice('${b.invoice}')">↓ ${b.invoice}</button></td>
-          </tr>`).join('')}
-        </tbody>
+          </tr>`).join('')}</tbody>
       </table>
-      ${billing.length===0?'<p style="padding:28px;text-align:center;font-size:.85rem;color:var(--c35)">No billing history yet.</p>':''}
+      ${billing.length===0?'<p style="padding:28px;text-align:center;font-size:.85rem;color:var(--c35)">No billing history yet. Simulate payment success to create a prototype receipt.</p>':''}
     </div>
   </div>
 
-  <!-- NOTIFICATIONS -->
   <div class="acc-section">
     <h2 class="fd acc-head">Notifications</h2>
     <div class="acc-card">
       ${[
-        {label:'Trial reminder (Day 6)',sub:'Email reminder before trial ends',id:'notif-trial',on:true},
-        {label:'New experiences added',sub:'When new content is added to your categories',id:'notif-new',on:true},
-        {label:'Weekly digest',sub:'Summary of recommended sessions',id:'notif-digest',on:false},
+        {label:'Access window reminder',sub:'Warn me before my Vault Pass closes',id:'notif-trial',on:true},
+        {label:'New sessions unlocked',sub:'Tell me when new pressure sessions are added',id:'notif-new',on:true},
+        {label:'Weekly access digest',sub:'Recommended sessions based on recent activity',id:'notif-digest',on:false},
       ].map(n=>`
       <div class="notif-row">
-        <div>
-          <p style="font-size:.88rem;color:var(--cream);margin-bottom:3px">${n.label}</p>
-          <p style="font-size:.75rem;color:var(--c35)">${n.sub}</p>
-        </div>
-        <label class="toggle" title="Toggle ${n.label}">
-          <input type="checkbox" ${n.on?'checked':''} onchange="this.parentElement.classList.toggle('on',this.checked)">
-          <span class="toggle-slider"></span>
-        </label>
+        <div><p style="font-size:.88rem;color:var(--cream);margin-bottom:3px">${n.label}</p><p style="font-size:.75rem;color:var(--c35)">${n.sub}</p></div>
+        <label class="toggle" title="Toggle ${n.label}"><input type="checkbox" ${n.on?'checked':''}><span class="toggle-slider"></span></label>
       </div>`).join('')}
-    </div>
-  </div>
-
-  <!-- SUPPORT -->
-  <div class="acc-section">
-    <h2 class="fd acc-head">Help & Support</h2>
-    <div class="acc-card">
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <a href="mailto:hello@visualizex.com" class="btn-ghost-sm">✉ Email Support</a>
-        <button class="btn-ghost-sm" onclick="alert('FAQ — link to help docs')">FAQ</button>
-        <button class="btn-ghost-sm" onclick="alert('Terms of Service')">Terms</button>
-        <button class="btn-ghost-sm" onclick="alert('Privacy Policy')">Privacy</button>
-      </div>
-      <p style="margin-top:16px;font-size:.78rem;color:var(--c35);line-height:1.6">
-        For billing queries, cancellations, or technical issues — email us at <span style="color:var(--tq)">hello@visualizex.com</span><br>
-        We respond within 24 hours.
-      </p>
-    </div>
-  </div>
-
-  <!-- DANGER ZONE -->
-  <div class="acc-section" style="margin-bottom:52px">
-    <div class="acc-card" style="border-color:rgba(224,91,91,.15);background:rgba(224,91,91,.03)">
-      <p style="font-size:.82rem;color:rgba(224,91,91,.6);margin-bottom:12px;letter-spacing:.06em;text-transform:uppercase;font-size:.65rem">Danger Zone</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div>
-          <p style="font-size:.88rem;color:var(--cream);margin-bottom:3px">Delete Account</p>
-          <p style="font-size:.75rem;color:var(--c35)">Permanently remove your account and all data.</p>
-        </div>
-        <button onclick="confirmDelete()" style="background:none;border:1px solid rgba(224,91,91,.3);color:rgba(224,91,91,.7);font-family:'DM Sans',sans-serif;font-size:.75rem;padding:8px 16px;border-radius:2px;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#E05B5B';this.style.color='#E05B5B'" onmouseout="this.style.borderColor='rgba(224,91,91,.3)';this.style.color='rgba(224,91,91,.7)'">Delete Account</button>
-      </div>
     </div>
   </div>
   `;
@@ -2636,26 +3419,30 @@ function resolveNotifState() {
   var graceStart = parseInt(localStorage.getItem('vx_grace_start') || '0');
   if (payStatus === 'failed' || payStatus === 'grace') {
     if (!graceStart || Math.floor((Date.now()-graceStart)/86400000) < GRACE_PERIOD_DAYS)
-      return {type:'payment-grace', text:'We couldn\'t process your last payment. <strong>Update your billing details</strong> to avoid interruption.', cta:'Update Payment', ctaClass:'danger', ctaFn:"showView('account')", dismissKey:null};
+      return {type:'payment-grace', text:'Your vault is at risk of locking. <strong>Secure access</strong> before the payment window closes.', cta:'Secure Access', ctaClass:'danger', ctaFn:'openSimulatedCheckout()', dismissKey:null};
   }
-  if (trial.status === 'expired') return {type:'trial-expired', text:'Your trial has ended. <strong>Your saved sessions are still here.</strong>', cta:'Continue Access', ctaClass:'', ctaFn:'showUpgradePlans()', dismissKey:null, showExpiredModal:true};
+  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Choose the access path that fits your budget to continue.</strong>', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:null, showExpiredModal:true};
   if (trial.status === 'active' && trial.daysLeft === 1) {
     if (wasRecentlyDismissed('trial-last-day', 4)) return null;
-    return {type:'trial-last-day', text:'Your access ends <strong>today</strong>. Continue uninterrupted access.', cta:'Upgrade Membership', ctaClass:'', ctaFn:'showUpgradePlans()', dismissKey:'trial-last-day'};
+    return {type:'trial-last-day', text:'Your access window closes <strong>today</strong>. Choose the access path that keeps the vault open after today.', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-last-day'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 3) {
     if (wasRecentlyDismissed('trial-warning', 12)) return null;
-    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left in your trial — ends ' + trial.trialEnd + '.', cta:'Upgrade Membership', ctaClass:'', ctaFn:'showUpgradePlans()', dismissKey:'trial-warning'};
+    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left before your Vault Pass closes.', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-warning'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 5 && trial.daysLeft > 3) {
     if (wasRecentlyDismissed('trial-early', 24)) return null;
     var explored = recentSessions.length;
-    var txt = explored > 0 ? 'You\'ve explored <strong>' + explored + ' situation' + (explored>1?'s':'') + '</strong> — trial continues until ' + trial.trialEnd + '.' : 'Trial continues until <strong>' + trial.trialEnd + '</strong>.';
-    return {type:'trial-early', text:txt, cta:'View Membership', ctaClass:'tq', ctaFn:"showView('account')", dismissKey:'trial-early'};
+    var txt = explored > 0 ? 'You have opened <strong>' + explored + ' pressure session' + (explored>1?'s':'') + '</strong>. Keep your path active before ' + trial.trialEnd + '.' : 'The full vault is unlocked until <strong>' + trial.trialEnd + '</strong>. You can choose or change your access path anytime before payment.';
+    return {type:'trial-early', text:txt, cta:'View Access Path', ctaClass:'tq', ctaFn:"showView('account')", dismissKey:'trial-early'};
+  }
+  if (trial.status === 'active' && trial.daysLeft > 5) {
+    if (wasRecentlyDismissed('trial-welcome', 24)) return null;
+    return {type:'trial-early', text:'Your <strong>7-Day Vault Pass</strong> has started. Full vault access is open now — no card needed today.', cta:'Explore Vault', ctaClass:'tq', ctaFn:"showView('vault')", dismissKey:'trial-welcome'};
   }
   if (vxUser && vxUser.justReactivated) {
     vxUser.justReactivated = false; try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
-    return {type:'reactivated', text:'Subscription reactivated. <strong>Welcome back.</strong>', cta:null, dismissKey:'reactivated'};
+    return {type:'reactivated', text:'Vault access secured. <strong>The full vault stays open.</strong>', cta:null, dismissKey:'reactivated'};
   }
   return null;
 }
@@ -2681,6 +3468,10 @@ function dismissNotif(key) {
   if (bar) { bar.style.opacity='0'; bar.style.transition='opacity .25s'; setTimeout(function(){bar.className='notif-bar';bar.style.opacity='';bar.style.transition='';},280); }
 }
 function showExpiredOverlay() {
+  if (localStorage.getItem('vx_access') !== 'paid' && checkTrial().status === 'expired' && localStorage.getItem('vx_post_trial_reflection_done') !== '1') {
+    showPostTrialReflection();
+    return;
+  }
   var summaryEl = document.getElementById('exp-saved-summary');
   if (summaryEl && (savedSessions.length > 0 || recentSessions.length > 0)) {
     var parts = [];
@@ -2691,6 +3482,33 @@ function showExpiredOverlay() {
   var overlay = document.getElementById('vx-expired-overlay'); if (overlay) overlay.classList.add('open');
 }
 function closeExpiredOverlay() { var o = document.getElementById('vx-expired-overlay'); if (o) o.classList.remove('open'); }
+function showPostTrialReflection() {
+  var existing = document.getElementById('vx-reflection-overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'vx-reflection-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto';
+  var impactedOptions = ['I think more clearly under pressure','I respond less emotionally','I recognize behavioral patterns faster','I communicate more strategically','I feel more mentally steady','I understand people more objectively','I feel more confident in difficult situations'];
+  var pathwayOptions = ['Difficult people & social dynamics','Leadership & workplace pressure','Strategic communication','Emotional control under pressure','Identity & confidence','Mental overload & burnout','Relationship conflict','Decision-making clarity'];
+  function chips(name, arr){ return arr.map(function(o,i){ return '<label style="display:block;background:rgba(249,240,225,.025);border:1px solid rgba(249,240,225,.08);border-radius:4px;padding:11px 13px;cursor:pointer;color:rgba(249,240,225,.62);font-size:.82rem;line-height:1.45"><input type="radio" name="'+name+'" value="'+o+'" style="margin-right:8px;accent-color:#00B4A0">'+o+'</label>'; }).join(''); }
+  overlay.innerHTML = '<div style="width:100%;max-width:760px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden">' +
+    '<div style="padding:28px 34px 22px;border-bottom:1px solid rgba(249,240,225,.07)"><span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">Post-Trial Reflection</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;line-height:1.22;margin-bottom:8px">How has your experience inside the Vault impacted you so far?</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75">Your reflection helps shape future scenario pathways and improve the precision of the Vault experience. Complete this to choose your next Access Path.</p></div>' +
+    '<div style="padding:28px 34px 34px"><div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">What changed most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('impact',impactedOptions)+'</div></div>' +
+    '<div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">Which pathway impacted you most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('pathway',pathwayOptions)+'</div></div>' +
+    '<div><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:9px">Your reflection</p><textarea id="vx-reflection-text" maxlength="700" placeholder="What stood out, shifted, challenged you, or became clearer during your time inside the Vault?" style="width:100%;min-height:120px;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.11);border-radius:4px;padding:14px;color:#F9F0E1;font-family:DM Sans,sans-serif;font-size:.9rem;line-height:1.6;outline:none;resize:vertical"></textarea></div>' +
+    '<button onclick="submitPostTrialReflection()" style="display:block;width:100%;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;border-radius:3px;padding:15px 20px;margin-top:22px;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Continue to Access Paths</button></div></div>';
+  document.body.appendChild(overlay);
+}
+function submitPostTrialReflection(){
+  var impact = document.querySelector('input[name="impact"]:checked');
+  var pathway = document.querySelector('input[name="pathway"]:checked');
+  var text = document.getElementById('vx-reflection-text');
+  if (!impact || !pathway || !text || text.value.trim().length < 20) { showToast('Complete the reflection before continuing.'); return; }
+  localStorage.setItem('vx_post_trial_reflection_done','1');
+  localStorage.setItem('vx_post_trial_reflection', JSON.stringify({impact:impact.value,pathway:pathway.value,reflection:text.value.trim(),createdAt:new Date().toISOString()}));
+  var o = document.getElementById('vx-reflection-overlay'); if (o) o.remove();
+  showExpiredOverlay();
+}
 function simulatePaymentFailed() { localStorage.setItem(PAYMENT_STATUS_KEY,'grace'); localStorage.setItem('vx_grace_start',Date.now().toString()); renderNotifBar(); showToast('Dev: payment failed state.'); }
 function clearPaymentFailed() { localStorage.removeItem(PAYMENT_STATUS_KEY); localStorage.removeItem('vx_grace_start'); renderNotifBar(); showToast('Dev: cleared.'); }
 
@@ -2790,7 +3608,7 @@ function filterSearch(cat, el) {
   var filtered = cat==='all' ? allM : allM.filter(function(s){return s.cat===cat;});
   document.getElementById('search-results-full').innerHTML = filtered.length===0 ? '<div class="sr-empty"><p>No results in this category</p></div>' : filtered.map(function(s){return sessionCard(s);}).join('');
 }
-function focusSearch() { var inp = document.getElementById('search-input'); if (inp){inp.focus();inp.select();showSearchPrompts();} }
+function focusSearch() { if (window.innerWidth <= 860) closeMobileSidebar(); var inp = document.getElementById('search-input'); if (inp){inp.focus();inp.select();showSearchPrompts();} }
 document.addEventListener('keydown', function(e) {
   if ((e.metaKey||e.ctrlKey) && e.key==='k') { e.preventDefault(); var inp=document.getElementById('search-input'); if(inp){inp.focus();inp.select();} }
 });
@@ -2973,8 +3791,8 @@ function showGuestCategory(catName) {
     cardsHtml +
     '<div style="padding:24px;background:rgba(185,147,66,.05);border:1px solid rgba(185,147,66,.18);border-radius:5px;text-align:center;margin-top:12px">' +
     '<p style="font-family:\'Cormorant Garamond\',serif;font-size:1.15rem;color:var(--cream);margin-bottom:8px">Unlock all '+sessions.length+' in this category.</p>' +
-    '<p style="font-size:.82rem;color:var(--c55);margin-bottom:16px">7 days free &mdash; no card needed.</p>' +
-    '<button style="background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="openVXAuth(\'signup\')">Start Free Trial</button></div>';
+    '<p style="font-size:.82rem;color:var(--c55);margin-bottom:16px">7 days unlocked &mdash; no card needed.</p>' +
+    '<button style="background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-family:\'DM Sans\',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:11px 22px;cursor:pointer" onclick="unlockVaultPrototype()">Unlock My Vault Pass</button></div>';
 }
 // Membership prompt (no auto-dismiss)
 function showMembershipPrompt(style) {
@@ -2984,10 +3802,10 @@ function showMembershipPrompt(style) {
   prompt.style.cssText='position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#0E3530;border:1px solid rgba(185,147,66,.25);border-top:2px solid rgba(185,147,66,.4);border-radius:4px;padding:20px 24px;z-index:5000;max-width:400px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,.6);animation:fadeIn .3s ease both';
   prompt.innerHTML=
     '<button onclick="document.getElementById(\'vx-soft-prompt\').remove()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(249,240,225,.3);cursor:pointer;font-size:.9rem">&#x2715;</button>' +
-    '<p style="font-family:\'Cormorant Garamond\',serif;font-size:1.05rem;color:var(--cream);margin-bottom:5px">This experience requires membership.</p>' +
-    '<p style="font-size:.8rem;font-weight:300;color:var(--c55);line-height:1.65;margin-bottom:14px">400+ guided experiences across 10 categories. 7-day free trial.</p>' +
+    '<p style="font-family:\'Cormorant Garamond\',serif;font-size:1.05rem;color:var(--cream);margin-bottom:5px">This session is behind the vault gate.</p>' +
+    '<p style="font-size:.8rem;font-weight:300;color:var(--c55);line-height:1.65;margin-bottom:14px">400+ guided experiences across 10 categories. Start your 7-day Vault Pass and keep the full vault open while the window is active.</p>' +
     '<div style="display:flex;gap:9px">' +
-      '<button onclick="openVXAuth(\'signup\');document.getElementById(\'vx-soft-prompt\').remove()" style="background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-family:\'DM Sans\',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:9px 18px;cursor:pointer;flex:1">Start Free Trial</button>' +
+      '<button onclick="unlockVaultPrototype();document.getElementById(\'vx-soft-prompt\')?.remove()" style="background:linear-gradient(135deg,var(--goldB),var(--gold));color:var(--bg);font-family:\'DM Sans\',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:9px 18px;cursor:pointer;flex:1">Unlock My Vault Pass</button>' +
       '<button onclick="openVXAuth(\'login\');document.getElementById(\'vx-soft-prompt\').remove()" style="background:transparent;color:rgba(249,240,225,.5);font-family:\'DM Sans\',sans-serif;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(249,240,225,.15);border-radius:2px;padding:9px 16px;cursor:pointer">Sign In</button>' +
     '</div>';
   document.body.appendChild(prompt);
@@ -3129,7 +3947,7 @@ function adminToggleFeatured(id, btn) {
     observeAll();
   }
 
-  // Re-observe after any JS renders new content (library, FAQ etc)
+  // Re-observe after any JS renders new content (vault, FAQ etc)
   window.vxRevealRefresh = function() {
     document.querySelectorAll('.reveal:not(.is-visible), .reveal-head:not(.is-visible), .reveal-stagger:not(.is-visible)').forEach(function(el) {
       observer.observe(el);
@@ -3225,12 +4043,12 @@ document.addEventListener('keydown', function(e) {
 <div id="vx-expired-overlay" class="expired-overlay" role="dialog" aria-modal="true">
   <div class="expired-box">
     <div class="expired-icon">&#x25CE;</div>
-    <h2>Your saved sessions are waiting.</h2>
-    <p class="exp-sub">Your trial has ended. Reactivate to continue where you left off.</p>
+    <h2>Your Vault pathways remain available.</h2>
+    <p class="exp-sub">Your 7-day Vault Pass has closed. Choose the Access Path that fits your budget and rhythm to keep your saved sessions, history, and guided pathways open.</p>
     <div class="exp-sessions-waiting"><p>Still saved for you</p><p id="exp-saved-summary">Your sessions, history, and preferences are preserved.</p></div>
     <div class="exp-actions">
-      <button class="exp-primary" onclick="showUpgradePlans();closeExpiredOverlay()">Continue My Access</button>
-      <button class="exp-secondary" onclick="closeExpiredOverlay()">Maybe later</button>
+      <button class="exp-primary" onclick="openSimulatedCheckout();closeExpiredOverlay()">Choose Access Path</button>
+      <button class="exp-secondary" onclick="closeExpiredOverlay()">Return to locked dashboard</button>
     </div>
   </div>
 </div>
@@ -3242,7 +4060,7 @@ document.addEventListener('keydown', function(e) {
     <p style="font-size:.72rem;font-weight:300;color:rgba(249,240,225,.35);margin-top:2px">400+ guided experiences &middot; Cancel anytime</p>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-    <button onclick="openVXAuth('signup')" style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:10px 22px;cursor:pointer;white-space:nowrap">Start with a free experience</button>
+    <button onclick="unlockVaultPrototype()" style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:2px;padding:10px 22px;cursor:pointer;white-space:nowrap">Unlock a free pressure session</button>
     <button onclick="dismissSticky()" style="background:none;border:none;color:rgba(249,240,225,.25);cursor:pointer;font-size:.85rem;padding:4px;line-height:1">&#x2715;</button>
   </div>
 </div>
@@ -3377,7 +4195,7 @@ document.addEventListener('keydown', function(e) {
       <p>Certain features may require account registration. You are responsible for maintaining the confidentiality of your login credentials, all activity occurring under your account, and ensuring your information remains accurate and current. VisualizeX reserves the right to suspend or terminate accounts that violate these Terms or misuse the Platform.</p>
 
       <h3><span class="policy-section-num">5</span>Subscriptions and Memberships</h3>
-      <p>VisualizeX may offer free trials, paid subscriptions, premium memberships, and gated content access. Subscription pricing, billing cycles, and access features may change over time. Payments are processed through trusted third-party providers including PayFast. VisualizeX does not store full payment card information on its own servers.</p>
+      <p>VisualizeX may offer Vault Passes, paid subscriptions, premium memberships, and gated content access. Subscription pricing, billing cycles, and access features may change over time. Payments are processed through trusted third-party providers including PayFast. VisualizeX does not store full payment card information on its own servers.</p>
 
       <h3><span class="policy-section-num">6</span>Cancellation and Subscription Management</h3>
       <p>Users may cancel their subscriptions at any time. Unless otherwise stated, cancellation stops future billing cycles and access may continue until the end of the active billing period. Subscriptions may be resumed later, subject to current pricing and availability. VisualizeX reserves the right to modify subscription plans, pricing, trial structures, or membership features in the future.</p>
