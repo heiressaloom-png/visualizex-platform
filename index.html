@@ -1968,6 +1968,35 @@ var VX_SETUP_QUESTIONS = [
   {key:'energyDrain', label:'Energy Drain', heading:'What type of situations drain your mental energy the fastest?', options:['Manipulative behavior','Workplace politics','Constant conflict','Emotional unpredictability','Feeling misunderstood','High expectations from others','Overthinking conversations afterward','Lack of clarity or direction']},
   {key:'strengthTarget', label:'Strength Target', heading:'What are you ultimately trying to strengthen?', options:['Emotional control','Strategic clarity','Confidence','Self-trust','Communication','Boundaries','Leadership presence','Mental resilience']}
 ];
+var VX_VIDEO_EXPERIENCE_KEY = 'videoExperienceFeedback';
+var VX_FREE_EXPERIENCE_SESSIONS = [
+  'When the Room Tests the Limits of an Idea',
+  'Building a Category-Defining Brand',
+  'Scaling Without Burning the Team',
+  "When the Decision Isn't Made in the Room",
+  'Let the Moment Pass Without Entering It'
+];
+function vxHtmlEscape(v){
+  return String(v || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+function vxGetVideoExperienceFeedback(){
+  var existing = vxSetupAnswers[VX_VIDEO_EXPERIENCE_KEY] || {};
+  return {
+    watched_sessions: Array.isArray(existing.watched_sessions) ? existing.watched_sessions : [],
+    felt_response: existing.felt_response || '',
+    submitted_at: existing.submitted_at || ''
+  };
+}
+function vxSaveVideoExperienceFeedback(feedback){
+  vxSetupAnswers[VX_VIDEO_EXPERIENCE_KEY] = feedback;
+  localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers));
+}
+
 function vxHasCompletedVaultSetup(){ return localStorage.getItem(VX_SETUP_KEY) === '1'; }
 function launchVaultSetupFlow(opts){
   opts = opts || {};
@@ -1986,7 +2015,7 @@ function launchVaultSetupFlow(opts){
 function renderVaultSetupStep(){
   var overlay = document.getElementById('vx-setup-overlay');
   if (!overlay) return;
-  var total = 10;
+  var total = 11;
   var progress = Math.max(8, Math.round(((vxSetupStep+1)/total)*100));
   var shellStart = '<div style="width:100%;max-width:720px;background:#0A1F1D;border:1px solid rgba(0,180,160,.18);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden">' +
     '<div style="padding:24px 32px 18px;border-bottom:1px solid rgba(249,240,225,.07)">' +
@@ -1997,6 +2026,7 @@ function renderVaultSetupStep(){
   if (vxSetupStep === 0) { overlay.innerHTML = shellStart + renderSetupAccessPath() + shellEnd; return; }
   if (vxSetupStep === 1) { overlay.innerHTML = shellStart + renderSetupDetails() + shellEnd; return; }
   if (vxSetupStep >= 2 && vxSetupStep <= 8) { overlay.innerHTML = shellStart + renderSetupQuestion(VX_SETUP_QUESTIONS[vxSetupStep-2]) + shellEnd; return; }
+  if (vxSetupStep === 9) { overlay.innerHTML = shellStart + renderVideoExperienceQuestion() + shellEnd; return; }
   overlay.innerHTML = shellStart + renderVaultActivationScreen() + shellEnd;
 }
 function setupButtons(nextLabel){
@@ -2053,6 +2083,55 @@ function renderSetupQuestion(q){
   }).join('');
   return '<span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">'+q.label+'</span><h2 style="font-family:Cormorant Garamond,serif;font-size:1.85rem;font-weight:400;color:#F9F0E1;margin-bottom:8px;line-height:1.25">'+q.heading+'</h2><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap"><p style="font-size:.88rem;color:rgba(249,240,225,.5);line-height:1.7;margin:0">Select up to 3 that feel most relevant. This shapes your recommended scenario pathways.</p><span style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:'+(selected.length?'#00B4A0':'rgba(249,240,225,.32)')+'">'+countText+'</span></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:10px">'+opts+'</div>'+setupButtons('Continue');
 }
+
+function renderVideoExperienceQuestion(){
+  var feedback = vxGetVideoExperienceFeedback();
+  var selected = feedback.watched_sessions;
+  var countText = selected.length ? (selected.length + ' selected') : 'Select at least 1';
+  var sessions = VX_FREE_EXPERIENCE_SESSIONS.map(function(title, i){
+    var active = selected.indexOf(title) !== -1;
+    return '<button onclick="vxToggleVideoExperienceSession('+i+')" style="text-align:left;background:'+(active?'rgba(0,180,160,.1)':'rgba(249,240,225,.025)')+';border:1px solid '+(active?'rgba(0,180,160,.38)':'rgba(249,240,225,.08)')+';border-radius:4px;padding:13px 15px;color:'+(active?'#F9F0E1':'rgba(249,240,225,.58)')+';font-family:DM Sans,sans-serif;font-size:.86rem;line-height:1.45;cursor:pointer;position:relative">'+(active?'<span style="color:#00B4A0;margin-right:7px">◆</span>':'')+vxHtmlEscape(title)+'</button>';
+  }).join('');
+  return '<span style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">Experience Feedback</span>'+
+    '<h2 style="font-family:Cormorant Garamond,serif;font-size:1.85rem;font-weight:400;color:#F9F0E1;margin-bottom:8px;line-height:1.25">Which free VisualizeX experience did you explore, and what did it bring up for you?</h2>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap"><p style="font-size:.88rem;color:rgba(249,240,225,.5);line-height:1.7;margin:0">This final question helps align your first Vault recommendations to the experience that already felt closest to your life.</p><span style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:'+(selected.length?'#00B4A0':'rgba(249,240,225,.32)')+'">'+countText+'</span></div>'+
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:10px;margin-bottom:18px">'+sessions+'</div>'+
+    '<label style="display:block;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(249,240,225,.35);margin-bottom:8px">In a few words, what did the experience make you notice, feel, or reflect on?</label>'+
+    '<textarea id="vx-video-felt-response" maxlength="1000" oninput="vxUpdateVideoExperienceText(this.value)" placeholder="Example: It made me notice how quickly I start explaining myself when I feel challenged." style="width:100%;min-height:112px;resize:vertical;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.11);border-radius:4px;padding:13px 14px;color:#F9F0E1;font-family:DM Sans,sans-serif;font-size:.88rem;font-weight:300;line-height:1.65;outline:none">'+vxHtmlEscape(String(feedback.felt_response || '').slice(0,1000))+'</textarea>'+
+    '<p style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.72rem;color:rgba(249,240,225,.32);line-height:1.6;margin-top:8px"><span>Required. Minimum 10 characters. Up to 1000 characters.</span><span id="vx-video-char-count" style="color:rgba(249,240,225,.42)">'+String(feedback.felt_response || '').slice(0,1000).length+' / 1000</span></p>'+setupButtons('Activate My Vault');
+}
+function vxToggleVideoExperienceSession(index){
+  var title = VX_FREE_EXPERIENCE_SESSIONS[index];
+  if (!title) return;
+  var feedback = vxGetVideoExperienceFeedback();
+  var selected = feedback.watched_sessions;
+  var existingIndex = selected.indexOf(title);
+  if (existingIndex !== -1) selected.splice(existingIndex, 1);
+  else selected.push(title);
+  feedback.watched_sessions = selected;
+  vxSaveVideoExperienceFeedback(feedback);
+  renderVaultSetupStep();
+}
+function vxUpdateVideoExperienceText(value){
+  var clean = String(value || '').slice(0, 1000);
+  var textarea = document.getElementById('vx-video-felt-response');
+  if (textarea && textarea.value !== clean) textarea.value = clean;
+  var feedback = vxGetVideoExperienceFeedback();
+  feedback.felt_response = clean;
+  vxSaveVideoExperienceFeedback(feedback);
+  var counter = document.getElementById('vx-video-char-count');
+  if (counter) counter.textContent = clean.length + ' / 1000';
+}
+function vxCaptureVideoExperienceFeedback(){
+  var feedback = vxGetVideoExperienceFeedback();
+  var textarea = document.getElementById('vx-video-felt-response');
+  if (textarea) feedback.felt_response = textarea.value || '';
+  feedback.felt_response = String(feedback.felt_response || '').trim().slice(0, 1000);
+  feedback.submitted_at = new Date().toISOString();
+  vxSaveVideoExperienceFeedback(feedback);
+  return feedback;
+}
+
 function vxSetupToggleOption(key, index){
   var q = VX_SETUP_QUESTIONS.find(function(item){ return item.key === key; });
   if (!q) return;
@@ -2074,8 +2153,14 @@ function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep()
 function vxSetupNext(){
   if(vxSetupStep===1 && !saveSetupDetails()) return;
   if(vxSetupStep>=2 && vxSetupStep<=8){ var q=VX_SETUP_QUESTIONS[vxSetupStep-2]; var selected = vxSetupSelectedList(q.key); if(!selected.length){ showToast('Select at least 1 pathway before continuing.'); return; } }
+  if(vxSetupStep===9){
+    var feedback = vxCaptureVideoExperienceFeedback();
+    if(!feedback.watched_sessions.length){ showToast('Select at least one free VisualizeX experience before continuing.'); return; }
+    if(!feedback.felt_response || feedback.felt_response.length < 10){ showToast('Write a few words about what the experience brought up for you.'); return; }
+    if(feedback.felt_response.length > 1000){ showToast('Keep your response under 1000 characters.'); return; }
+  }
   vxSetupStep++;
-  if(vxSetupStep>9){ completeVaultSetup(); return; }
+  if(vxSetupStep>10){ completeVaultSetup(); return; }
   renderVaultSetupStep();
 }
 function renderVaultActivationScreen(){
