@@ -1511,6 +1511,7 @@ body.vx-app-open{overflow-x:hidden}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ═══════════════════════════════════
 // VX BRIDGE — connects site ↔ dashboard  
@@ -1521,6 +1522,111 @@ var VX_TRIAL_USED_KEY = 'vx_trial_used';
 var VX_TRIAL_EMAILS_KEY = 'vx_trial_emails';
 var VX_TRIAL_END_KEY = 'vx_trial_end';
 var VX_PLAN_LOCK_KEY = 'vx_plan_locked_until';
+
+// Supabase connection for the live VisualizeX project.
+// These are public browser keys; data access is protected by Supabase Row Level Security.
+var VX_SUPABASE_URL = 'https://auzqsarupjkviuwazndh.supabase.co';
+var VX_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1enFzYXJ1cGprdml1d2F6bmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2NDMzOTEsImV4cCI6MjA5NTIxOTM5MX0.8EGVXQ9i1lm0S0Hj-12S50I0B6ANz6Gjy9ZGzCB3ayA';
+var vxSupabase = null;
+try {
+  if (window.supabase && window.supabase.createClient) {
+    vxSupabase = window.supabase.createClient(VX_SUPABASE_URL, VX_SUPABASE_ANON_KEY);
+  }
+} catch(e) {
+  console.warn('Supabase client could not be initialized', e);
+}
+
+function vxShowAuthMessage(message) {
+  if (typeof showToast === 'function') showToast(message);
+  else alert(message);
+}
+function vxSplitName(fullName) {
+  var parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  return { first: parts[0] || '', last: parts.slice(1).join(' ') || '' };
+}
+function vxInitialsFromName(first, last, fallbackEmail) {
+  var initials = ((first && first[0]) || '') + ((last && last[0]) || '');
+  if (!initials && fallbackEmail) initials = String(fallbackEmail)[0] || '?';
+  return initials.toUpperCase().substring(0,2);
+}
+async function vxHydrateSupabaseUser() {
+  if (!vxSupabase) return;
+  try {
+    var result = await vxSupabase.auth.getUser();
+    var user = result && result.data ? result.data.user : null;
+    if (!user) return;
+    var meta = user.user_metadata || {};
+    var fullName = meta.full_name || ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || (user.email ? user.email.split('@')[0] : 'Member');
+    var names = vxSplitName(fullName);
+    vxUser = {
+      id: user.id,
+      name: fullName,
+      email: user.email,
+      initials: vxInitialsFromName(names.first, names.last, user.email),
+      plan: meta.selected_access_path || vxPlan || 'quarterly',
+      supabase: true
+    };
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    showDashBtn();
+  } catch(e) {
+    console.warn('Could not hydrate Supabase user', e);
+  }
+}
+function vxBuildOnboardingAnswersForSupabase() {
+  var answers = {};
+  try { answers = JSON.parse(localStorage.getItem(VX_SETUP_ANSWERS_KEY) || '{}'); } catch(e) { answers = {}; }
+  var videoFeedback = answers[VX_VIDEO_EXPERIENCE_KEY] || {};
+  var pathwayAnswers = Object.assign({}, answers);
+  delete pathwayAnswers[VX_VIDEO_EXPERIENCE_KEY];
+  return {
+    pathway_answers: pathwayAnswers,
+    video_experience_feedback: {
+      watched_sessions: Array.isArray(videoFeedback.watched_sessions) ? videoFeedback.watched_sessions : [],
+      felt_response: String(videoFeedback.felt_response || '').slice(0, 1000),
+      submitted_at: videoFeedback.submitted_at || new Date().toISOString()
+    },
+    completed_at: new Date().toISOString()
+  };
+}
+async function vxSyncProfileToSupabase() {
+  if (!vxSupabase) {
+    console.warn('Supabase is not initialized.');
+    return false;
+  }
+  try {
+    var userResult = await vxSupabase.auth.getUser();
+    var user = userResult && userResult.data ? userResult.data.user : null;
+    if (!user) {
+      console.warn('No authenticated Supabase user found for profile sync.');
+      return false;
+    }
+    var profile = {};
+    try { profile = JSON.parse(localStorage.getItem(VX_PROFILE_KEY) || '{}'); } catch(e) {}
+    var payload = {
+      id: user.id,
+      email: profile.email || user.email || (vxUser && vxUser.email) || null,
+      first_name: profile.firstName || null,
+      last_name: profile.lastName || null,
+      country: profile.country || null,
+      city: profile.city || null,
+      work_environment: profile.work || null,
+      selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly',
+      account_status: localStorage.getItem('vx_access') === 'paid' ? 'paid_active' : 'trial_active',
+      onboarding_answers: vxBuildOnboardingAnswersForSupabase()
+    };
+    var sync = await vxSupabase.from('profiles').upsert(payload, { onConflict: 'id' });
+    if (sync.error) {
+      console.error('Profile sync failed:', sync.error);
+      vxShowAuthMessage('Your account was created, but the profile did not sync yet: ' + sync.error.message);
+      return false;
+    }
+    return true;
+  } catch(e) {
+    console.error('Profile sync error:', e);
+    vxShowAuthMessage('Your account was created, but the profile did not sync yet. Please try signing in again.');
+    return false;
+  }
+}
 
 function vxNormalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
@@ -1572,6 +1678,7 @@ function vxTrialExpiredStart() {
 function vxInit() {
   var stored = localStorage.getItem(VXK.u);
   if (stored) { vxUser = JSON.parse(stored); showDashBtn(); }
+  vxHydrateSupabaseUser();
   window.addEventListener('scroll', function() {
     var nav = document.getElementById('nav');
     if(nav) nav.classList.toggle('scrolled', window.scrollY > 50);
@@ -1833,11 +1940,10 @@ function renderVXAuth() {
 }
 
 function vxGoogleAuth(){
-  var b=document.getElementById('vf-btn');
-  if(b){b.disabled=true;b.textContent='Connecting…';}
-  setTimeout(function(){vxFinish({name:'Alex Morgan',email:'alex@example.com',initials:'AM',plan:vxPlan,google:true},vxAuthMode==='signup');},1100);
+  if (!vxSupabase) { vxShowAuthMessage('Supabase is not connected yet.'); return; }
+  vxShowAuthMessage('Google sign-in is not enabled yet. Use email and password for this test.');
 }
-function vxSignup(){
+async function vxSignup(){
   var n=document.getElementById('vf-name')?document.getElementById('vf-name').value.trim():'';
   var e=document.getElementById('vf-email')?document.getElementById('vf-email').value.trim():'';
   var p=document.getElementById('vf-pass')?document.getElementById('vf-pass').value:'';
@@ -1847,21 +1953,73 @@ function vxSignup(){
     else vxShake('vf-pass');
     return;
   }
-  var b=document.getElementById('vf-btn');b.disabled=true;b.textContent='Creating account…';
-  var init=n.split(' ').map(function(x){return x[0];}).join('').toUpperCase().substring(0,2);
-  setTimeout(function(){vxFinish({name:n,email:e,initials:init,plan:vxPlan},true);},1100);
+  if(!vxSupabase){ vxShowAuthMessage('Supabase is not connected yet.'); return; }
+  var b=document.getElementById('vf-btn');
+  if(b){b.disabled=true;b.textContent='Creating account…';}
+  var names = vxSplitName(n);
+  try {
+    var result = await vxSupabase.auth.signUp({
+      email: e,
+      password: p,
+      options: {
+        data: {
+          full_name: n,
+          first_name: names.first,
+          last_name: names.last,
+          selected_access_path: vxPlan || 'quarterly'
+        }
+      }
+    });
+    if(result.error) throw result.error;
+    var user = result.data && result.data.user ? result.data.user : null;
+    if(!user) throw new Error('No user returned from Supabase.');
+    var init=vxInitialsFromName(names.first, names.last, e);
+    vxUser = {id:user.id,name:n,email:e,initials:init,plan:vxPlan || 'quarterly',supabase:true};
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    if(result.data && result.data.session) {
+      await vxSyncProfileToSupabase();
+      vxFinish(vxUser,true);
+    } else {
+      localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+      closeVXAuth();
+      showDashBtn();
+      vxShowAuthMessage('Account created in Supabase. Check your email to confirm, then sign in to complete onboarding.');
+    }
+  } catch(err) {
+    console.error('Supabase signup failed:', err);
+    vxShowAuthMessage(err && err.message ? err.message : 'Signup failed. Please try again.');
+  } finally {
+    if(b){b.disabled=false;b.innerHTML='Create Account &amp; Unlock Vault';}
+  }
 }
-function vxLogin(){
+async function vxLogin(){
   var e=document.getElementById('vf-email')?document.getElementById('vf-email').value.trim():'';
   var p=document.getElementById('vf-pass')?document.getElementById('vf-pass').value:'';
   if(!e||!e.includes('@')){vxShake('vf-email');return;}
   if(!p){vxShake('vf-pass');return;}
-  var b=document.getElementById('vf-btn');b.disabled=true;b.textContent='Signing in…';
-  setTimeout(function(){
-    var stored=localStorage.getItem(VXK.u);
-    var u=stored?JSON.parse(stored):{name:e.split('@')[0],email:e,initials:e[0].toUpperCase(),plan:vxPlan};
-    vxFinish(u,false);
-  },900);
+  if(!vxSupabase){ vxShowAuthMessage('Supabase is not connected yet.'); return; }
+  var b=document.getElementById('vf-btn');
+  if(b){b.disabled=true;b.textContent='Signing in…';}
+  try {
+    var result = await vxSupabase.auth.signInWithPassword({email:e,password:p});
+    if(result.error) throw result.error;
+    var user = result.data && result.data.user ? result.data.user : null;
+    if(!user) throw new Error('No user returned from Supabase.');
+    var meta = user.user_metadata || {};
+    var fullName = meta.full_name || ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || e.split('@')[0];
+    var names = vxSplitName(fullName);
+    vxUser = {id:user.id,name:fullName,email:user.email || e,initials:vxInitialsFromName(names.first,names.last,e),plan:meta.selected_access_path || vxPlan || 'quarterly',supabase:true};
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    closeVXAuth();
+    showDashBtn();
+    if (!vxHasCompletedVaultSetup()) launchVaultSetupFlow({source:'login'});
+    else openMemberDashboard('dashboard');
+  } catch(err) {
+    console.error('Supabase login failed:', err);
+    vxShowAuthMessage(err && err.message ? err.message : 'Login failed. Please try again.');
+  } finally {
+    if(b){b.disabled=false;b.textContent='Sign In to My Dashboard';}
+  }
 }
 function vxShake(id){
   var el=document.getElementById(id);if(!el)return;
@@ -1893,7 +2051,7 @@ function vxFinish(u,isNew){
 
   // MVP testing mode: allow a new signup click to reopen the Vault Pass while we test trial-to-paid.
   // Remove this once Supabase owns trial enforcement.
-  var VX_ALLOW_TRIAL_RETEST = true;
+  var VX_ALLOW_TRIAL_RETEST = false;
   if (VX_ALLOW_TRIAL_RETEST && isNew) {
     trialStart = null;
     trialUsed = false;
@@ -2169,8 +2327,9 @@ function renderVaultActivationScreen(){
   var sub = localStorage.getItem('vx_access')==='paid' ? 'Your access path is active and your guided scenarios are aligned to your current focus.' : 'Your full Vault access is open now. Your guided scenarios and strategic visualizations are aligned to your current focus for the next 7 days.';
   return '<div style="text-align:center;padding:10px 0 4px"><div style="width:64px;height:64px;border-radius:50%;border:1px solid rgba(0,180,160,.35);background:rgba(0,180,160,.08);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;color:#00B4A0;font-size:1.5rem">◎</div><span style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#00B4A0;display:block;margin-bottom:12px">Vault Ready</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2.2rem;font-weight:400;color:#F9F0E1;line-height:1.2;margin-bottom:12px">'+title+'</h2><p style="font-size:.92rem;color:rgba(249,240,225,.58);line-height:1.8;max-width:500px;margin:0 auto 26px">'+sub+'</p><button onclick="completeVaultSetup()" style="background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;padding:15px 30px;cursor:pointer">Enter The Vault</button></div>';
 }
-function completeVaultSetup(){
+async function completeVaultSetup(){
   localStorage.setItem(VX_SETUP_KEY,'1');
+  await vxSyncProfileToSupabase();
   var o=document.getElementById('vx-setup-overlay'); if(o) o.remove();
   openMemberDashboard('dashboard');
   var tr = typeof checkTrial==='function'?checkTrial():{status:'active'};
@@ -2434,8 +2593,9 @@ function goDashboard() {
   }
 }
 
-function doLogout() {
+async function doLogout() {
   if (!confirm('Sign out of VisualizeX?')) return;
+  if (vxSupabase) { try { await vxSupabase.auth.signOut(); } catch(e) { console.warn('Supabase signout failed', e); } }
   vxUser = null;
   localStorage.removeItem(VXK.u);
   var vxApp = document.getElementById('vx-app');
