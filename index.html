@@ -1577,7 +1577,7 @@ function vxApplySupabaseProfile(profile) {
     localStorage.setItem('vx_payment_status','trial_no_card');
   }
 }
-async function vxFetchProfileFromSupabase(userId) {
+async function vxFetchProfileFromSupabase(userId, applyToLocal) {
   if (!vxSupabase || !userId) return null;
   try {
     var result = await vxSupabase.from('profiles').select('*').eq('id', userId).maybeSingle();
@@ -1585,7 +1585,7 @@ async function vxFetchProfileFromSupabase(userId) {
       console.warn('Could not fetch Supabase profile:', result.error.message || result.error);
       return null;
     }
-    if (result.data) vxApplySupabaseProfile(result.data);
+    if (result.data && applyToLocal !== false) vxApplySupabaseProfile(result.data);
     return result.data || null;
   } catch(e) {
     console.warn('Could not fetch Supabase profile:', e);
@@ -1679,9 +1679,12 @@ async function vxSyncProfileToSupabase() {
       console.warn('No authenticated Supabase user found for profile sync.');
       return false;
     }
-    var existing = await vxFetchProfileFromSupabase(user.id);
     var profile = {};
     try { profile = JSON.parse(localStorage.getItem(VX_PROFILE_KEY) || '{}'); } catch(e) {}
+    // Important: read the local onboarding profile before fetching the Supabase row.
+    // Existing blank Supabase rows can contain NULL profile fields; applying that row first
+    // would wipe the dropdown values that were just saved locally.
+    var existing = await vxFetchProfileFromSupabase(user.id, false);
     var seven = 7*24*60*60*1000;
     var localStartMs = Number(localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t) || Date.now());
     if (!Number.isFinite(localStartMs) || localStartMs <= 0) localStartMs = Date.now();
@@ -1690,12 +1693,12 @@ async function vxSyncProfileToSupabase() {
     var trialEndsAt = (existing && existing.trial_ends_at) || new Date((existingStartMs || localStartMs) + seven).toISOString();
     var payload = {
       id: user.id,
-      email: profile.email || user.email || (vxUser && vxUser.email) || null,
-      first_name: profile.firstName || null,
-      last_name: profile.lastName || null,
-      country: profile.country || null,
-      city: profile.city || null,
-      work_environment: profile.work || null,
+      email: profile.email || (existing && existing.email) || user.email || (vxUser && vxUser.email) || null,
+      first_name: profile.firstName || (existing && existing.first_name) || null,
+      last_name: profile.lastName || (existing && existing.last_name) || null,
+      country: profile.country || (existing && existing.country) || null,
+      city: profile.city || (existing && existing.city) || null,
+      work_environment: profile.work || (existing && existing.work_environment) || null,
       selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly',
       account_status: localStorage.getItem('vx_access') === 'paid' ? 'paid_active' : 'trial_active',
       trial_started_at: trialStartedAt,
@@ -2062,6 +2065,7 @@ async function vxSignup(){
     if(result.error) throw result.error;
     var user = result.data && result.data.user ? result.data.user : null;
     if(!user) throw new Error('No user returned from Supabase.');
+    vxClearVaultSetupForNewUser();
     var init=vxInitialsFromName(names.first, names.last, e);
     vxUser = {id:user.id,name:n,email:e,initials:init,plan:vxPlan || 'quarterly',supabase:true};
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
@@ -2203,6 +2207,7 @@ function vxFinish(u,isNew){
 // ═══════════════════════════════════
 var VX_PROFILE_KEY = 'vx_profile_details';
 var VX_SETUP_KEY = 'vx_setup_completed';
+var VX_SETUP_USER_KEY = 'vx_setup_completed_user_id';
 var VX_SETUP_ANSWERS_KEY = 'vx_pathway_answers';
 var vxSetupStep = 0;
 var vxSetupAnswers = {};
@@ -2244,7 +2249,34 @@ function vxSaveVideoExperienceFeedback(feedback){
   localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers));
 }
 
-function vxHasCompletedVaultSetup(){ return localStorage.getItem(VX_SETUP_KEY) === '1'; }
+function vxCurrentUserIdForSetup(){
+  try {
+    var storedUser = vxUser || JSON.parse(localStorage.getItem(VXK.u) || 'null');
+    return storedUser && storedUser.id ? String(storedUser.id) : '';
+  } catch(e) {
+    return vxUser && vxUser.id ? String(vxUser.id) : '';
+  }
+}
+function vxHasCompletedVaultSetup(){
+  var currentId = vxCurrentUserIdForSetup();
+  var completedId = localStorage.getItem(VX_SETUP_USER_KEY) || '';
+  return localStorage.getItem(VX_SETUP_KEY) === '1' && !!currentId && completedId === currentId;
+}
+function vxClearVaultSetupForNewUser(){
+  localStorage.removeItem(VX_SETUP_KEY);
+  localStorage.removeItem(VX_SETUP_USER_KEY);
+  localStorage.removeItem(VX_SETUP_ANSWERS_KEY);
+  localStorage.removeItem(VX_PROFILE_KEY);
+  vxSetupAnswers = {};
+  vxSetupStep = 0;
+}
+function vxClearSupabaseAuthStorage(){
+  try {
+    Object.keys(localStorage).forEach(function(key){
+      if (key.indexOf('sb-') === 0 && key.indexOf('auth-token') !== -1) localStorage.removeItem(key);
+    });
+  } catch(e) {}
+}
 function launchVaultSetupFlow(opts){
   opts = opts || {};
   vxSetupStep = 0;
@@ -2313,6 +2345,16 @@ function saveSetupDetails(){
   var profile={firstName:vals.first,lastName:vals.last,email:vals.email,country:vals.country,city:vals.city,work:vals.work};
   localStorage.setItem(VX_PROFILE_KEY, JSON.stringify(profile));
   if(vxUser){ vxUser.name=vals.first+' '+vals.last; vxUser.email=vals.email; vxUser.initials=(vals.first[0]+vals.last[0]).toUpperCase(); localStorage.setItem(VXK.u,JSON.stringify(vxUser)); }
+  if (typeof vxUpdateSupabaseProfileFields === 'function') {
+    vxUpdateSupabaseProfileFields({
+      email: vals.email,
+      first_name: vals.first,
+      last_name: vals.last,
+      country: vals.country,
+      city: vals.city,
+      work_environment: vals.work
+    });
+  }
   return true;
 }
 function vxSetupSelectedList(key){
@@ -2418,6 +2460,7 @@ function renderVaultActivationScreen(){
 }
 async function completeVaultSetup(){
   localStorage.setItem(VX_SETUP_KEY,'1');
+  localStorage.setItem(VX_SETUP_USER_KEY, vxCurrentUserIdForSetup());
   await vxSyncProfileToSupabase();
   var o=document.getElementById('vx-setup-overlay'); if(o) o.remove();
   openMemberDashboard('dashboard');
@@ -2688,6 +2731,16 @@ async function doLogout() {
   vxUser = null;
   localStorage.removeItem(VXK.u);
   localStorage.removeItem(VX_PROFILE_CACHE_KEY);
+  localStorage.removeItem(VX_PROFILE_KEY);
+  localStorage.removeItem(VX_SETUP_KEY);
+  localStorage.removeItem(VX_SETUP_USER_KEY);
+  localStorage.removeItem(VX_SETUP_ANSWERS_KEY);
+  localStorage.removeItem(VX_TRIAL_END_KEY);
+  localStorage.removeItem('vx_trial_start');
+  localStorage.removeItem(VXK.t);
+  localStorage.removeItem('vx_payment_status');
+  localStorage.removeItem('vx_access');
+  vxClearSupabaseAuthStorage();
   var vxApp = document.getElementById('vx-app');
   if (vxApp) { vxApp.classList.remove('show'); vxApp.style.display = 'none'; }
   var appShell = document.getElementById('app');
