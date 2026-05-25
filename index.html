@@ -2434,7 +2434,7 @@ function vxSetupToggleOption(key, index){
     selected.push(val);
   }
   vxSetupAnswers[key] = selected;
-  localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers));
+  localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers)); 
   renderVaultSetupStep();
 }
 
