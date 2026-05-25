@@ -1565,6 +1565,13 @@ function vxApplySupabaseProfile(profile) {
   var work = profile.work_environment || '';
   var localProfile = { firstName:first, lastName:last, email:email, country:profile.country || '', city:profile.city || '', work:work };
   try { localStorage.setItem(VX_PROFILE_KEY, JSON.stringify(localProfile)); } catch(e) {}
+  if (profile.onboarding_answers && Object.keys(profile.onboarding_answers || {}).length) {
+    try {
+      localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(profile.onboarding_answers.pathway_answers || {}));
+      localStorage.setItem(VX_SETUP_KEY, '1');
+      localStorage.setItem(VX_SETUP_USER_KEY, profile.id);
+    } catch(e) {}
+  }
   var startMs = vxParseDateMs(profile.trial_started_at);
   var endMs = vxParseDateMs(profile.trial_ends_at);
   if (startMs) { localStorage.setItem('vx_trial_start', String(startMs)); localStorage.setItem(VXK.t, String(startMs)); }
@@ -2434,10 +2441,10 @@ function vxSetupToggleOption(key, index){
     selected.push(val);
   }
   vxSetupAnswers[key] = selected;
-  localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers)); 
+  localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers));
   renderVaultSetupStep();
 }
-
+function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep(); } }
 function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep(); } }
 function vxSetupNext(){
   if(vxSetupStep===1 && !saveSetupDetails()) return;
