@@ -2437,7 +2437,7 @@ function vxSetupToggleOption(key, index){
   localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(vxSetupAnswers));
   renderVaultSetupStep();
 }
-function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep(); } }
+
 function vxSetupBack(){ if(vxSetupStep>0){ vxSetupStep--; renderVaultSetupStep(); } }
 function vxSetupNext(){
   if(vxSetupStep===1 && !saveSetupDetails()) return;
