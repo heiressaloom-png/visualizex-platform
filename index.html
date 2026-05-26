@@ -1045,7 +1045,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v5.3 login-profile-hydration + paid-plan-renewal-expiry -->
+<!-- VX VERSION: v5.4 plan-expiry simulation + paid-content gating -->
 
 
 
@@ -2959,6 +2959,8 @@ function checkTrial() {
     return {status:'expired'};
   }
 
+  if (payStatus === 'paid_expired') return {status:'expired', reason:'paid_expired'};
+
   var profile = (typeof vxGetCachedSupabaseProfile === 'function') ? vxGetCachedSupabaseProfile() : null;
   if (profile && profile.account_status === 'paid_active' && payStatus !== 'paid_expired') {
     if (planLockUntil && Date.now() >= planLockUntil) { markPaidExpired(); return {status:'expired'}; }
@@ -3161,18 +3163,71 @@ function setTrialDaysLeft(daysLeft) {
   try { showView('dashboard'); } catch(e) {}
   showToast('Prototype trial set to ' + daysLeft + ' day' + (daysLeft===1?'':'s') + ' left.');
 }
+
+function setPaidDaysLeft(daysLeft) {
+  daysLeft = Math.max(0, Number(daysLeft) || 0);
+  var now = Date.now();
+  var lockUntil = daysLeft === 0 ? now - 1000 : now + (daysLeft * 24*60*60*1000);
+  localStorage.removeItem('vx_grace_start');
+  localStorage.removeItem('vx_post_trial_intro_seen');
+  localStorage.removeItem('vx_post_trial_reflection_done');
+  localStorage.setItem('vx_paid_date', now.toString());
+  localStorage.setItem(VX_PLAN_LOCK_KEY, String(lockUntil));
+
+  if (daysLeft === 0) {
+    localStorage.removeItem(ACCESS_KEY);
+    localStorage.setItem('vx_payment_status','paid_expired');
+  } else {
+    localStorage.setItem(ACCESS_KEY, 'paid');
+    localStorage.setItem('vx_payment_status','ok');
+  }
+
+  if (vxUser) {
+    vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
+    vxUser.accessMode = daysLeft === 0 ? 'trial_expired' : 'active_simulated';
+    try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
+  }
+
+  try {
+    if (typeof vxCacheSupabaseProfile === 'function') {
+      var cached = vxGetCachedSupabaseProfile() || {};
+      cached.account_status = daysLeft === 0 ? 'paid_expired' : 'paid_active';
+      cached.selected_access_path = (vxUser && vxUser.plan) || vxPlan || 'quarterly';
+      vxCacheSupabaseProfile(cached);
+    }
+    if (typeof vxUpdateSupabaseProfileFields === 'function') {
+      vxUpdateSupabaseProfileFields({ account_status: daysLeft === 0 ? 'paid_expired' : 'paid_active', selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly' });
+    }
+  } catch(e) {}
+
+  updateSidebar();
+  renderNotifBar();
+  try { showView('dashboard'); } catch(e) {}
+  showToast(daysLeft === 0 ? 'Paid plan lapsed. Playback is now gated.' : 'Paid plan: ' + daysLeft + 'd left until renewal.');
+}
+
 function renderTrialTestPanel() {
   var trial = checkTrial();
-  var statusText = trial.status === 'paid' ? 'Paid member state is active.' : trial.status === 'active' ? trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left — notification bar changes based on this.' : trial.status === 'expired' ? 'Expired state — reclaim overlay and payment CTA should appear.' : 'No active trial state yet.';
+  var statusText = trial.status === 'paid'
+    ? (trial.daysLeft !== null ? 'Paid member state active — ' + trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' until renewal.' : 'Paid member state is active.')
+    : trial.status === 'active'
+      ? trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left in the 7-day Vault Pass.'
+      : trial.status === 'expired'
+        ? 'Expired/lapsed state — dashboard remains visible, paid playback is gated.'
+        : 'No active trial state yet.';
   return '<div class="trial-test-panel">' +
-    '<div><p>Trial tester</p><p>' + statusText + ' Use this while testing the trial-to-paid journey.</p></div>' +
+    '<div><p>Access state tester</p><p>' + statusText + ' Use these controls while testing trial-to-paid, renewal, lapse, and gating behaviour.</p></div>' +
     '<div class="trial-test-actions">' +
-      '<button onclick="setTrialDaysLeft(7)">Day 1</button>' +
-      '<button onclick="setTrialDaysLeft(5)">Day 3</button>' +
-      '<button onclick="setTrialDaysLeft(3)">Day 5</button>' +
-      '<button onclick="setTrialDaysLeft(1)">Last Day</button>' +
-      '<button onclick="simulateTrialExpiry()">Expired</button>' +
-      '<button onclick="openSimulatedCheckout()">Paid Test</button>' +
+      '<button onclick="setTrialDaysLeft(7)">Trial: Day 1</button>' +
+      '<button onclick="setTrialDaysLeft(5)">Trial: 5d left</button>' +
+      '<button onclick="setTrialDaysLeft(3)">Trial: 3d left</button>' +
+      '<button onclick="setTrialDaysLeft(1)">Trial: Last Day</button>' +
+      '<button onclick="simulateTrialExpiry()">Trial: Expired</button>' +
+      '<button onclick="setPaidDaysLeft(90)">Paid: Active</button>' +
+      '<button onclick="setPaidDaysLeft(5)">Paid: 5d left</button>' +
+      '<button onclick="setPaidDaysLeft(1)">Paid: Renews Today</button>' +
+      '<button onclick="setPaidDaysLeft(0)">Paid: Lapsed</button>' +
+      '<button onclick="openSimulatedCheckout()">Checkout</button>' +
     '</div>' +
   '</div>';
 }
@@ -3180,12 +3235,28 @@ function renderTrialTestPanel() {
 function simulateTrialExpiry() {
   var eightDaysAgo = Date.now() - (8*24*60*60*1000);
   localStorage.setItem('vx_trial_start', String(eightDaysAgo));
+  localStorage.setItem(VX_TRIAL_END_KEY, String(Date.now() - 1000));
   localStorage.removeItem('vx_access');
+  localStorage.removeItem(VX_PLAN_LOCK_KEY);
+  localStorage.setItem('vx_payment_status','trial_expired');
+  localStorage.removeItem('vx_post_trial_intro_seen');
+  localStorage.removeItem('vx_post_trial_reflection_done');
   if (vxUser) { vxUser.accessMode = 'trial_expired'; localStorage.setItem(VXK.u, JSON.stringify(vxUser)); }
+  try {
+    if (typeof vxCacheSupabaseProfile === 'function') {
+      var cached = vxGetCachedSupabaseProfile() || {};
+      cached.trial_started_at = new Date(eightDaysAgo).toISOString();
+      cached.trial_ends_at = new Date(Date.now() - 1000).toISOString();
+      cached.account_status = 'trial_expired';
+      vxCacheSupabaseProfile(cached);
+    }
+  } catch(e) {}
   updateSidebar();
   renderNotifBar();
+  try { showView('dashboard'); } catch(e) {}
   showToast('Dev: Vault Pass expired state activated.');
 }
+
 function resetSimulatedAccess() {
   localStorage.removeItem('vx_access');
   localStorage.removeItem('vx_paid_date');
@@ -3353,6 +3424,34 @@ function showCategory(cat) {
   renderCategoryView(cat);
 }
 
+function vxAccessLocked() {
+  return !hasVaultAccess();
+}
+function vxLockedAccessBanner(title, body) {
+  title = title || 'Vault playback is paused.';
+  body = body || 'Your dashboard, saved items, and recent activity remain visible. Premium playback reopens as soon as you choose an access path.';
+  return '<div style="background:linear-gradient(135deg,rgba(185,147,66,.08),rgba(0,180,160,.035));border:1px solid rgba(185,147,66,.2);border-radius:4px;padding:20px 22px;margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">' +
+    '<div><p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--goldB);margin-bottom:6px">Access path needed</p>' +
+    '<p style="font-family:Cormorant Garamond,serif;font-size:1.22rem;color:var(--cream);line-height:1.45;margin-bottom:5px">' + title + '</p>' +
+    '<p style="font-size:.82rem;font-weight:300;color:var(--c55);line-height:1.65;max-width:620px">' + body + '</p></div>' +
+    '<button class="btn-ghost-sm" onclick="showExpiredOverlay()">Review Access Path</button>' +
+  '</div>';
+}
+function vxLockedRecentPreview(limit) {
+  limit = limit || 2;
+  var ids = recentSessions.slice(0, limit);
+  if (!ids.length) return '';
+  return '<div class="section-head"><h2 class="fd">Recently Played <span class="section-mood">Preserved</span></h2></div>' +
+    '<div class="recent-grid">' + ids.map(function(id){
+      var s = ALL_SESSIONS.find(function(x){ return x.id === id; });
+      if (!s) return '';
+      return '<div class="rc" onclick="showExpiredOverlay()">' +
+        '<span class="rc-cat">' + s.cat + '</span>' +
+        '<p class="rc-title">' + s.title + '</p>' +
+        '<span class="rc-meta">' + s.dur + ' · Playback locked</span></div>';
+    }).join('') + '</div>';
+}
+
 // ── DASHBOARD ──
 function renderDashboard() {
   var el = document.getElementById('main-content');
@@ -3382,6 +3481,8 @@ function renderDashboard() {
     }
   }
 
+  var accessOpen = hasVaultAccess();
+  var lockedPreviewLimit = accessOpen ? 4 : 2;
   var continueHtml = lastRecent
     ? '<div class="section-head"><h2 class="fd">' + continueHeading + '</h2></div>' +
       '<div class="continue-card" onclick="openPlayer(' + lastRecent.id + ')">' +
@@ -3391,17 +3492,26 @@ function renderDashboard() {
           '<p class="cc-title">' + lastRecent.title + '</p>' +
           '<p class="cc-sub">' + lastRecent.dur + '</p>' +
           '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div>' +
-          '<p class="cc-resume">' + continueSub + '</p></div>' +
+          '<p class="cc-resume">' + (accessOpen ? continueSub : 'Saved — review access path to resume') + '</p></div>' +
         '</div>' +
       '</div>'
-    : '<div class="section-head"><h2 class="fd">Start Here</h2></div>' +
-      '<div class="continue-card" onclick="openPlayer(7)">' +
-        '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
-        '<div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span>' +
-        '<p class="cc-title">When the Room Tests the Limits of an Idea</p>' +
-        '<p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p>' +
-        '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div>' +
-        '<p class="cc-resume">Begin your first guided experience</p></div></div></div>';
+    : accessOpen
+      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div>' +
+        '<div class="continue-card" onclick="openPlayer(7)">' +
+          '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
+          '<div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span>' +
+          '<p class="cc-title">When the Room Tests the Limits of an Idea</p>' +
+          '<p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p>' +
+          '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div>' +
+          '<p class="cc-resume">Begin your first guided experience</p></div></div></div>'
+      : '<div class="section-head"><h2 class="fd">Vault Access</h2></div>' +
+        '<div class="continue-card" onclick="showExpiredOverlay()">' +
+          '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
+          '<div class="cc-info"><span class="cc-cat">Playback Locked</span>' +
+          '<p class="cc-title">Choose an access path to reopen the Vault.</p>' +
+          '<p class="cc-sub">Your dashboard and activity stay visible.</p>' +
+          '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>' +
+          '<p class="cc-resume">Review Access Path</p></div></div></div>';
 
   var latestIds = [30,29,28,27,26,25];
   var latestSessions = latestIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,3);
@@ -3435,26 +3545,26 @@ function renderDashboard() {
   var savedPreview = savedSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Saved for Revisit</h2><span class="see-all" onclick="showView(\'saved\')">All saved &rarr;</span></div>' +
       '<div class="saved-home-grid">' +
-      savedSessions.slice(0,4).map(function(id) {
+      savedSessions.slice(0, lockedPreviewLimit).map(function(id) {
         var s = ALL_SESSIONS.find(function(x){return x.id===id;});
         if (!s) return '';
         return '<div class="rc" onclick="openPlayer(' + s.id + ')">' +
           '<span class="rc-cat">' + s.cat + '</span>' +
           '<p class="rc-title">' + s.title + '</p>' +
-          '<span class="rc-meta">' + s.dur + ' · Saved</span></div>';
+          '<span class="rc-meta">' + s.dur + (accessOpen ? ' · Saved' : ' · Saved · Playback locked') + '</span></div>';
       }).join('') + '</div>'
     : '';
 
   var recentHtml = recentSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Recently Navigated</h2><span class="see-all" onclick="showView(\'recent\')">Full history &rarr;</span></div>' +
       '<div class="recent-grid">' +
-      recentSessions.slice(0,4).map(function(id) {
+      recentSessions.slice(0, lockedPreviewLimit).map(function(id) {
         var s = ALL_SESSIONS.find(function(x){return x.id===id;});
         if (!s) return '';
         return '<div class="rc" onclick="openPlayer(' + s.id + ')">' +
           '<span class="rc-cat">' + s.cat + '</span>' +
           '<p class="rc-title">' + s.title + '</p>' +
-          '<span class="rc-meta">' + s.dur + '</span></div>';
+          '<span class="rc-meta">' + s.dur + (accessOpen ? '' : ' · Playback locked') + '</span></div>';
       }).join('') + '</div>'
     : '';
 
@@ -3462,7 +3572,9 @@ function renderDashboard() {
   var trialState = checkTrial();
   var trialIntro = trialState.status === 'active'
     ? '<div style="background:linear-gradient(135deg,rgba(0,180,160,.08),rgba(185,147,66,.04));border:1px solid rgba(0,180,160,.18);border-radius:4px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tq);margin-bottom:6px">7-Day Vault Pass Started</p><p style="font-family:Cormorant Garamond,serif;font-size:1.2rem;color:var(--cream);line-height:1.45;margin-bottom:5px">Your trial has begun. Full vault access is open now.</p><p style="font-size:.82rem;font-weight:300;color:var(--c55);line-height:1.65">You have ' + trialState.daysLeft + ' day' + (trialState.daysLeft===1?'':'s') + ' left. Choose monthly, quarterly, or annual access only when you are ready to keep the vault open after the trial.</p></div><button class="btn-ghost-sm" onclick="showView(\'account\')">Review Access Paths</button></div>'
-    : '';
+    : accessOpen
+      ? ''
+      : vxLockedAccessBanner('Your access window has closed.', 'Premium playback and the full Vault are locked until an access path is active again. We still keep your dashboard, account, and up to two recent sessions visible so the return path feels clear.');
   el.innerHTML =
     '<div class="welcome-row" style="margin-bottom:20px"><h1 class="fd">' + greeting + ', ' + firstName + '.</h1></div>' +
     trialIntro +
@@ -3470,12 +3582,12 @@ function renderDashboard() {
     '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
     continueHtml +
     savedPreview +
-    '<div class="section-head"><h2 class="fd">Recently Released <span class="section-mood">New in the vault</span></h2><span class="see-all" onclick="showView(\'vault\')">Open the vault &rarr;</span></div>' +
-    '<div class="feat-grid">' + latestHtml + '</div>' +
-    '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div>' +
-    '<div class="sit-grid">' + sitHtml + '</div>' +
-    '<div class="section-head"><h2 class="fd">Often Revisited <span class="section-mood">Top 5 replay picks</span></h2></div>' +
-    '<div class="momentum-rail">' + oftenHtml + '</div>' +
+    (accessOpen ? '<div class="section-head"><h2 class="fd">Recently Released <span class="section-mood">New in the vault</span></h2><span class="see-all" onclick="showView(\'vault\')">Open the vault &rarr;</span></div>' : '') +
+    (accessOpen ? '<div class="feat-grid">' + latestHtml + '</div>' : '') +
+    (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div>' : '') +
+    (accessOpen ? '<div class="sit-grid">' + sitHtml + '</div>' : '') +
+    (accessOpen ? '<div class="section-head"><h2 class="fd">Often Revisited <span class="section-mood">Top 5 replay picks</span></h2></div>' : '') +
+    (accessOpen ? '<div class="momentum-rail">' + oftenHtml + '</div>' : '') +
     recentHtml;
 }
 
@@ -3503,6 +3615,12 @@ function getRecommended() {
 function renderVault() {
   const cats = [...new Set(ALL_SESSIONS.map(s=>s.cat))];
   const el = document.getElementById('main-content');
+  if (!hasVaultAccess()) {
+    el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p>Your account stays open, but premium playback and the full vault archive require an active access path.</p></div>' +
+      vxLockedAccessBanner('The full Vault is locked right now.', 'Choose an access path to reopen every guided experience. Until then, we keep a light trail of your recent activity visible without exposing the full paid library.') +
+      vxLockedRecentPreview(2);
+    return;
+  }
   el.innerHTML = `
     <div class="welcome-row">
       <h1 class="fd">The Vault</h1>
@@ -3520,6 +3638,12 @@ function renderVault() {
 function renderCategoryView(cat) {
   const sessions = ALL_SESSIONS.filter(s=>s.cat===cat);
   const el = document.getElementById('main-content');
+  if (!hasVaultAccess()) {
+    el.innerHTML = '<div class="welcome-row"><h1 class="fd">' + cat + '</h1><p>This scenario pod is part of the paid Vault library.</p></div>' +
+      vxLockedAccessBanner('This pod is locked until access is active.', 'You can still view your account and recent activity. Choose an access path to reopen this scenario pod and the rest of the Vault.') +
+      vxLockedRecentPreview(2);
+    return;
+  }
   el.innerHTML = `
     <div class="welcome-row">
       <h1 class="fd">${cat}</h1>
