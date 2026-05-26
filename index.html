@@ -567,6 +567,15 @@ a{text-decoration:none;color:inherit}
 .btn-play-sm:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,180,160,.4)}
 .btn-save-sm{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--c55);font-size:.72rem;letter-spacing:.08em;border:1px solid var(--c08);border-radius:2px;padding:8px 14px;cursor:pointer;transition:all .2s}
 .btn-save-sm:hover{border-color:rgba(185,147,66,.3);color:var(--goldB)}
+.sess-save,.rc-save,.momen-save,.feat-save{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(249,240,225,.1);background:rgba(249,240,225,.035);color:rgba(249,240,225,.48);border-radius:999px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;line-height:1;z-index:3}
+/* v6.6: keep floating heart controls anchored inside each card. */
+.rc,.momen-card{position:relative;padding-right:46px}
+.sess-save{width:34px;height:34px;font-size:1rem;flex-shrink:0;margin-top:1px}
+.rc-save,.momen-save,.feat-save{position:absolute;top:12px;right:12px;width:30px;height:30px;font-size:.9rem}
+.feat-save{top:14px;right:14px}
+.sess-save:hover,.rc-save:hover,.momen-save:hover,.feat-save:hover{border-color:rgba(185,147,66,.35);color:var(--goldB);background:rgba(185,147,66,.08);transform:translateY(-1px)}
+.sess-save.saved,.rc-save.saved,.momen-save.saved,.feat-save.saved{color:var(--goldB);border-color:rgba(185,147,66,.42);background:rgba(185,147,66,.12)}
+.btn-save-sm.saved{border-color:rgba(185,147,66,.35);color:var(--goldB);background:rgba(185,147,66,.06)}
 
 /* Recommended */
 .rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:32px}
@@ -1049,7 +1058,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v6.3 MVP1 Supabase-backed user activity + search telemetry -->
+<!-- VX VERSION: v6.6 dashboard order locked: Search → Continue → Saved → Recently Played → Often Revisited → Scenario Pods → Completed Recently; save/unsave max 10 preserved -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1523,6 +1532,8 @@ body.vx-app-open{overflow-x:hidden}
 // ═══════════════════════════════════
 // VX BRIDGE — connects site ↔ dashboard  
 // ═══════════════════════════════════
+window.VX_BUILD_VERSION = 'v6.6_dashboard_order_cleanup';
+console.log('VisualizeX build', window.VX_BUILD_VERSION);
 var vxUser = null, vxAuthMode = 'signup', vxPlan = 'quarterly';
 var VXK = {u:'vx_u',t:'vx_t',a:'vx_a',s:'vx_s',r:'vx_r',p:'vx_p'};
 var VX_TRIAL_USED_KEY = 'vx_trial_used';
@@ -3223,6 +3234,7 @@ const ACCESS_KEY = 'vx_access';
 const SAVED_KEY  = 'vx_saved';
 const RECENT_KEY = 'vx_recent';
 const PROGRESS_KEY = 'vx_progress';
+const VX_MAX_SAVED_SESSIONS = 10;
 
 let isPlaying = false;
 let playerTimer = null;
@@ -3264,7 +3276,8 @@ function vxApplySessionStateRows(rows, fromLocalOnly) {
   savedSessions = rows.filter(function(r){ return !!r.is_saved; })
     .sort(function(a,b){ return Date.parse(b.saved_at || b.updated_at || 0) - Date.parse(a.saved_at || a.updated_at || 0); })
     .map(function(r){ return Number(r.session_id); })
-    .filter(function(id){ return ALL_SESSIONS.some(function(s){ return s.id === id; }); });
+    .filter(function(id){ return ALL_SESSIONS.some(function(s){ return s.id === id; }); })
+    .slice(0, VX_MAX_SAVED_SESSIONS);
   recentSessions = rows.filter(function(r){ return !!r.last_played_at; })
     .sort(function(a,b){ return Date.parse(b.last_played_at || 0) - Date.parse(a.last_played_at || 0); })
     .map(function(r){ return Number(r.session_id); })
@@ -4076,38 +4089,39 @@ function renderDashboard() {
   var continueHtml = lastRecent
     ? '<div class="section-head"><h2 class="fd">' + continueHeading + '</h2></div>' +
       '<div class="continue-card" onclick="openPlayer(' + lastRecent.id + ')">' +
+        vxSaveHeartButton(lastRecent.id, 'feat-save') +
         '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div>' +
         '<div class="cc-info"><span class="cc-cat">' + lastRecent.cat + '</span><p class="cc-title">' + lastRecent.title + '</p><p class="cc-sub">' + lastRecent.dur + '</p>' +
         '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div><p class="cc-resume">' + (accessOpen ? continueSub : 'Saved — review access path to resume') + '</p></div></div></div>'
     : accessOpen
-      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)"><div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
+      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)">' + vxSaveHeartButton(7, 'feat-save') + '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
       : '<div class="section-head"><h2 class="fd">Vault Access</h2></div><div class="continue-card" onclick="showExpiredOverlay()"><div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Playback Locked</span><p class="cc-title">Choose an access path to reopen the Vault.</p><p class="cc-sub">Your dashboard and activity stay visible.</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div><p class="cc-resume">Review Access Path</p></div></div></div>';
 
   var savedPreview = savedSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Saved Sessions</h2><span class="see-all" onclick="showView(\'saved\')">All saved &rarr;</span></div><div class="saved-home-grid">' +
-      savedSessions.slice(0, accessOpen ? 6 : 2).map(function(id){ var s=ALL_SESSIONS.find(function(x){return x.id===id;}); if(!s)return ''; return '<div class="rc" onclick="openPlayer(' + s.id + ')"><span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + (accessOpen ? ' · Saved' : ' · Saved · Playback locked') + '</span></div>'; }).join('') + '</div>'
+      savedSessions.slice(0, accessOpen ? 6 : 2).map(function(id){ var s=ALL_SESSIONS.find(function(x){return x.id===id;}); if(!s)return ''; return '<div class="rc" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'rc-save') + '<span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + (accessOpen ? ' · Saved' : ' · Saved · Playback locked') + '</span></div>'; }).join('') + '</div>'
     : '';
 
   var recentHtml = recentSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Recently Played</h2><span class="see-all" onclick="showView(\'recent\')">Latest 10 &rarr;</span></div><div class="recent-grid">' +
-      recentSessions.slice(0, Math.min(10, lockedPreviewLimit)).map(function(id){ var s=ALL_SESSIONS.find(function(x){return x.id===id;}); if(!s)return ''; return '<div class="rc" onclick="openPlayer(' + s.id + ')"><span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + (accessOpen ? '' : ' · Playback locked') + '</span></div>'; }).join('') + '</div>'
+      recentSessions.slice(0, Math.min(10, lockedPreviewLimit)).map(function(id){ var s=ALL_SESSIONS.find(function(x){return x.id===id;}); if(!s)return ''; return '<div class="rc" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'rc-save') + '<span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + (accessOpen ? '' : ' · Playback locked') + '</span></div>'; }).join('') + '</div>'
     : '';
 
   var oftenSessions = (typeof vxGetOftenRevisitedSessions === 'function') ? vxGetOftenRevisitedSessions(5) : [];
   var oftenHtml = oftenSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Often Revisited <span class="section-mood">Sessions you return to</span></h2></div><div class="momentum-rail">' +
-      oftenSessions.map(function(s){ var row = (typeof vxGetSessionRow === 'function') ? vxGetSessionRow(s.id) : null; var plays = row && row.play_count ? row.play_count : 2; return '<div class="momen-card" onclick="openPlayer(' + s.id + ')"><span class="momen-cat">' + s.cat + '</span><p class="momen-title">' + s.title + '</p><span class="momen-meta">' + s.dur + '</span><span class="momen-replay">◈ Revisited ' + plays + 'x</span></div>'; }).join('') + '</div>'
+      oftenSessions.map(function(s){ var row = (typeof vxGetSessionRow === 'function') ? vxGetSessionRow(s.id) : null; var plays = row && row.play_count ? row.play_count : 2; return '<div class="momen-card" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'momen-save') + '<span class="momen-cat">' + s.cat + '</span><p class="momen-title">' + s.title + '</p><span class="momen-meta">' + s.dur + '</span><span class="momen-replay">◈ Revisited ' + plays + 'x</span></div>'; }).join('') + '</div>'
     : '';
 
   var sitHtml = (typeof SITUATION_CATS !== 'undefined' ? SITUATION_CATS : []).map(function(s){ return '<div class="sit-card" onclick="showCategory(\'' + s.cat + '\')"><div class="sit-icon">' + s.icon + '</div><p class="sit-name">' + s.name + '</p><p class="sit-count">' + s.hint + '</p></div>'; }).join('');
   var completedSessions = (typeof vxGetCompletedSessions === 'function') ? vxGetCompletedSessions(6) : [];
   var completedHtml = completedSessions.length > 0
     ? '<div class="section-head"><h2 class="fd">Completed Recently <span class="section-mood">Quiet progress</span></h2></div><div class="recent-grid">' +
-      completedSessions.map(function(s){ return '<div class="rc" onclick="openPlayer(' + s.id + ')"><span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + ' · Completed</span></div>'; }).join('') + '</div>'
+      completedSessions.map(function(s){ return '<div class="rc" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'rc-save') + '<span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + ' · Completed</span></div>'; }).join('') + '</div>'
     : '';
 
   var latestIds = [30,29,28,27,26,25];
-  var latestHtml = latestIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,3).map(function(s){ return '<div class="feat-card" onclick="openPlayer(' + s.id + ')"><div class="feat-label">Recently Released</div><p class="feat-title">' + s.title + '</p><p class="feat-sub">' + s.desc.slice(0,110) + '&hellip;</p><div class="feat-meta"><span class="feat-dur">⌚ ' + s.dur + '</span><div class="feat-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:1px"><polygon points="6,3 20,12 6,21"/></svg></div></div></div>'; }).join('');
+  var latestHtml = latestIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,3).map(function(s){ return '<div class="feat-card" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'feat-save') + '<div class="feat-label">Recently Released</div><p class="feat-title">' + s.title + '</p><p class="feat-sub">' + s.desc.slice(0,110) + '&hellip;</p><div class="feat-meta"><span class="feat-dur">⌚ ' + s.dur + '</span><div class="feat-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:1px"><polygon points="6,3 20,12 6,21"/></svg></div></div></div>'; }).join('');
 
   el.className = 'content fade-in dashboard-home';
   var trialState = checkTrial();
@@ -4121,6 +4135,7 @@ function renderDashboard() {
     '<div class="welcome-row" style="margin-bottom:20px"><h1 class="fd">' + greeting + ', ' + firstName + '.</h1></div>' +
     trialIntro + renderTrialTestPanel() +
     '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
+    // v6.6: dashboard order follows human-use priority: find/resume/keep/revisit/browse/progress.
     searchHomeHtml + continueHtml + savedPreview + recentHtml + oftenHtml +
     (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
     completedHtml +
@@ -4192,11 +4207,33 @@ function renderCategoryView(cat) {
 function renderSaved() {
   const el = document.getElementById('main-content');
   const saved = ALL_SESSIONS.filter(s=>savedSessions.includes(s.id));
+  var savedHeader = '<div class="section-head"><h2 class="fd">Saved Sessions <span class="section-mood">' + saved.length + '/' + VX_MAX_SAVED_SESSIONS + '</span></h2></div>';
   if (saved.length === 0) {
-    el.innerHTML = `<div class="empty-state"><p class="fd">No saved sessions yet.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Tap the bookmark icon on any experience to save it here.</span></p></div>`;
+    el.innerHTML = savedHeader + `<div class="empty-state"><p class="fd">No saved sessions yet.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Tap the heart on any experience to save it here. You can keep up to 10.</span></p></div>`;
   } else {
-    el.innerHTML = `<div class="session-list">${saved.map(s=>sessionCard(s)).join('')}</div>`;
+    el.innerHTML = savedHeader + `<div class="session-list">${saved.map(s=>sessionCard(s)).join('')}</div>`;
   }
+}
+
+
+function vxSaveHeartButton(id, cls) {
+  var isSaved = savedSessions.includes(id);
+  cls = cls || 'rc-save';
+  return '<button class="' + cls + (isSaved ? ' saved' : '') + '" data-save-id="' + id + '" onclick="event.stopPropagation(); toggleSave(' + id + ')" title="' + (isSaved ? 'Remove from saved' : 'Save session') + '" aria-label="' + (isSaved ? 'Remove from saved sessions' : 'Save session') + '">' + (isSaved ? '&#x2665;' : '&#x2661;') + '</button>';
+}
+function vxRefreshSaveControls(id) {
+  var isSaved = savedSessions.includes(id);
+  document.querySelectorAll('[data-save-id="' + id + '"]').forEach(function(btn){
+    btn.classList.toggle('saved', isSaved);
+    btn.classList.toggle('active', isSaved);
+    btn.setAttribute('title', isSaved ? 'Remove from saved' : 'Save session');
+    btn.setAttribute('aria-label', isSaved ? 'Remove from saved sessions' : 'Save session');
+    if (btn.classList.contains('sess-save') || btn.classList.contains('rc-save') || btn.classList.contains('momen-save') || btn.classList.contains('feat-save')) {
+      btn.innerHTML = isSaved ? '&#x2665;' : '&#x2661;';
+    } else {
+      btn.textContent = isSaved ? '♥ Saved' : '♡ Save';
+    }
+  });
 }
 
 function sessionCard(s) {
@@ -4212,13 +4249,14 @@ function sessionCard(s) {
         <p class="sess-title">${s.title}</p>
         <span class="sess-dur">⏱ ${s.dur}</span>
       </div>
+      ${vxSaveHeartButton(s.id, 'sess-save')}
       <button class="sess-expand" onclick="toggleDesc(${s.id})" id="exp-${s.id}" title="Show description">▾</button>
     </div>
     <div class="sess-desc" id="desc-${s.id}">
       <p>${s.desc}</p>
       <div class="sess-actions">
         <button class="btn-play-sm" onclick="openPlayer(${s.id})">▶ Play Now</button>
-        <button class="btn-save-sm" onclick="toggleSave(${s.id})" id="save-btn-${s.id}">${isSaved?'♥ Saved':'♡ Save'}</button>
+        <button class="btn-save-sm${isSaved?' saved':''}" onclick="event.stopPropagation(); toggleSave(${s.id})" data-save-id="${s.id}">${isSaved?'♥ Saved':'♡ Save'}</button>
       </div>
     </div>
   </div>`;
@@ -4233,14 +4271,21 @@ function toggleDesc(id) {
 }
 
 function toggleSave(id) {
+  id = Number(id);
   const idx = savedSessions.indexOf(id);
   var nowSaved = idx === -1;
-  if (nowSaved) savedSessions.push(id);
+  if (nowSaved && savedSessions.length >= VX_MAX_SAVED_SESSIONS) {
+    showToast('You can save up to 10 sessions. Remove one from Saved Sessions to save this one.');
+    return false;
+  }
+  if (nowSaved) savedSessions.unshift(id);
   else savedSessions.splice(idx, 1);
+  savedSessions = savedSessions.filter(function(value, index, arr){ return arr.indexOf(value) === index; }).slice(0, VX_MAX_SAVED_SESSIONS);
   localStorage.setItem(SAVED_KEY, JSON.stringify(savedSessions));
   if (typeof vxPersistSavedState === 'function') vxPersistSavedState(id, nowSaved);
-  const btn = document.getElementById(`save-btn-${id}`);
-  if (btn) btn.textContent = savedSessions.includes(id) ? '♥ Saved' : '♡ Save';
+  if (typeof vxRefreshSaveControls === 'function') vxRefreshSaveControls(id);
+  showToast(nowSaved ? ('Session saved. ' + savedSessions.length + '/' + VX_MAX_SAVED_SESSIONS + ' saved.') : 'Removed from saved sessions.');
+  return nowSaved;
 }
 
 // ══════════════════════════════════════════════
