@@ -459,7 +459,7 @@ a{text-decoration:none;color:inherit}
 .sb-bottom{padding:10px 10px}
 .sb-user{padding:8px 10px}
 @media(min-height:760px){.sidebar{--sidebar-row-py:9px}}
-@media(max-height:700px){.sb-section{display:none}.sb-nav{padding-top:8px}.sb-link{padding:7px 10px}.sb-top{padding:14px 16px}.sb-bottom{padding:8px 10px}.sb-user{display:none}}
+@media(max-height:700px){.sb-section{display:none}.sb-nav{padding-top:8px}.sb-link{padding:7px 10px}.sb-top{padding:14px 16px}.sb-bottom{padding:8px 10px}.sb-user{padding:6px 10px}}
 .mobile-dash-fab{display:none;position:fixed;right:16px;bottom:18px;z-index:1200;background:linear-gradient(135deg,var(--tq),var(--tqM));color:var(--bg);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:999px;padding:12px 16px;box-shadow:0 14px 36px rgba(0,0,0,.45);cursor:pointer}
 @media(max-width:768px){.mobile-dash-fab.show{display:flex;align-items:center;gap:7px}}
 .trial-test-panel{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:rgba(0,180,160,.045);border:1px solid rgba(0,180,160,.14);border-radius:4px;padding:14px 16px;margin:0 0 22px}
@@ -479,6 +479,10 @@ a{text-decoration:none;color:inherit}
 .sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--tq),var(--tqD));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:500;color:var(--bg);flex-shrink:0}
 .sb-user-info p{font-size:.82rem;font-weight:400;color:var(--cream);line-height:1.2}
 .sb-user-info span{font-size:.68rem;color:var(--c35)}
+.sb-plan-badge{display:inline-flex;align-items:center;gap:6px;font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--goldB);border:1px solid rgba(185,147,66,.24);background:rgba(185,147,66,.07);border-radius:2px;padding:4px 7px;margin-top:4px;line-height:1.15}
+.sb-plan-badge.trial{color:var(--tq);border-color:rgba(0,180,160,.24);background:rgba(0,180,160,.07)}
+.sb-plan-badge.lapsed{color:#E05B5B;border-color:rgba(224,91,91,.28);background:rgba(224,91,91,.07)}
+.sb-plan-sub{display:block;font-size:.64rem;color:var(--c35);margin-top:4px;line-height:1.35;max-width:138px}
 
 /* TRIAL BAR */
 .trial-bar{background:linear-gradient(90deg,rgba(0,180,160,.12),rgba(185,147,66,.08));border-bottom:1px solid rgba(0,180,160,.15);padding:9px 28px;display:flex;align-items:center;justify-content:space-between;font-size:.78rem}
@@ -1045,7 +1049,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v5.4 plan-expiry simulation + paid-content gating -->
+<!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
 
@@ -1581,9 +1585,17 @@ function vxApplySupabaseProfile(profile) {
   if (profile.account_status === 'paid_active') {
     localStorage.setItem('vx_access','paid');
     localStorage.setItem('vx_payment_status','ok');
+  } else if (profile.account_status === 'paid_expired') {
+    localStorage.removeItem('vx_access');
+    localStorage.setItem('vx_payment_status','paid_expired');
+    if (vxUser) vxUser.accessMode = 'paid_expired';
   } else if (profile.account_status === 'trial_active') {
     localStorage.removeItem('vx_access');
     localStorage.setItem('vx_payment_status','trial_no_card');
+  } else if (profile.account_status === 'trial_expired') {
+    localStorage.removeItem('vx_access');
+    localStorage.setItem('vx_payment_status','trial_expired');
+    if (vxUser) vxUser.accessMode = 'trial_expired';
   }
 }
 async function vxFetchProfileFromSupabase(userId, applyToLocal) {
@@ -2932,12 +2944,12 @@ function checkTrial() {
     localStorage.removeItem(ACCESS_KEY);
     localStorage.setItem('vx_payment_status','paid_expired');
     if (vxUser) {
-      vxUser.accessMode = 'trial_expired';
+      vxUser.accessMode = 'paid_expired';
       try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
     }
     try {
       var cached = vxGetCachedSupabaseProfile ? vxGetCachedSupabaseProfile() : null;
-      if (cached && cached.account_status === 'paid_active') {
+      if (cached) {
         cached.account_status = 'paid_expired';
         localStorage.setItem(VX_PROFILE_CACHE_KEY, JSON.stringify(cached));
       }
@@ -2953,23 +2965,24 @@ function checkTrial() {
     if (!planLockUntil || Date.now() < planLockUntil) {
       var paidDaysLeft = planLockUntil ? Math.ceil((planLockUntil - Date.now())/(24*60*60*1000)) : null;
       var planEnd = planLockUntil ? new Date(planLockUntil).toLocaleDateString('en-GB',{day:'numeric',month:'long'}) : null;
-      return {status:'paid', daysLeft:paidDaysLeft, planEnd:planEnd};
+      return {status:'paid', daysLeft:paidDaysLeft, planEnd:planEnd, reason:'paid_active'};
     }
     markPaidExpired();
-    return {status:'expired'};
+    return {status:'expired', reason:'paid_expired'};
   }
 
   if (payStatus === 'paid_expired') return {status:'expired', reason:'paid_expired'};
 
   var profile = (typeof vxGetCachedSupabaseProfile === 'function') ? vxGetCachedSupabaseProfile() : null;
+  if (profile && profile.account_status === 'paid_expired') return {status:'expired', reason:'paid_expired'};
   if (profile && profile.account_status === 'paid_active' && payStatus !== 'paid_expired') {
-    if (planLockUntil && Date.now() >= planLockUntil) { markPaidExpired(); return {status:'expired'}; }
-    return {status:'paid', daysLeft:null, planEnd:null};
+    if (planLockUntil && Date.now() >= planLockUntil) { markPaidExpired(); return {status:'expired', reason:'paid_expired'}; }
+    return {status:'paid', daysLeft:null, planEnd:null, reason:'paid_active'};
   }
 
   var cachedEndMs = profile && profile.trial_ends_at ? vxParseDateMs(profile.trial_ends_at) : Number(localStorage.getItem(VX_TRIAL_END_KEY) || 0);
   if (cachedEndMs) {
-    if (Date.now() >= cachedEndMs) return {status:'expired'};
+    if (Date.now() >= cachedEndMs) return {status:'expired', reason:'trial_expired'};
     var cachedDaysLeft = Math.ceil((cachedEndMs - Date.now())/(24*60*60*1000));
     var cachedTrialEnd = new Date(cachedEndMs).toLocaleDateString('en-GB',{day:'numeric',month:'long'});
     return {status:'active', daysLeft:cachedDaysLeft, trialEnd:cachedTrialEnd};
@@ -2980,11 +2993,11 @@ function checkTrial() {
     var legacy = localStorage.getItem(VXK.t);
     if (legacy) { localStorage.setItem(TRIAL_KEY, legacy); ts = legacy; }
   }
-  if (!ts && vxHasTrialBeenUsed(vxUser && vxUser.email)) return {status:'expired'};
+  if (!ts && vxHasTrialBeenUsed(vxUser && vxUser.email)) return {status:'expired', reason:'trial_expired'};
   if (!ts) return {status:'none'};
   const elapsed = Date.now() - parseInt(ts,10);
   const seven = 7*24*60*60*1000;
-  if (elapsed >= seven) return {status:'expired'};
+  if (elapsed >= seven) return {status:'expired', reason:'trial_expired'};
   const daysLeft = Math.ceil((seven - elapsed)/(24*60*60*1000));
   const trialEnd = new Date(parseInt(ts,10)+seven).toLocaleDateString('en-GB',{day:'numeric',month:'long'});
   return {status:'active', daysLeft, trialEnd};
@@ -3003,23 +3016,60 @@ function logoutDash() {
   // auth handled by VX bridge
 }
 
+function getSidebarAccessLabel(trial) {
+  var currentPlan = (vxUser && vxUser.plan) || vxPlan || 'quarterly';
+  var meta = getPlanMeta(currentPlan);
+  var payStatus = localStorage.getItem('vx_payment_status') || 'ok';
+  var isPaidLapsed = trial.reason === 'paid_expired' || payStatus === 'paid_expired';
+
+  if (trial.status === 'paid') {
+    var days = trial.daysLeft;
+    return {
+      cls: 'paid',
+      badge: (currentPlan === 'monthly' ? 'Monthly' : currentPlan === 'yearly' ? 'Yearly' : 'Quarterly') + ' Plan',
+      sub: days !== null ? 'Renews in ' + days + ' day' + (days === 1 ? '' : 's') : 'Active member',
+      top: days !== null && days <= 5 ? 'RENEWS · ' + days + 'D' : 'MEMBER'
+    };
+  }
+
+  if (trial.status === 'active') {
+    return {
+      cls: 'trial',
+      badge: 'Vault Pass',
+      sub: trial.daysLeft + ' day' + (trial.daysLeft === 1 ? '' : 's') + ' left',
+      top: 'TRIAL · ' + trial.daysLeft + 'D LEFT'
+    };
+  }
+
+  if (isPaidLapsed) {
+    return {
+      cls: 'lapsed',
+      badge: 'Plan Lapsed',
+      sub: 'Renew to play sessions',
+      top: 'PLAN LAPSED'
+    };
+  }
+
+  return {
+    cls: 'lapsed',
+    badge: 'Pass Closed',
+    sub: 'Choose access to play',
+    top: 'PASS CLOSED'
+  };
+}
+
 function updateSidebar() {
   if (!vxUser) return;
   document.getElementById('sb-name').textContent = vxUser.name;
   document.getElementById('sb-avatar').textContent = vxUser.initials || vxUser.name[0].toUpperCase();
   const trial = checkTrial();
-  const meta = getPlanMeta((vxUser && vxUser.plan) || vxPlan || 'quarterly');
-  const planText = trial.status==='paid'
-    ? 'Member · Active'
-    : trial.status==='active'
-      ? 'Trial · ' + trial.daysLeft + 'd left'
-      : 'Pass Closed';
-  document.getElementById('sb-plan').textContent = planText;
-  document.getElementById('mem-badge-top').textContent = trial.status==='paid'
-    ? 'MEMBER'
-    : trial.status==='active'
-      ? 'TRIAL · ' + trial.daysLeft + 'D LEFT'
-      : 'PASS CLOSED';
+  const access = getSidebarAccessLabel(trial);
+  const planEl = document.getElementById('sb-plan');
+  if (planEl) {
+    planEl.innerHTML = '<span class="sb-plan-badge ' + access.cls + '">' + access.badge + '</span><span class="sb-plan-sub">' + access.sub + '</span>';
+  }
+  const topBadge = document.getElementById('mem-badge-top');
+  if (topBadge) topBadge.textContent = access.top;
 }
 
 function showUpgradePrompt(plan) {
@@ -3184,7 +3234,7 @@ function setPaidDaysLeft(daysLeft) {
 
   if (vxUser) {
     vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
-    vxUser.accessMode = daysLeft === 0 ? 'trial_expired' : 'active_simulated';
+    vxUser.accessMode = daysLeft === 0 ? 'paid_expired' : 'active_simulated';
     try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
   }
 
@@ -3208,12 +3258,13 @@ function setPaidDaysLeft(daysLeft) {
 
 function renderTrialTestPanel() {
   var trial = checkTrial();
+  var isPaidLapsed = trial.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired';
   var statusText = trial.status === 'paid'
     ? (trial.daysLeft !== null ? 'Paid member state active — ' + trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' until renewal.' : 'Paid member state is active.')
     : trial.status === 'active'
       ? trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left in the 7-day Vault Pass.'
       : trial.status === 'expired'
-        ? 'Expired/lapsed state — dashboard remains visible, paid playback is gated.'
+        ? (isPaidLapsed ? 'Paid plan lapsed — dashboard remains visible, playback renews through the access path CTA.' : 'Trial expired — dashboard remains visible, paid playback is gated.')
         : 'No active trial state yet.';
   return '<div class="trial-test-panel">' +
     '<div><p>Access state tester</p><p>' + statusText + ' Use these controls while testing trial-to-paid, renewal, lapse, and gating behaviour.</p></div>' +
@@ -3261,6 +3312,7 @@ function resetSimulatedAccess() {
   localStorage.removeItem('vx_access');
   localStorage.removeItem('vx_paid_date');
   localStorage.removeItem('vx_grace_start');
+  localStorage.removeItem(VX_PLAN_LOCK_KEY);
   if (vxHasTrialBeenUsed(vxUser && vxUser.email)) {
     localStorage.setItem('vx_payment_status','trial_expired');
     if (!localStorage.getItem('vx_trial_start')) localStorage.setItem('vx_trial_start', vxTrialExpiredStart());
@@ -3574,7 +3626,9 @@ function renderDashboard() {
     ? '<div style="background:linear-gradient(135deg,rgba(0,180,160,.08),rgba(185,147,66,.04));border:1px solid rgba(0,180,160,.18);border-radius:4px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><p style="font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--tq);margin-bottom:6px">7-Day Vault Pass Started</p><p style="font-family:Cormorant Garamond,serif;font-size:1.2rem;color:var(--cream);line-height:1.45;margin-bottom:5px">Your trial has begun. Full vault access is open now.</p><p style="font-size:.82rem;font-weight:300;color:var(--c55);line-height:1.65">You have ' + trialState.daysLeft + ' day' + (trialState.daysLeft===1?'':'s') + ' left. Choose monthly, quarterly, or annual access only when you are ready to keep the vault open after the trial.</p></div><button class="btn-ghost-sm" onclick="showView(\'account\')">Review Access Paths</button></div>'
     : accessOpen
       ? ''
-      : vxLockedAccessBanner('Your access window has closed.', 'Premium playback and the full Vault are locked until an access path is active again. We still keep your dashboard, account, and up to two recent sessions visible so the return path feels clear.');
+      : (trialState.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired')
+        ? vxLockedAccessBanner('Your paid access path has lapsed.', 'Premium playback is paused until access is renewed. Your dashboard, account, saved sessions, and recent activity remain visible so returning feels clear.')
+        : vxLockedAccessBanner('Your access window has closed.', 'Premium playback and the full Vault are locked until an access path is active again. We still keep your dashboard, account, and up to two recent sessions visible so the return path feels clear.');
   el.innerHTML =
     '<div class="welcome-row" style="margin-bottom:20px"><h1 class="fd">' + greeting + ', ' + firstName + '.</h1></div>' +
     trialIntro +
@@ -3714,7 +3768,9 @@ function hasVaultAccess() {
 }
 function openPlayer(id) {
   if (!hasVaultAccess()) {
-    showToast('Your Vault Pass has closed. Your progress is saved — choose an access path when you are ready.');
+    var trialState = checkTrial();
+    var isPaidLapsed = trialState && trialState.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired';
+    showToast(isPaidLapsed ? 'Your paid access path has lapsed. Renew access to reopen playback.' : 'Your Vault Pass has closed. Your progress is saved — choose an access path when you are ready.');
     showExpiredOverlay();
     return;
   }
@@ -3883,13 +3939,16 @@ function renderAccount() {
   const meta = getPlanMeta(currentPlan);
   const isPaid = trial.status === 'paid';
   const isActiveTrial = trial.status === 'active';
-  const statusLabel = isPaid ? 'Active Member' : isActiveTrial ? '7-Day Vault Pass' : 'Vault Pass Closed';
+  const isPaidLapsed = trial.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired';
+  const statusLabel = isPaid ? 'Active Member' : isActiveTrial ? '7-Day Vault Pass' : isPaidLapsed ? 'Paid Access Lapsed' : 'Vault Pass Closed';
   const statusColor = isPaid ? 'var(--goldB)' : isActiveTrial ? 'var(--tq)' : '#E05B5B';
   const statusCopy = isPaid
-    ? meta.label + ' secured · simulated billing active'
+    ? meta.label + (trial.daysLeft !== null ? ' secured · renews in ' + trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') : ' secured · simulated billing active')
     : isActiveTrial
       ? 'Full vault unlocked · ' + trial.daysLeft + ' day' + (trial.daysLeft===1?'':'s') + ' left before sessions lock again'
-      : 'Your vault is paused · saved sessions and progress are waiting';
+      : isPaidLapsed
+        ? 'Payment period has lapsed · renew access to reopen playback'
+        : 'Your vault is paused · saved sessions and progress are waiting';
 
   el.innerHTML = `
   <div class="welcome-row">
@@ -3925,7 +3984,7 @@ function renderAccount() {
           <p style="font-size:.82rem;color:${statusColor};margin-top:4px">${statusCopy}</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-primary-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'View Current Access' : 'Choose Access Path'}</button>
+          <button class="btn-primary-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'View Current Access' : isPaidLapsed ? 'Renew Access' : 'Choose Access Path'}</button>
           <button class="btn-ghost-sm" onclick="resetSimulatedAccess()">Test Trial Restart Guard</button>
         </div>
       </div>
@@ -3951,9 +4010,9 @@ function renderAccount() {
       <div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
         <div>
           <p style="font-size:.82rem;font-weight:400;color:var(--cream);margin-bottom:3px">Payment State</p>
-          <p style="font-size:.8rem;color:var(--c55)">${isPaid ? 'Simulated payment active · no real card charged' : 'No card added · Vault Pass access only'}</p>
+          <p style="font-size:.8rem;color:var(--c55)">${isPaid ? 'Simulated payment active · no real card charged' : isPaidLapsed ? 'Paid plan lapsed · renew to reopen playback' : 'No card added · Vault Pass access only'}</p>
         </div>
-        <button class="btn-ghost-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'Open Checkout Test' : 'Choose Access Path Test'}</button>
+        <button class="btn-ghost-sm" onclick="openSimulatedCheckout('${currentPlan}')">${isPaid ? 'Open Checkout Test' : isPaidLapsed ? 'Renew Access Test' : 'Choose Access Path Test'}</button>
       </div>
 
       <div class="acc-divider" style="margin-top:16px"></div>
@@ -3962,10 +4021,14 @@ function renderAccount() {
         <button onclick="setTrialDaysLeft(3)" class="btn-ghost-sm">Test: 3 Days Left</button>
         <button onclick="setTrialDaysLeft(1)" class="btn-ghost-sm">Test: Last Day</button>
         <button onclick="simulateTrialExpiry()" class="btn-ghost-sm">Simulate Trial Expiry</button>
+        <button onclick="setPaidDaysLeft(90)" class="btn-ghost-sm">Test: Paid Active</button>
+        <button onclick="setPaidDaysLeft(5)" class="btn-ghost-sm">Test: Paid 5 Days</button>
+        <button onclick="setPaidDaysLeft(1)" class="btn-ghost-sm">Test: Paid Renews Today</button>
+        <button onclick="setPaidDaysLeft(0)" class="btn-ghost-sm">Simulate Paid Lapse</button>
         <button onclick="simulatePaymentFailed()" class="btn-ghost-sm">Simulate Failed Payment</button>
         <button onclick="clearPaymentFailed()" class="btn-ghost-sm">Clear Payment Warning</button>
       </div>
-      <p style="font-size:.72rem;color:var(--c35);line-height:1.6;margin-top:10px">Prototype-only controls so you can test the Vault Pass window, expiry state, flexible access-path choice, and payment journey without waiting seven days.</p>
+      <p style="font-size:.72rem;color:var(--c35);line-height:1.6;margin-top:10px">Prototype-only controls so you can test the Vault Pass window, trial expiry, paid renewal warnings, paid lapse, flexible access-path choice, and payment journey without waiting for real time to pass.</p>
     </div>
   </div>
 
@@ -4126,7 +4189,11 @@ function resolveNotifState() {
     if (!graceStart || Math.floor((Date.now()-graceStart)/86400000) < GRACE_PERIOD_DAYS)
       return {type:'payment-grace', text:'Your vault is at risk of locking. <strong>Secure access</strong> before the payment window closes.', cta:'Secure Access', ctaClass:'danger', ctaFn:'openSimulatedCheckout()', dismissKey:null};
   }
-  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your dashboard, history, and account stay available. Playback will reopen when you choose an access path.</strong>', cta:'Review Access Path', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null};
+  if (trial.status === 'expired') {
+    var paidLapsed = trial.reason === 'paid_expired' || payStatus === 'paid_expired';
+    if (paidLapsed) return {type:'trial-expired', text:'Your paid access path has lapsed. <strong>Your dashboard, history, and saved sessions stay available. Playback will reopen when access is renewed.</strong>', cta:'Renew Access', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null};
+    return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your dashboard, history, and account stay available. Playback will reopen when you choose an access path.</strong>', cta:'Review Access Path', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null};
+  }
   if (trial.status === 'active' && trial.daysLeft === 1) {
     if (wasRecentlyDismissed('trial-last-day', 4)) return null;
     return {type:'trial-last-day', text:'Your Vault Pass closes <strong>today</strong>. Your saved sessions and history are ready if you decide to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:"showView('account')", dismissKey:'trial-last-day'};
@@ -4174,22 +4241,52 @@ function dismissNotif(key) {
   if (bar) { bar.style.opacity='0'; bar.style.transition='opacity .25s'; setTimeout(function(){bar.className='notif-bar';bar.style.opacity='';bar.style.transition='';},280); }
 }
 function showExpiredOverlay() {
-  if (localStorage.getItem('vx_access') !== 'paid' && checkTrial().status === 'expired' && localStorage.getItem('vx_post_trial_intro_seen') !== '1') {
+  var trialState = checkTrial();
+  var isPaidLapsed = trialState && trialState.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired';
+
+  // Trial expiry gets the appreciation/reflection sequence.
+  // Paid lapse skips that emotional trial closeout and goes straight to renewal.
+  if (!isPaidLapsed && localStorage.getItem('vx_access') !== 'paid' && trialState.status === 'expired' && localStorage.getItem('vx_post_trial_intro_seen') !== '1') {
     showTrialCompletionIntro();
     return;
   }
-  if (localStorage.getItem('vx_access') !== 'paid' && checkTrial().status === 'expired' && localStorage.getItem('vx_post_trial_reflection_done') !== '1') {
+  if (!isPaidLapsed && localStorage.getItem('vx_access') !== 'paid' && trialState.status === 'expired' && localStorage.getItem('vx_post_trial_reflection_done') !== '1') {
     showPostTrialReflection();
     return;
   }
+
+  var overlay = document.getElementById('vx-expired-overlay');
+  if (!overlay) return;
+  var titleEl = overlay.querySelector('.expired-box h2');
+  var subEl = overlay.querySelector('.exp-sub');
+  var waitLabelEl = overlay.querySelector('.exp-sessions-waiting p:first-child');
+  var primaryEl = overlay.querySelector('.exp-primary');
+  var secondaryEl = overlay.querySelector('.exp-secondary');
+
+  if (isPaidLapsed) {
+    if (titleEl) titleEl.textContent = 'Your paid access path has lapsed.';
+    if (subEl) subEl.textContent = 'Your dashboard, saved sessions, history, and preferences are still here. Renew access to reopen premium playback.';
+    if (waitLabelEl) waitLabelEl.textContent = 'Paused, not lost';
+    if (primaryEl) primaryEl.textContent = 'Renew Access';
+    if (secondaryEl) secondaryEl.textContent = 'Return to paused dashboard';
+  } else {
+    if (titleEl) titleEl.textContent = 'Your Vault pathways remain available.';
+    if (subEl) subEl.textContent = 'Your 7-day Vault Pass has closed. Your saved sessions, history, and guided pathways are preserved — choose an Access Path when you are ready to continue.';
+    if (waitLabelEl) waitLabelEl.textContent = 'Still saved for you';
+    if (primaryEl) primaryEl.textContent = 'Review Access Path';
+    if (secondaryEl) secondaryEl.textContent = 'Return to locked dashboard';
+  }
+
   var summaryEl = document.getElementById('exp-saved-summary');
   if (summaryEl && (savedSessions.length > 0 || recentSessions.length > 0)) {
     var parts = [];
     if (savedSessions.length>0) parts.push(savedSessions.length + ' saved');
     if (recentSessions.length>0) parts.push(recentSessions.length + ' recently played');
     summaryEl.textContent = parts.join(' · ') + ' — preserved and ready.';
+  } else if (summaryEl) {
+    summaryEl.textContent = isPaidLapsed ? 'Your sessions, history, and preferences are preserved while access is paused.' : 'Your sessions, history, and preferences are preserved.';
   }
-  var overlay = document.getElementById('vx-expired-overlay'); if (overlay) overlay.classList.add('open');
+  overlay.classList.add('open');
 }
 function closeExpiredOverlay() { var o = document.getElementById('vx-expired-overlay'); if (o) o.classList.remove('open'); }
 
