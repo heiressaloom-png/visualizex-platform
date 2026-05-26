@@ -1049,7 +1049,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v6.0 exact v4 onboarding flow restored + Supabase access lifecycle -->
+<!-- VX VERSION: v6.1 live Supabase access refresh + exact v4 onboarding flow -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1717,12 +1717,40 @@ async function vxFetchProfileFromSupabase(userId, applyToLocal) {
 }
 
 var vxHydrationPromise = null;
-async function vxEnsureSupabaseHydrated() {
+var vxAccessRefreshInFlight = null;
+var vxAccessAutoRefreshTimer = null;
+async function vxEnsureSupabaseHydrated(forceRefresh) {
   if (!vxSupabase) return null;
+  if (forceRefresh) vxHydrationPromise = null;
   if (!vxHydrationPromise) vxHydrationPromise = vxHydrateSupabaseUser();
   try { return await vxHydrationPromise; }
   catch(e) { console.warn('Supabase hydration did not complete before routing', e); return null; }
 }
+async function vxRefreshAccessFromSupabaseAndRender(reason) {
+  if (!vxSupabase || vxAccessRefreshInFlight) return vxAccessRefreshInFlight || null;
+  vxAccessRefreshInFlight = (async function(){
+    var result = await vxEnsureSupabaseHydrated(true);
+    try {
+      if (document.body.classList.contains('vx-app-open')) {
+        if (typeof updateSidebar === 'function') updateSidebar();
+        if (window.vxCurrentView && typeof showView === 'function') showView(window.vxCurrentView);
+        else if (typeof renderNotifBar === 'function') renderNotifBar();
+      }
+    } catch(e) { console.warn('Could not refresh access UI after Supabase sync', e); }
+    return result;
+  })();
+  try { return await vxAccessRefreshInFlight; }
+  finally { vxAccessRefreshInFlight = null; }
+}
+function vxStartAccessAutoRefresh() {
+  if (vxAccessAutoRefreshTimer) return;
+  vxAccessAutoRefreshTimer = setInterval(function(){
+    if (document.body.classList.contains('vx-app-open')) vxRefreshAccessFromSupabaseAndRender('interval');
+  }, 60000);
+}
+window.addEventListener('focus', function(){
+  if (document.body.classList.contains('vx-app-open')) vxRefreshAccessFromSupabaseAndRender('focus');
+});
 
 async function vxUpdateSupabaseProfileFields(fields) {
   if (!vxSupabase) return false;
@@ -2795,13 +2823,19 @@ function toggleMobileSidebar() {
   else openMobileSidebar();
 }
 
-function openMemberDashboard(defaultView) {
+async function openMemberDashboard(defaultView) {
   var stored = localStorage.getItem(VXK.u);
   if (stored) { try { vxUser = JSON.parse(stored); } catch(e) {} }
   if (!vxUser) { showGuestDashboard(); return; }
   vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
   migrateTrialKeysForPrototype();
   localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+
+  // v6.1: always pull the latest user_access row before the dashboard renders.
+  // This makes Supabase date changes show immediately after refresh/sign-in/dashboard open.
+  await vxEnsureSupabaseHydrated(true);
+  stored = localStorage.getItem(VXK.u);
+  if (stored) { try { vxUser = JSON.parse(stored); } catch(e) {} }
 
   // v6.0 hard guard: a new trial user cannot bypass the original onboarding questions.
   // Dashboard, vault, and playback open only after the setup flow is completed.
@@ -2814,6 +2848,7 @@ function openMemberDashboard(defaultView) {
   restoreMemberSidebar();
   updateSidebar();
   showView(defaultView || 'dashboard');
+  vxStartAccessAutoRefresh();
   if (typeof renderNotifBar === 'function') renderNotifBar();
 }
 
@@ -2981,7 +3016,7 @@ function backToSite() {
 }
 
 async function goDashboard() {
-  if (typeof vxEnsureSupabaseHydrated === 'function') await vxEnsureSupabaseHydrated();
+  if (typeof vxEnsureSupabaseHydrated === 'function') await vxEnsureSupabaseHydrated(true);
   var stored = localStorage.getItem(VXK.u);
   if (stored) {
     try { vxUser = JSON.parse(stored); } catch(e) {}
@@ -3569,6 +3604,7 @@ function resetSimulatedAccess() {
 // VIEWS
 // ══════════════════════════════════════════════
 function showView(view) {
+  window.vxCurrentView = view || 'dashboard';
   if (window.innerWidth <= 860) closeMobileSidebar();
   closeSearchDropdown && closeSearchDropdown();
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
