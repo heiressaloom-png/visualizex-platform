@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- VisualizeX index.html — v5.2 dashboard-safe expiry flow: appreciation/reflection triggered by gated playback or access CTA, not dashboard auto-open -->
-<html lang="en"> 
+<html lang="en">
 <head> 
 <meta charset="UTF-8"> 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2263,6 +2263,7 @@ async function vxSignup(){
     var user = result.data && result.data.user ? result.data.user : null;
     if(!user) throw new Error('No user returned from Supabase.');
     vxClearVaultSetupForNewUser();
+    vxClearLocalAccessStateForFreshSignup();
     var init=vxInitialsFromName(names.first, names.last, e);
     vxUser = {id:user.id,name:n,email:e,initials:init,plan:vxPlan || 'quarterly',supabase:true};
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
@@ -2333,7 +2334,7 @@ function vxFinish(u,isNew){
   var email = vxNormalizeEmail(vxUser.email);
   var now = Date.now();
   var seven = 7*24*60*60*1000;
-  var paidAlready = localStorage.getItem('vx_access') === 'paid' || vxUser.accessMode === 'active_simulated';
+  var paidAlready = !isNew && (localStorage.getItem('vx_access') === 'paid' || vxUser.accessMode === 'active_simulated');
 
   // Paid members never get pushed back into trial.
   if (paidAlready) {
@@ -2349,9 +2350,8 @@ function vxFinish(u,isNew){
   var trialStart = localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t);
   var trialUsed = vxHasTrialBeenUsed(email);
 
-  // MVP/testing rule: when a user is completing a fresh onboarding/signup path,
-  // give them a live 7-day Vault Pass instead of inheriting a stale expired test state.
-  // Production enforcement can move to Supabase later.
+  // Fresh signup rule: never inherit another test user's stale local paid/expired state.
+  // Supabase remains the source of truth; this protects the browser handoff into onboarding.
   var VX_ALLOW_TRIAL_RETEST = true;
   if (VX_ALLOW_TRIAL_RETEST && isNew) {
     trialStart = null;
@@ -2478,6 +2478,22 @@ function vxClearVaultSetupForNewUser(){
   localStorage.removeItem(VX_PROFILE_KEY);
   vxSetupAnswers = {};
   vxSetupStep = 0;
+}
+function vxClearLocalAccessStateForFreshSignup(){
+  // New signup must not inherit whatever the previous test user did in this browser.
+  // This keeps onboarding reliable when testing many emails on the same device.
+  try {
+    localStorage.removeItem('vx_access');
+    localStorage.removeItem('vx_payment_status');
+    localStorage.removeItem('vx_trial_start');
+    localStorage.removeItem('vx_paid_date');
+    localStorage.removeItem('vx_user_access_supabase');
+    if (typeof VXK !== 'undefined' && VXK.t) localStorage.removeItem(VXK.t);
+    if (typeof VX_TRIAL_END_KEY !== 'undefined') localStorage.removeItem(VX_TRIAL_END_KEY);
+    if (typeof VX_PLAN_LOCK_KEY !== 'undefined') localStorage.removeItem(VX_PLAN_LOCK_KEY);
+    if (typeof VX_TRIAL_USED_KEY !== 'undefined') localStorage.removeItem(VX_TRIAL_USED_KEY);
+    if (typeof vxClearPostTrialFlowState === 'function') vxClearPostTrialFlowState();
+  } catch(e) {}
 }
 function vxClearSupabaseAuthStorage(){
   try {
