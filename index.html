@@ -1044,6 +1044,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
+<!-- VX VERSION: v5 expiry-flow polish -->
 
 
 
@@ -1991,7 +1992,13 @@ function openVXAuth(mode, plan) {
       return;
     }
 
-    // Expired or paid users can enter the checkout/reclaim flow deliberately.
+    // Expired trial users should enter the appreciation/reflection/access flow first,
+    // not jump straight into checkout. Paid users can still manage their access path directly.
+    if (trialState.status === 'expired' && localStorage.getItem('vx_access') !== 'paid') {
+      showExpiredOverlay();
+      return;
+    }
+
     openSimulatedCheckout(vxUser.plan || requestedPlan || vxPlan || 'quarterly');
     return;
   }
@@ -3882,14 +3889,14 @@ function resolveNotifState() {
     if (!graceStart || Math.floor((Date.now()-graceStart)/86400000) < GRACE_PERIOD_DAYS)
       return {type:'payment-grace', text:'Your vault is at risk of locking. <strong>Secure access</strong> before the payment window closes.', cta:'Secure Access', ctaClass:'danger', ctaFn:'openSimulatedCheckout()', dismissKey:null};
   }
-  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your progress is saved — choose the access path that keeps the vault open.</strong>', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:null, showExpiredModal:true};
+  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your sessions and progress are saved — continue when the path feels right.</strong>', cta:'Continue', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null, showExpiredModal:true};
   if (trial.status === 'active' && trial.daysLeft === 1) {
     if (wasRecentlyDismissed('trial-last-day', 4)) return null;
-    return {type:'trial-last-day', text:'Your access window closes <strong>today</strong>. Choose the access path that keeps the vault open after today.', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-last-day'};
+    return {type:'trial-last-day', text:'Your Vault Pass closes <strong>today</strong>. Your saved sessions and history are ready if you decide to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-last-day'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 3) {
     if (wasRecentlyDismissed('trial-warning', 12)) return null;
-    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left before your Vault Pass closes.', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-warning'};
+    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left in your Vault Pass. Your progress stays with you if you choose to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-warning'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 5 && trial.daysLeft > 3) {
     if (wasRecentlyDismissed('trial-early', 24)) return null;
@@ -4549,10 +4556,10 @@ document.addEventListener('keydown', function(e) {
   <div class="expired-box">
     <div class="expired-icon">&#x25CE;</div>
     <h2>Your Vault pathways remain available.</h2>
-    <p class="exp-sub">Your 7-day Vault Pass has closed. Choose the Access Path that fits your budget and rhythm to keep your saved sessions, history, and guided pathways open.</p>
+    <p class="exp-sub">Your 7-day Vault Pass has closed. Your saved sessions, history, and guided pathways are preserved — choose an Access Path when you are ready to continue.</p>
     <div class="exp-sessions-waiting"><p>Still saved for you</p><p id="exp-saved-summary">Your sessions, history, and preferences are preserved.</p></div>
     <div class="exp-actions">
-      <button class="exp-primary" onclick="openSimulatedCheckout();closeExpiredOverlay()">Choose Access Path</button>
+      <button class="exp-primary" onclick="openSimulatedCheckout();closeExpiredOverlay()">Review Access Path</button>
       <button class="exp-secondary" onclick="closeExpiredOverlay()">Return to locked dashboard</button>
     </div>
   </div>
