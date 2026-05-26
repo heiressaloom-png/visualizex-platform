@@ -1543,6 +1543,7 @@ try {
 }
 
 var VX_PROFILE_CACHE_KEY = 'vx_profile_supabase';
+var VX_ACCESS_CACHE_KEY = 'vx_user_access_supabase';
 
 function vxParseDateMs(value) {
   if (!value) return 0;
@@ -1560,6 +1561,101 @@ function vxGetCachedSupabaseProfile() {
 function vxCacheSupabaseProfile(profile) {
   if (!profile) return;
   try { localStorage.setItem(VX_PROFILE_CACHE_KEY, JSON.stringify(profile)); } catch(e) {}
+}
+
+function vxNormalizeAccessStatus(row) {
+  if (!row) return 'trial_active';
+  if (row.plan_status === 'active') return 'paid_active';
+  if (row.plan_status === 'paid_lapsed' || row.plan_status === 'lapsed') return 'paid_expired';
+  if (row.plan_status === 'trial_expired') return 'trial_expired';
+  if (row.plan_status === 'trialing') return 'trial_active';
+  return row.account_status || 'trial_active';
+}
+function vxBuildProfileLikeFromAccess(row) {
+  if (!row) return null;
+  return {
+    id: row.user_id,
+    email: row.email,
+    selected_access_path: row.plan_type || 'trial',
+    account_status: vxNormalizeAccessStatus(row),
+    trial_started_at: row.trial_started_at,
+    trial_ends_at: row.trial_ends_at,
+    plan_renews_at: row.plan_renews_at,
+    payment_status: row.payment_status,
+    is_admin: !!row.is_admin
+  };
+}
+function vxApplySupabaseAccess(row) {
+  if (!row) return;
+  try { localStorage.setItem(VX_ACCESS_CACHE_KEY, JSON.stringify(row)); } catch(e) {}
+  var profileLike = vxBuildProfileLikeFromAccess(row);
+  if (profileLike) {
+    var cachedProfile = vxGetCachedSupabaseProfile() || {};
+    vxCacheSupabaseProfile(Object.assign({}, cachedProfile, profileLike));
+    vxApplySupabaseProfile(Object.assign({}, cachedProfile, profileLike));
+  }
+  if (vxUser) {
+    vxUser.isAdmin = !!row.is_admin;
+    if (row.plan_type && row.plan_type !== 'trial') vxUser.plan = row.plan_type;
+    try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
+  }
+}
+function vxGetCachedSupabaseAccess() {
+  try {
+    var row = JSON.parse(localStorage.getItem(VX_ACCESS_CACHE_KEY) || 'null');
+    if (!row) return null;
+    if (vxUser && row.user_id && vxUser.id && row.user_id !== vxUser.id) return null;
+    return row;
+  } catch(e) { return null; }
+}
+async function vxFetchAccessFromSupabase(userId, applyToLocal) {
+  if (!vxSupabase || !userId) return null;
+  try {
+    var result = await vxSupabase.from('user_access').select('*').eq('user_id', userId).maybeSingle();
+    if (result.error) {
+      console.warn('Could not fetch Supabase access record:', result.error.message || result.error);
+      return null;
+    }
+    if (result.data && applyToLocal !== false) vxApplySupabaseAccess(result.data);
+    return result.data || null;
+  } catch(e) {
+    console.warn('Could not fetch Supabase access record:', e);
+    return null;
+  }
+}
+async function vxUpsertUserAccessFields(fields) {
+  if (!vxSupabase) return false;
+  try {
+    var userResult = await vxSupabase.auth.getUser();
+    var user = userResult && userResult.data ? userResult.data.user : null;
+    if (!user) return false;
+    var payload = Object.assign({ user_id:user.id, email:user.email || (vxUser && vxUser.email) || null, updated_at:new Date().toISOString() }, fields || {});
+    var result = await vxSupabase.from('user_access').upsert(payload, { onConflict:'user_id' }).select().single();
+    if (result.error) {
+      console.warn('Supabase user_access update failed:', result.error.message || result.error);
+      return false;
+    }
+    if (result.data) vxApplySupabaseAccess(result.data);
+    return true;
+  } catch(e) {
+    console.warn('Supabase user_access update failed:', e);
+    return false;
+  }
+}
+async function vxEnsureTrialAccessRecord(user, fullName) {
+  if (!vxSupabase || !user) return false;
+  var existing = await vxFetchAccessFromSupabase(user.id, false);
+  if (existing) { vxApplySupabaseAccess(existing); return true; }
+  var now = new Date();
+  var trialEnd = new Date(Date.now() + 7*24*60*60*1000);
+  return vxUpsertUserAccessFields({
+    email: user.email || (vxUser && vxUser.email) || null,
+    trial_started_at: now.toISOString(),
+    trial_ends_at: trialEnd.toISOString(),
+    plan_type: 'trial',
+    plan_status: 'trialing',
+    payment_status: 'none'
+  });
 }
 function vxApplySupabaseProfile(profile) {
   if (!profile) return;
@@ -1635,6 +1731,19 @@ async function vxUpdateSupabaseProfileFields(fields) {
       return false;
     }
     if (result.data) vxApplySupabaseProfile(result.data);
+    // Keep the new user_access lifecycle table aligned when access fields are updated by legacy profile calls.
+    try {
+      var accessFields = {};
+      if ('account_status' in fields) {
+        accessFields.plan_status = fields.account_status === 'paid_active' ? 'active' : fields.account_status === 'paid_expired' ? 'paid_lapsed' : fields.account_status === 'trial_expired' ? 'trial_expired' : 'trialing';
+        accessFields.payment_status = fields.account_status === 'paid_active' ? 'paid' : fields.account_status === 'paid_expired' ? 'failed' : 'none';
+      }
+      if ('selected_access_path' in fields) accessFields.plan_type = fields.selected_access_path;
+      if ('trial_started_at' in fields) accessFields.trial_started_at = fields.trial_started_at;
+      if ('trial_ends_at' in fields) accessFields.trial_ends_at = fields.trial_ends_at;
+      if ('email' in fields) accessFields.email = fields.email;
+      if (Object.keys(accessFields).length) vxUpsertUserAccessFields(accessFields);
+    } catch(e) {}
     return true;
   } catch(e) {
     console.warn('Supabase profile update failed:', e);
@@ -1663,6 +1772,9 @@ async function vxHydrateSupabaseUser() {
     if (!user) return;
     var meta = user.user_metadata || {};
     var profile = await vxFetchProfileFromSupabase(user.id);
+    var access = await vxFetchAccessFromSupabase(user.id);
+    if (!access) await vxEnsureTrialAccessRecord(user);
+    access = access || vxGetCachedSupabaseAccess();
     var profileName = profile ? ((profile.first_name || '') + ' ' + (profile.last_name || '')).trim() : '';
     var fullName = profileName || meta.full_name || ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || (user.email ? user.email.split('@')[0] : 'Member');
     var names = vxSplitName(fullName);
@@ -1676,8 +1788,9 @@ async function vxHydrateSupabaseUser() {
     };
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     if (profile) vxApplySupabaseProfile(profile);
+    if (access) vxApplySupabaseAccess(access);
     showDashBtn();
-    return profile || null;
+    return access || profile || null;
   } catch(e) {
     console.warn('Could not hydrate Supabase user', e);
     return null;
@@ -1747,6 +1860,14 @@ async function vxSyncProfileToSupabase() {
       return false;
     }
     vxApplySupabaseProfile(sync.data || payload);
+    await vxUpsertUserAccessFields({
+      email: payload.email,
+      trial_started_at: trialStartedAt,
+      trial_ends_at: trialEndsAt,
+      plan_type: payload.account_status === 'paid_active' ? payload.selected_access_path : 'trial',
+      plan_status: payload.account_status === 'paid_active' ? 'active' : 'trialing',
+      payment_status: payload.account_status === 'paid_active' ? 'paid' : 'none'
+    });
     return true;
   } catch(e) {
     console.error('Profile sync error:', e);
@@ -2146,6 +2267,7 @@ async function vxSignup(){
     vxUser = {id:user.id,name:n,email:e,initials:init,plan:vxPlan || 'quarterly',supabase:true};
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     if(result.data && result.data.session) {
+      await vxEnsureTrialAccessRecord(user, n);
       await vxSyncProfileToSupabase();
       vxFinish(vxUser,true);
     } else {
@@ -2180,9 +2302,11 @@ async function vxLogin(){
     vxUser = {id:user.id,name:fullName,email:user.email || e,initials:vxInitialsFromName(names.first,names.last,e),plan:meta.selected_access_path || vxPlan || 'quarterly',supabase:true};
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
 
-    // v5.3: fetch the Supabase profile before routing.
-    // This restores onboarding_answers, setup completion, trial dates, and paid state across devices.
+    // v5.7: fetch Supabase profile + user_access before routing.
+    // user_access is the source of truth for trial countdown, paid state, renewal, and lapse.
     await vxFetchProfileFromSupabase(user.id);
+    var access = await vxFetchAccessFromSupabase(user.id);
+    if (!access) await vxEnsureTrialAccessRecord(user, fullName);
 
     closeVXAuth();
     showDashBtn();
@@ -2821,6 +2945,7 @@ async function doLogout() {
   vxUser = null;
   localStorage.removeItem(VXK.u);
   localStorage.removeItem(VX_PROFILE_CACHE_KEY);
+  localStorage.removeItem(VX_ACCESS_CACHE_KEY);
   localStorage.removeItem(VX_PROFILE_KEY);
   localStorage.removeItem(VX_SETUP_KEY);
   localStorage.removeItem(VX_SETUP_USER_KEY);
@@ -2973,6 +3098,25 @@ function checkTrial() {
 
   if (payStatus === 'paid_expired') return {status:'expired', reason:'paid_expired'};
 
+  var access = (typeof vxGetCachedSupabaseAccess === 'function') ? vxGetCachedSupabaseAccess() : null;
+  if (access) {
+    var accessStatus = vxNormalizeAccessStatus(access);
+    var renewMs = vxParseDateMs(access.plan_renews_at);
+    if (accessStatus === 'paid_expired') return {status:'expired', reason:'paid_expired'};
+    if (accessStatus === 'paid_active') {
+      if (renewMs && Date.now() >= renewMs) { markPaidExpired(); vxUpsertUserAccessFields({plan_status:'paid_lapsed', payment_status:'failed'}); return {status:'expired', reason:'paid_expired'}; }
+      var pd = renewMs ? Math.ceil((renewMs - Date.now())/(24*60*60*1000)) : null;
+      var pe = renewMs ? new Date(renewMs).toLocaleDateString('en-GB',{day:'numeric',month:'long'}) : null;
+      return {status:'paid', daysLeft:pd, planEnd:pe, reason:'paid_active'};
+    }
+    var ae = vxParseDateMs(access.trial_ends_at);
+    if (ae) {
+      if (Date.now() >= ae || accessStatus === 'trial_expired') return {status:'expired', reason:'trial_expired'};
+      var ad = Math.ceil((ae - Date.now())/(24*60*60*1000));
+      return {status:'active', daysLeft:ad, trialEnd:new Date(ae).toLocaleDateString('en-GB',{day:'numeric',month:'long'})};
+    }
+  }
+
   var profile = (typeof vxGetCachedSupabaseProfile === 'function') ? vxGetCachedSupabaseProfile() : null;
   if (profile && profile.account_status === 'paid_expired') return {status:'expired', reason:'paid_expired'};
   if (profile && profile.account_status === 'paid_active' && payStatus !== 'paid_expired') {
@@ -3013,6 +3157,7 @@ function logoutDash() {
   vxUser = null;
   localStorage.removeItem(AUTH_KEY);
   localStorage.removeItem(VX_PROFILE_CACHE_KEY);
+  localStorage.removeItem(VX_ACCESS_CACHE_KEY);
   // auth handled by VX bridge
 }
 
@@ -3177,6 +3322,14 @@ function simulatePaymentSuccess() {
   if (typeof vxUpdateSupabaseProfileFields === 'function') {
     vxUpdateSupabaseProfileFields({ account_status:'paid_active', selected_access_path:vxUser.plan });
   }
+  if (typeof vxUpsertUserAccessFields === 'function') {
+    vxUpsertUserAccessFields({
+      plan_type: vxUser.plan,
+      plan_status: 'active',
+      plan_renews_at: new Date(Date.now() + cycleDays*24*60*60*1000).toISOString(),
+      payment_status: 'paid'
+    });
+  }
   closeSimulatedCheckout();
   updateSidebar();
   if (!vxHasCompletedVaultSetup()) {
@@ -3204,6 +3357,15 @@ function setTrialDaysLeft(daysLeft) {
   }
   if (typeof vxUpdateSupabaseProfileFields === 'function') {
     vxUpdateSupabaseProfileFields({ trial_started_at:new Date(start).toISOString(), trial_ends_at:new Date(start + 7*24*60*60*1000).toISOString(), account_status:'trial_active' });
+  }
+  if (typeof vxUpsertUserAccessFields === 'function') {
+    vxUpsertUserAccessFields({
+      trial_started_at:new Date(start).toISOString(),
+      trial_ends_at:new Date(start + 7*24*60*60*1000).toISOString(),
+      plan_type:'trial',
+      plan_status:'trialing',
+      payment_status:'none'
+    });
   }
   if (vxUser) {
     vxUser.accessMode = 'trial_no_card';
@@ -3248,8 +3410,25 @@ function setPaidDaysLeft(daysLeft) {
     if (typeof vxUpdateSupabaseProfileFields === 'function') {
       vxUpdateSupabaseProfileFields({ account_status: daysLeft === 0 ? 'paid_expired' : 'paid_active', selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly' });
     }
+    if (typeof vxUpsertUserAccessFields === 'function') {
+      vxUpsertUserAccessFields({
+        plan_type:(vxUser && vxUser.plan) || vxPlan || 'quarterly',
+        plan_status:daysLeft === 0 ? 'paid_lapsed' : 'active',
+        plan_renews_at:new Date(lockUntil).toISOString(),
+        payment_status:daysLeft === 0 ? 'failed' : 'paid'
+      });
+    }
   } catch(e) {}
 
+  if (typeof vxUpsertUserAccessFields === 'function') {
+    vxUpsertUserAccessFields({
+      trial_started_at:new Date(eightDaysAgo).toISOString(),
+      trial_ends_at:new Date(Date.now() - 1000).toISOString(),
+      plan_type:'trial',
+      plan_status:'trial_expired',
+      payment_status:'none'
+    });
+  }
   updateSidebar();
   renderNotifBar();
   try { showView('dashboard'); } catch(e) {}
@@ -3257,6 +3436,9 @@ function setPaidDaysLeft(daysLeft) {
 }
 
 function renderTrialTestPanel() {
+  var access = (typeof vxGetCachedSupabaseAccess === 'function') ? vxGetCachedSupabaseAccess() : null;
+  var isAdmin = (vxUser && vxUser.isAdmin) || (access && access.is_admin) || localStorage.getItem('vx_dev_mode') === '1';
+  if (!isAdmin) return '';
   var trial = checkTrial();
   var isPaidLapsed = trial.reason === 'paid_expired' || localStorage.getItem('vx_payment_status') === 'paid_expired';
   var statusText = trial.status === 'paid'
