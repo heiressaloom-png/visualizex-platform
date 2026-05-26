@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- VisualizeX index.html — v5.2 dashboard-safe expiry flow: appreciation/reflection triggered by gated playback or access CTA, not dashboard auto-open -->
 <html lang="en">
 <head> 
 <meta charset="UTF-8"> 
@@ -1044,7 +1045,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v5 expiry-flow polish -->
+<!-- VX VERSION: v5.3 login-profile-hydration + paid-plan-renewal-expiry -->
 
 
 
@@ -1600,6 +1601,15 @@ async function vxFetchProfileFromSupabase(userId, applyToLocal) {
     return null;
   }
 }
+
+var vxHydrationPromise = null;
+async function vxEnsureSupabaseHydrated() {
+  if (!vxSupabase) return null;
+  if (!vxHydrationPromise) vxHydrationPromise = vxHydrateSupabaseUser();
+  try { return await vxHydrationPromise; }
+  catch(e) { console.warn('Supabase hydration did not complete before routing', e); return null; }
+}
+
 async function vxUpdateSupabaseProfileFields(fields) {
   if (!vxSupabase) return false;
   try {
@@ -1655,8 +1665,10 @@ async function vxHydrateSupabaseUser() {
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     if (profile) vxApplySupabaseProfile(profile);
     showDashBtn();
+    return profile || null;
   } catch(e) {
     console.warn('Could not hydrate Supabase user', e);
+    return null;
   }
 }
 function vxBuildOnboardingAnswersForSupabase() {
@@ -1696,9 +1708,12 @@ async function vxSyncProfileToSupabase() {
     var seven = 7*24*60*60*1000;
     var localStartMs = Number(localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t) || Date.now());
     if (!Number.isFinite(localStartMs) || localStartMs <= 0) localStartMs = Date.now();
+    var localEndMs = Number(localStorage.getItem(VX_TRIAL_END_KEY) || 0);
+    if (!Number.isFinite(localEndMs) || localEndMs <= 0) localEndMs = localStartMs + seven;
+    var localTrialIsActive = localStorage.getItem('vx_payment_status') === 'trial_no_card' && localEndMs > Date.now();
     var existingStartMs = vxParseDateMs(existing && existing.trial_started_at);
-    var trialStartedAt = (existing && existing.trial_started_at) || new Date(localStartMs).toISOString();
-    var trialEndsAt = (existing && existing.trial_ends_at) || new Date((existingStartMs || localStartMs) + seven).toISOString();
+    var trialStartedAt = localTrialIsActive ? new Date(localStartMs).toISOString() : ((existing && existing.trial_started_at) || new Date(localStartMs).toISOString());
+    var trialEndsAt = localTrialIsActive ? new Date(localEndMs).toISOString() : ((existing && existing.trial_ends_at) || new Date((existingStartMs || localStartMs) + seven).toISOString());
     var payload = {
       id: user.id,
       email: profile.email || (existing && existing.email) || user.email || (vxUser && vxUser.email) || null,
@@ -1774,11 +1789,46 @@ function vxBlockPlanSwitch(requestedPlan) {
 function vxTrialExpiredStart() {
   return String(Date.now() - (8*24*60*60*1000));
 }
+function vxClearPostTrialFlowState() {
+  localStorage.removeItem('vx_post_trial_intro_seen');
+  localStorage.removeItem('vx_post_trial_reflection_done');
+  localStorage.removeItem('vx_post_trial_reflection');
+}
+function vxStartFreshVaultPass(reason) {
+  if (localStorage.getItem('vx_access') === 'paid') return null;
+  var start = Date.now();
+  var seven = 7*24*60*60*1000;
+  var end = start + seven;
+  localStorage.setItem('vx_trial_start', String(start));
+  localStorage.setItem(VXK.t, String(start));
+  localStorage.setItem(VX_TRIAL_END_KEY, String(end));
+  localStorage.setItem('vx_payment_status','trial_no_card');
+  localStorage.removeItem('vx_access');
+  vxClearPostTrialFlowState();
+  if (vxUser) {
+    vxUser.accessMode = 'trial_no_card';
+    localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+    vxMarkTrialUsed(vxUser.email);
+  }
+  try {
+    var cached = JSON.parse(localStorage.getItem(VX_PROFILE_CACHE_KEY) || 'null') || {};
+    cached.account_status = 'trial_active';
+    cached.trial_started_at = new Date(start).toISOString();
+    cached.trial_ends_at = new Date(end).toISOString();
+    if (vxUser) {
+      cached.id = cached.id || vxUser.id;
+      cached.email = cached.email || vxUser.email;
+      cached.selected_access_path = vxUser.plan || vxPlan || cached.selected_access_path || 'quarterly';
+    }
+    localStorage.setItem(VX_PROFILE_CACHE_KEY, JSON.stringify(cached));
+  } catch(e) {}
+  return { start:start, end:end, reason:reason || 'vault_pass_started' };
+}
 
 function vxInit() {
   var stored = localStorage.getItem(VXK.u);
   if (stored) { vxUser = JSON.parse(stored); showDashBtn(); }
-  vxHydrateSupabaseUser();
+  vxHydrationPromise = vxHydrateSupabaseUser();
   window.addEventListener('scroll', function() {
     var nav = document.getElementById('nav');
     if(nav) nav.classList.toggle('scrolled', window.scrollY > 50);
@@ -2117,10 +2167,17 @@ async function vxLogin(){
     var names = vxSplitName(fullName);
     vxUser = {id:user.id,name:fullName,email:user.email || e,initials:vxInitialsFromName(names.first,names.last,e),plan:meta.selected_access_path || vxPlan || 'quarterly',supabase:true};
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+
+    // v5.3: fetch the Supabase profile before routing.
+    // This restores onboarding_answers, setup completion, trial dates, and paid state across devices.
+    await vxFetchProfileFromSupabase(user.id);
+
     closeVXAuth();
     showDashBtn();
-    if (!vxHasCompletedVaultSetup()) launchVaultSetupFlow({source:'login'});
-    else openMemberDashboard('dashboard');
+    var tr = (typeof checkTrial === 'function') ? checkTrial() : {status:'active'};
+    if (tr.status === 'paid') { openMemberDashboard('dashboard'); return; }
+    if (vxHasCompletedVaultSetup()) { openMemberDashboard('dashboard'); return; }
+    launchVaultSetupFlow({source:'login'});
   } catch(err) {
     console.error('Supabase login failed:', err);
     vxShowAuthMessage(err && err.message ? err.message : 'Login failed. Please try again.');
@@ -2156,13 +2213,15 @@ function vxFinish(u,isNew){
   var trialStart = localStorage.getItem('vx_trial_start') || localStorage.getItem(VXK.t);
   var trialUsed = vxHasTrialBeenUsed(email);
 
-  // MVP testing mode: allow a new signup click to reopen the Vault Pass while we test trial-to-paid.
-  // Remove this once Supabase owns trial enforcement.
-  var VX_ALLOW_TRIAL_RETEST = false;
+  // MVP/testing rule: when a user is completing a fresh onboarding/signup path,
+  // give them a live 7-day Vault Pass instead of inheriting a stale expired test state.
+  // Production enforcement can move to Supabase later.
+  var VX_ALLOW_TRIAL_RETEST = true;
   if (VX_ALLOW_TRIAL_RETEST && isNew) {
     trialStart = null;
     trialUsed = false;
     localStorage.removeItem(VX_TRIAL_USED_KEY);
+    vxClearPostTrialFlowState();
   }
 
   var activeTrial = false;
@@ -2475,6 +2534,9 @@ function renderVaultActivationScreen(){
 async function completeVaultSetup(){
   localStorage.setItem(VX_SETUP_KEY,'1');
   localStorage.setItem(VX_SETUP_USER_KEY, vxCurrentUserIdForSetup());
+  if (localStorage.getItem('vx_access') !== 'paid') {
+    vxStartFreshVaultPass('onboarding_complete');
+  }
   await vxSyncProfileToSupabase();
   var o=document.getElementById('vx-setup-overlay'); if(o) o.remove();
   openMemberDashboard('dashboard');
@@ -2697,7 +2759,8 @@ function renderGuestDashboard() {
 }
 
 
-function vxLaunchDash() {
+async function vxLaunchDash() {
+  if (typeof vxEnsureSupabaseHydrated === 'function') await vxEnsureSupabaseHydrated();
   var stored = localStorage.getItem(VXK.u);
   if (stored) {
     try { vxUser = JSON.parse(stored); } catch(e) {}
@@ -2729,7 +2792,8 @@ function backToSite() {
   if (vxUser) showDashBtn(); else hideDashBtn();
 }
 
-function goDashboard() {
+async function goDashboard() {
+  if (typeof vxEnsureSupabaseHydrated === 'function') await vxEnsureSupabaseHydrated();
   var stored = localStorage.getItem(VXK.u);
   if (stored) {
     try { vxUser = JSON.parse(stored); } catch(e) {}
@@ -2860,9 +2924,46 @@ let recentSessions = JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
 // init() handled by VX bridge
 
 function checkTrial() {
-  if (localStorage.getItem(ACCESS_KEY) === 'paid') return {status:'paid'};
+  var planLockUntil = parseInt(localStorage.getItem(VX_PLAN_LOCK_KEY) || '0', 10);
+  var isPaidInStorage = localStorage.getItem(ACCESS_KEY) === 'paid';
+  var payStatus = localStorage.getItem('vx_payment_status') || 'ok';
+
+  function markPaidExpired() {
+    localStorage.removeItem(ACCESS_KEY);
+    localStorage.setItem('vx_payment_status','paid_expired');
+    if (vxUser) {
+      vxUser.accessMode = 'trial_expired';
+      try { localStorage.setItem(VXK.u, JSON.stringify(vxUser)); } catch(e) {}
+    }
+    try {
+      var cached = vxGetCachedSupabaseProfile ? vxGetCachedSupabaseProfile() : null;
+      if (cached && cached.account_status === 'paid_active') {
+        cached.account_status = 'paid_expired';
+        localStorage.setItem(VX_PROFILE_CACHE_KEY, JSON.stringify(cached));
+      }
+    } catch(e) {}
+    if (typeof vxUpdateSupabaseProfileFields === 'function') {
+      vxUpdateSupabaseProfileFields({ account_status:'paid_expired' });
+    }
+  }
+
+  // Paid state is valid only while the local simulated billing period is still open.
+  // If there is no local lock, treat Supabase paid_active as the source of truth for cross-device users.
+  if (isPaidInStorage) {
+    if (!planLockUntil || Date.now() < planLockUntil) {
+      var paidDaysLeft = planLockUntil ? Math.ceil((planLockUntil - Date.now())/(24*60*60*1000)) : null;
+      var planEnd = planLockUntil ? new Date(planLockUntil).toLocaleDateString('en-GB',{day:'numeric',month:'long'}) : null;
+      return {status:'paid', daysLeft:paidDaysLeft, planEnd:planEnd};
+    }
+    markPaidExpired();
+    return {status:'expired'};
+  }
+
   var profile = (typeof vxGetCachedSupabaseProfile === 'function') ? vxGetCachedSupabaseProfile() : null;
-  if (profile && profile.account_status === 'paid_active') return {status:'paid'};
+  if (profile && profile.account_status === 'paid_active' && payStatus !== 'paid_expired') {
+    if (planLockUntil && Date.now() >= planLockUntil) { markPaidExpired(); return {status:'expired'}; }
+    return {status:'paid', daysLeft:null, planEnd:null};
+  }
 
   var cachedEndMs = profile && profile.trial_ends_at ? vxParseDateMs(profile.trial_ends_at) : Number(localStorage.getItem(VX_TRIAL_END_KEY) || 0);
   if (cachedEndMs) {
@@ -3885,18 +3986,30 @@ function wasRecentlyDismissed(key, hrs) { var d = getNotifDismissed(); return d[
 function resolveNotifState() {
   var trial = checkTrial(); var payStatus = localStorage.getItem(PAYMENT_STATUS_KEY) || 'ok';
   var graceStart = parseInt(localStorage.getItem('vx_grace_start') || '0');
+
+  // v5.3: paid plan renewal warnings mirror trial cadence without blocking access.
+  if (trial.status === 'paid' && trial.daysLeft !== null) {
+    if (trial.daysLeft === 1) {
+      if (!wasRecentlyDismissed('paid-last-day', 4))
+        return {type:'trial-last-day', text:'Your access path renews <strong>today</strong>. Make sure your payment details are current to keep the vault open.', cta:'Review Membership', ctaClass:'', ctaFn:"showView('account')", dismissKey:'paid-last-day'};
+    } else if (trial.daysLeft <= 5) {
+      if (!wasRecentlyDismissed('paid-warning', 12))
+        return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> until your access path renews. Vault stays open on renewal — no action needed unless your card has changed.', cta:'Review Membership', ctaClass:'', ctaFn:"showView('account')", dismissKey:'paid-warning'};
+    }
+  }
+
   if (payStatus === 'failed' || payStatus === 'grace') {
     if (!graceStart || Math.floor((Date.now()-graceStart)/86400000) < GRACE_PERIOD_DAYS)
       return {type:'payment-grace', text:'Your vault is at risk of locking. <strong>Secure access</strong> before the payment window closes.', cta:'Secure Access', ctaClass:'danger', ctaFn:'openSimulatedCheckout()', dismissKey:null};
   }
-  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your sessions and progress are saved — continue when the path feels right.</strong>', cta:'Continue', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null, showExpiredModal:true};
+  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your dashboard, history, and account stay available. Playback will reopen when you choose an access path.</strong>', cta:'Review Access Path', ctaClass:'', ctaFn:'showExpiredOverlay()', dismissKey:null};
   if (trial.status === 'active' && trial.daysLeft === 1) {
     if (wasRecentlyDismissed('trial-last-day', 4)) return null;
-    return {type:'trial-last-day', text:'Your Vault Pass closes <strong>today</strong>. Your saved sessions and history are ready if you decide to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-last-day'};
+    return {type:'trial-last-day', text:'Your Vault Pass closes <strong>today</strong>. Your saved sessions and history are ready if you decide to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:"showView('account')", dismissKey:'trial-last-day'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 3) {
     if (wasRecentlyDismissed('trial-warning', 12)) return null;
-    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left in your Vault Pass. Your progress stays with you if you choose to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-warning'};
+    return {type:'trial-warning', text:'<strong>' + trial.daysLeft + ' days</strong> left in your Vault Pass. Your progress stays with you if you choose to continue.', cta:'Review Access Path', ctaClass:'', ctaFn:"showView('account')", dismissKey:'trial-warning'};
   }
   if (trial.status === 'active' && trial.daysLeft <= 5 && trial.daysLeft > 3) {
     if (wasRecentlyDismissed('trial-early', 24)) return null;
@@ -3919,7 +4032,8 @@ function renderNotifBar() {
   var bar = document.getElementById('vx-notif-bar'); if (!bar) return;
   var state = resolveNotifState();
   if (!state) { bar.className = 'notif-bar'; return; }
-  if (state.showExpiredModal && !wasRecentlyDismissed('expired-modal', 48)) { setNotifDismissed('expired-modal'); setTimeout(function(){showExpiredOverlay();}, 800); }
+  // v5.2: Do not auto-open the expiry modal on dashboard load.
+  // Expired users can browse dashboard/account/history; the appreciation/reflection/access flow opens from gated playback or an explicit access CTA.
   bar.className = 'notif-bar show ' + state.type;
   var textEl = document.getElementById('notif-text'); if (textEl) textEl.innerHTML = state.text;
   var actEl  = document.getElementById('notif-actions');
@@ -3966,7 +4080,7 @@ function showTrialCompletionIntro() {
   vxRemovePostTrialOverlays();
   var overlay = document.createElement('div');
   overlay.id = 'vx-trial-completion-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:flex-start;justify-content:center;padding:28px 22px;overflow:auto';
   overlay.innerHTML =
     '<div style="width:100%;max-width:620px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden;text-align:center">' +
       '<div style="padding:42px 40px 38px;position:relative">' +
@@ -3997,18 +4111,19 @@ function showPostTrialReflection() {
   vxRemovePostTrialOverlays();
   var overlay = document.createElement('div');
   overlay.id = 'vx-reflection-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:flex-start;justify-content:center;padding:28px 22px;overflow:auto';
   var impactedOptions = ['I think more clearly under pressure','I respond less emotionally','I recognize behavioral patterns faster','I communicate more strategically','I feel more mentally steady','I understand people more objectively','I feel more confident in difficult situations'];
   var pathwayOptions = ['Difficult people & social dynamics','Leadership & workplace pressure','Strategic communication','Emotional control under pressure','Identity & confidence','Mental overload & burnout','Relationship conflict','Decision-making clarity'];
   function chips(name, arr){ return arr.map(function(o,i){ return '<label style="display:block;background:rgba(249,240,225,.025);border:1px solid rgba(249,240,225,.08);border-radius:4px;padding:11px 13px;cursor:pointer;color:rgba(249,240,225,.62);font-size:.82rem;line-height:1.45"><input type="radio" name="'+name+'" value="'+o+'" style="margin-right:8px;accent-color:#00B4A0">'+o+'</label>'; }).join(''); }
-  overlay.innerHTML = '<div style="width:100%;max-width:760px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden">' +
+  overlay.innerHTML = '<div style="width:100%;max-width:760px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden;max-height:calc(100vh - 56px);display:flex;flex-direction:column">' +
     '<div style="padding:28px 34px 22px;border-bottom:1px solid rgba(249,240,225,.07)"><span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">Your Vault Reflection</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;line-height:1.22;margin-bottom:8px">What felt most different after using the Vault?</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75">This is optional, but it helps us understand the parts of the experience that genuinely supported you — not just what you clicked.</p></div>' +
-    '<div style="padding:28px 34px 34px"><div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">What felt most different?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('impact',impactedOptions)+'</div></div>' +
+    '<div style="padding:28px 34px 34px;overflow:auto"><div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">What felt most different?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('impact',impactedOptions)+'</div></div>' +
     '<div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">Which experiences stayed with you the most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('pathway',pathwayOptions)+'</div></div>' +
     '<div><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:9px">Your reflection</p><textarea id="vx-reflection-text" maxlength="700" placeholder="What stood out, shifted, challenged you, or became clearer during your time inside the Vault?" style="width:100%;min-height:120px;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.11);border-radius:4px;padding:14px;color:#F9F0E1;font-family:DM Sans,sans-serif;font-size:.9rem;line-height:1.6;outline:none;resize:vertical"></textarea></div>' +
     '<button onclick="submitPostTrialReflection()" style="display:block;width:100%;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;border-radius:3px;padding:15px 20px;margin-top:22px;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Save Reflection & Continue</button>' +
     '<button onclick="skipPostTrialReflection()" style="display:block;margin:12px auto 0;background:transparent;border:none;color:rgba(249,240,225,.38);font-family:DM Sans,sans-serif;font-size:.78rem;cursor:pointer;padding:8px 12px">Skip reflection</button></div></div>';
   document.body.appendChild(overlay);
+  setTimeout(function(){ overlay.scrollTop = 0; }, 0);
 }
 function submitPostTrialReflection(){
   var impact = document.querySelector('input[name="impact"]:checked');
