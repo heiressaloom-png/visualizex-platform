@@ -568,7 +568,7 @@ a{text-decoration:none;color:inherit}
 .btn-save-sm{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--c55);font-size:.72rem;letter-spacing:.08em;border:1px solid var(--c08);border-radius:2px;padding:8px 14px;cursor:pointer;transition:all .2s}
 .btn-save-sm:hover{border-color:rgba(185,147,66,.3);color:var(--goldB)}
 .sess-save,.rc-save,.momen-save,.feat-save{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(249,240,225,.1);background:rgba(249,240,225,.035);color:rgba(249,240,225,.48);border-radius:999px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;line-height:1;z-index:3}
-/* v6.6: keep floating heart controls anchored inside each card. */
+/* v6.5: keep floating heart controls anchored inside each card. */
 .rc,.momen-card{position:relative;padding-right:46px}
 .sess-save{width:34px;height:34px;font-size:1rem;flex-shrink:0;margin-top:1px}
 .rc-save,.momen-save,.feat-save{position:absolute;top:12px;right:12px;width:30px;height:30px;font-size:.9rem}
@@ -1058,7 +1058,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v6.6 dashboard order locked: Search → Continue → Saved → Recently Played → Often Revisited → Scenario Pods → Completed Recently; save/unsave max 10 preserved -->
+<!-- VX VERSION: v6.5 visible save/unsave controls + max 10 saved sessions -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1532,8 +1532,6 @@ body.vx-app-open{overflow-x:hidden}
 // ═══════════════════════════════════
 // VX BRIDGE — connects site ↔ dashboard  
 // ═══════════════════════════════════
-window.VX_BUILD_VERSION = 'v6.6_dashboard_order_cleanup';
-console.log('VisualizeX build', window.VX_BUILD_VERSION);
 var vxUser = null, vxAuthMode = 'signup', vxPlan = 'quarterly';
 var VXK = {u:'vx_u',t:'vx_t',a:'vx_a',s:'vx_s',r:'vx_r',p:'vx_p'};
 var VX_TRIAL_USED_KEY = 'vx_trial_used';
@@ -4135,7 +4133,6 @@ function renderDashboard() {
     '<div class="welcome-row" style="margin-bottom:20px"><h1 class="fd">' + greeting + ', ' + firstName + '.</h1></div>' +
     trialIntro + renderTrialTestPanel() +
     '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
-    // v6.6: dashboard order follows human-use priority: find/resume/keep/revisit/browse/progress.
     searchHomeHtml + continueHtml + savedPreview + recentHtml + oftenHtml +
     (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
     completedHtml +
