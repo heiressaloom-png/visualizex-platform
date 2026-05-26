@@ -3482,8 +3482,8 @@ function hasVaultAccess() {
 }
 function openPlayer(id) {
   if (!hasVaultAccess()) {
-    showToast('Your Vault Pass has closed. Reclaim access to play full sessions.');
-    openSimulatedCheckout((vxUser && vxUser.plan) || vxPlan || 'quarterly');
+    showToast('Your Vault Pass has closed. Your progress is saved — choose an access path when you are ready.');
+    showExpiredOverlay();
     return;
   }
   const s = ALL_SESSIONS.find(x=>x.id===id);
@@ -3882,7 +3882,7 @@ function resolveNotifState() {
     if (!graceStart || Math.floor((Date.now()-graceStart)/86400000) < GRACE_PERIOD_DAYS)
       return {type:'payment-grace', text:'Your vault is at risk of locking. <strong>Secure access</strong> before the payment window closes.', cta:'Secure Access', ctaClass:'danger', ctaFn:'openSimulatedCheckout()', dismissKey:null};
   }
-  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Choose the access path that fits your budget to continue.</strong>', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:null, showExpiredModal:true};
+  if (trial.status === 'expired') return {type:'trial-expired', text:'Your Vault Pass has closed. <strong>Your progress is saved — choose the access path that keeps the vault open.</strong>', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:null, showExpiredModal:true};
   if (trial.status === 'active' && trial.daysLeft === 1) {
     if (wasRecentlyDismissed('trial-last-day', 4)) return null;
     return {type:'trial-last-day', text:'Your access window closes <strong>today</strong>. Choose the access path that keeps the vault open after today.', cta:'Choose Access Path', ctaClass:'', ctaFn:'openSimulatedCheckout()', dismissKey:'trial-last-day'};
@@ -3929,6 +3929,10 @@ function dismissNotif(key) {
   if (bar) { bar.style.opacity='0'; bar.style.transition='opacity .25s'; setTimeout(function(){bar.className='notif-bar';bar.style.opacity='';bar.style.transition='';},280); }
 }
 function showExpiredOverlay() {
+  if (localStorage.getItem('vx_access') !== 'paid' && checkTrial().status === 'expired' && localStorage.getItem('vx_post_trial_intro_seen') !== '1') {
+    showTrialCompletionIntro();
+    return;
+  }
   if (localStorage.getItem('vx_access') !== 'paid' && checkTrial().status === 'expired' && localStorage.getItem('vx_post_trial_reflection_done') !== '1') {
     showPostTrialReflection();
     return;
@@ -3943,9 +3947,47 @@ function showExpiredOverlay() {
   var overlay = document.getElementById('vx-expired-overlay'); if (overlay) overlay.classList.add('open');
 }
 function closeExpiredOverlay() { var o = document.getElementById('vx-expired-overlay'); if (o) o.classList.remove('open'); }
+
+function vxRemovePostTrialOverlays(){
+  ['vx-trial-completion-overlay','vx-reflection-overlay'].forEach(function(id){
+    var node = document.getElementById(id);
+    if (node) node.remove();
+  });
+}
+
+function showTrialCompletionIntro() {
+  vxRemovePostTrialOverlays();
+  var overlay = document.createElement('div');
+  overlay.id = 'vx-trial-completion-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto';
+  overlay.innerHTML =
+    '<div style="width:100%;max-width:620px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden;text-align:center">' +
+      '<div style="padding:42px 40px 38px;position:relative">' +
+        '<div style="width:48px;height:48px;border-radius:50%;margin:0 auto 20px;background:rgba(0,180,160,.08);border:1px solid rgba(0,180,160,.22);display:flex;align-items:center;justify-content:center;color:#00B4A0;font-size:1.2rem">◎</div>' +
+        '<span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:12px">Vault Pass Complete</span>' +
+        '<h2 style="font-family:Cormorant Garamond,serif;font-size:2.15rem;font-weight:400;color:#F9F0E1;line-height:1.18;margin-bottom:16px">Thank you for spending time inside the Vault.</h2>' +
+        '<p style="font-size:.94rem;color:rgba(249,240,225,.58);line-height:1.85;max-width:480px;margin:0 auto 14px">Over the last 7 days, you explored guided experiences designed to help you think more clearly under pressure, navigate difficult dynamics, and regain mental steadiness.</p>' +
+        '<p style="font-size:.9rem;color:rgba(249,240,225,.48);line-height:1.75;max-width:440px;margin:0 auto 28px">Before your Vault Pass closes, we would love to understand what shifted most for you.</p>' +
+        '<button onclick="startPostTrialReflection()" style="display:block;width:100%;max-width:360px;margin:0 auto 12px;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;border-radius:3px;padding:15px 20px;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Continue Reflection</button>' +
+        '<button onclick="skipPostTrialReflection()" style="background:transparent;border:none;color:rgba(249,240,225,.38);font-family:DM Sans,sans-serif;font-size:.78rem;cursor:pointer;padding:8px 12px">Skip for now</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+function startPostTrialReflection(){
+  localStorage.setItem('vx_post_trial_intro_seen','1');
+  var o = document.getElementById('vx-trial-completion-overlay'); if (o) o.remove();
+  showPostTrialReflection();
+}
+function skipPostTrialReflection(){
+  localStorage.setItem('vx_post_trial_intro_seen','1');
+  localStorage.setItem('vx_post_trial_reflection_done','1');
+  var o = document.getElementById('vx-trial-completion-overlay'); if (o) o.remove();
+  showExpiredOverlay();
+}
+
 function showPostTrialReflection() {
-  var existing = document.getElementById('vx-reflection-overlay');
-  if (existing) existing.remove();
+  vxRemovePostTrialOverlays();
   var overlay = document.createElement('div');
   overlay.id = 'vx-reflection-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:7800;background:rgba(4,14,13,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:22px;overflow:auto';
@@ -3953,18 +3995,20 @@ function showPostTrialReflection() {
   var pathwayOptions = ['Difficult people & social dynamics','Leadership & workplace pressure','Strategic communication','Emotional control under pressure','Identity & confidence','Mental overload & burnout','Relationship conflict','Decision-making clarity'];
   function chips(name, arr){ return arr.map(function(o,i){ return '<label style="display:block;background:rgba(249,240,225,.025);border:1px solid rgba(249,240,225,.08);border-radius:4px;padding:11px 13px;cursor:pointer;color:rgba(249,240,225,.62);font-size:.82rem;line-height:1.45"><input type="radio" name="'+name+'" value="'+o+'" style="margin-right:8px;accent-color:#00B4A0">'+o+'</label>'; }).join(''); }
   overlay.innerHTML = '<div style="width:100%;max-width:760px;background:#0A1F1D;border:1px solid rgba(185,147,66,.24);border-radius:7px;box-shadow:0 26px 90px rgba(0,0,0,.6);overflow:hidden">' +
-    '<div style="padding:28px 34px 22px;border-bottom:1px solid rgba(249,240,225,.07)"><span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">Post-Trial Reflection</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;line-height:1.22;margin-bottom:8px">How has your experience inside the Vault impacted you so far?</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75">Your reflection helps shape future scenario pathways and improve the precision of the Vault experience. Complete this to choose your next Access Path.</p></div>' +
-    '<div style="padding:28px 34px 34px"><div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">What changed most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('impact',impactedOptions)+'</div></div>' +
-    '<div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">Which pathway impacted you most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('pathway',pathwayOptions)+'</div></div>' +
+    '<div style="padding:28px 34px 22px;border-bottom:1px solid rgba(249,240,225,.07)"><span style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:#C9A84C;display:block;margin-bottom:10px">Your Vault Reflection</span><h2 style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:400;color:#F9F0E1;line-height:1.22;margin-bottom:8px">What felt most different after using the Vault?</h2><p style="font-size:.9rem;color:rgba(249,240,225,.55);line-height:1.75">This is optional, but it helps us understand the parts of the experience that genuinely supported you — not just what you clicked.</p></div>' +
+    '<div style="padding:28px 34px 34px"><div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">What felt most different?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('impact',impactedOptions)+'</div></div>' +
+    '<div style="margin-bottom:22px"><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:11px">Which experiences stayed with you the most?</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px">'+chips('pathway',pathwayOptions)+'</div></div>' +
     '<div><p style="font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:#00B4A0;margin-bottom:9px">Your reflection</p><textarea id="vx-reflection-text" maxlength="700" placeholder="What stood out, shifted, challenged you, or became clearer during your time inside the Vault?" style="width:100%;min-height:120px;background:rgba(249,240,225,.04);border:1px solid rgba(249,240,225,.11);border-radius:4px;padding:14px;color:#F9F0E1;font-family:DM Sans,sans-serif;font-size:.9rem;line-height:1.6;outline:none;resize:vertical"></textarea></div>' +
-    '<button onclick="submitPostTrialReflection()" style="display:block;width:100%;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;border-radius:3px;padding:15px 20px;margin-top:22px;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Continue to Access Paths</button></div></div>';
+    '<button onclick="submitPostTrialReflection()" style="display:block;width:100%;background:linear-gradient(135deg,#C9A84C,#B89342);color:#0C2321;border:none;border-radius:3px;padding:15px 20px;margin-top:22px;font-family:DM Sans,sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">Save Reflection & Continue</button>' +
+    '<button onclick="skipPostTrialReflection()" style="display:block;margin:12px auto 0;background:transparent;border:none;color:rgba(249,240,225,.38);font-family:DM Sans,sans-serif;font-size:.78rem;cursor:pointer;padding:8px 12px">Skip reflection</button></div></div>';
   document.body.appendChild(overlay);
 }
 function submitPostTrialReflection(){
   var impact = document.querySelector('input[name="impact"]:checked');
   var pathway = document.querySelector('input[name="pathway"]:checked');
   var text = document.getElementById('vx-reflection-text');
-  if (!impact || !pathway || !text || text.value.trim().length < 20) { showToast('Complete the reflection before continuing.'); return; }
+  if (!impact || !pathway || !text || text.value.trim().length < 10) { showToast('Choose what shifted most, or skip reflection for now.'); return; }
+  localStorage.setItem('vx_post_trial_intro_seen','1');
   localStorage.setItem('vx_post_trial_reflection_done','1');
   localStorage.setItem('vx_post_trial_reflection', JSON.stringify({impact:impact.value,pathway:pathway.value,reflection:text.value.trim(),createdAt:new Date().toISOString()}));
   var o = document.getElementById('vx-reflection-overlay'); if (o) o.remove();
