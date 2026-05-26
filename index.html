@@ -1049,6 +1049,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
+<!-- VX VERSION: v6.0 exact v4 onboarding flow restored + Supabase access lifecycle -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1667,9 +1668,14 @@ function vxApplySupabaseProfile(profile) {
   var work = profile.work_environment || '';
   var localProfile = { firstName:first, lastName:last, email:email, country:profile.country || '', city:profile.city || '', work:work };
   try { localStorage.setItem(VX_PROFILE_KEY, JSON.stringify(localProfile)); } catch(e) {}
-  if (profile.onboarding_answers && Object.keys(profile.onboarding_answers || {}).length) {
+  // v5.9: only mark onboarding complete when the real setup flow has completed.
+  // Earlier Supabase syncs can create a placeholder onboarding_answers object; that must not skip the questions.
+  var onboarding = profile.onboarding_answers || null;
+  var pathwayAnswers = onboarding && onboarding.pathway_answers ? onboarding.pathway_answers : {};
+  var hasRealPathwayAnswers = pathwayAnswers && Object.keys(pathwayAnswers).length >= 3;
+  if (onboarding && onboarding.completed_at && hasRealPathwayAnswers) {
     try {
-      localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(profile.onboarding_answers.pathway_answers || {}));
+      localStorage.setItem(VX_SETUP_ANSWERS_KEY, JSON.stringify(pathwayAnswers || {}));
       localStorage.setItem(VX_SETUP_KEY, '1');
       localStorage.setItem(VX_SETUP_USER_KEY, profile.id);
     } catch(e) {}
@@ -1850,9 +1856,13 @@ async function vxSyncProfileToSupabase() {
       selected_access_path: (vxUser && vxUser.plan) || vxPlan || 'quarterly',
       account_status: localStorage.getItem('vx_access') === 'paid' ? 'paid_active' : 'trial_active',
       trial_started_at: trialStartedAt,
-      trial_ends_at: trialEndsAt,
-      onboarding_answers: vxBuildOnboardingAnswersForSupabase()
+      trial_ends_at: trialEndsAt
     };
+    // v5.9: never write placeholder onboarding_answers before the onboarding flow is actually finished.
+    // This prevents new users from being routed straight to the dashboard and losing the questions.
+    if (localStorage.getItem(VX_SETUP_KEY) === '1' && localStorage.getItem(VX_SETUP_USER_KEY) === user.id) {
+      payload.onboarding_answers = vxBuildOnboardingAnswersForSupabase();
+    }
     var sync = await vxSupabase.from('profiles').upsert(payload, { onConflict: 'id' }).select().single();
     if (sync.error) {
       console.error('Profile sync failed:', sync.error);
@@ -2269,13 +2279,14 @@ async function vxSignup(){
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     if(result.data && result.data.session) {
       await vxEnsureTrialAccessRecord(user, n);
-      await vxSyncProfileToSupabase();
-      vxFinish(vxUser,true);
+      // v6.0: do not sync placeholder onboarding answers before the user has actually answered the setup flow.
+      // The full original v4 onboarding questions run first; profile/onboarding answers sync on completion.
+      vxForceOnboardingForCurrentUser('signup');
     } else {
       localStorage.setItem(VXK.u, JSON.stringify(vxUser));
       closeVXAuth();
       showDashBtn();
-      vxShowAuthMessage('Account created in Supabase. Check your email to confirm, then sign in to complete onboarding.');
+      vxShowAuthMessage('Account created in Supabase. Check your email to confirm, then sign in — the onboarding questions will open before the dashboard.');
     }
   } catch(err) {
     console.error('Supabase signup failed:', err);
@@ -2470,6 +2481,23 @@ function vxHasCompletedVaultSetup(){
   var currentId = vxCurrentUserIdForSetup();
   var completedId = localStorage.getItem(VX_SETUP_USER_KEY) || '';
   return localStorage.getItem(VX_SETUP_KEY) === '1' && !!currentId && completedId === currentId;
+}
+function vxShouldRunOnboardingBeforeDashboard(){
+  if (!vxUser) return false;
+  if (localStorage.getItem('vx_access') === 'paid') return false;
+  if (vxHasCompletedVaultSetup()) return false;
+  return true;
+}
+function vxForceOnboardingForCurrentUser(source){
+  closeVXAuth();
+  showDashBtn();
+  // v6.0: clear only setup completion flags for this user; keep the newly created Supabase access record.
+  localStorage.removeItem(VX_SETUP_KEY);
+  localStorage.removeItem(VX_SETUP_USER_KEY);
+  localStorage.removeItem(VX_SETUP_ANSWERS_KEY);
+  vxSetupAnswers = {};
+  vxSetupStep = 0;
+  setTimeout(function(){ launchVaultSetupFlow({source: source || 'signup'}); }, 180);
 }
 function vxClearVaultSetupForNewUser(){
   localStorage.removeItem(VX_SETUP_KEY);
@@ -2774,6 +2802,14 @@ function openMemberDashboard(defaultView) {
   vxUser.plan = vxUser.plan || vxPlan || 'quarterly';
   migrateTrialKeysForPrototype();
   localStorage.setItem(VXK.u, JSON.stringify(vxUser));
+
+  // v6.0 hard guard: a new trial user cannot bypass the original onboarding questions.
+  // Dashboard, vault, and playback open only after the setup flow is completed.
+  if (typeof vxShouldRunOnboardingBeforeDashboard === 'function' && vxShouldRunOnboardingBeforeDashboard()) {
+    launchVaultSetupFlow({source:'dashboard_guard'});
+    return;
+  }
+
   ensureDashboardShell();
   restoreMemberSidebar();
   updateSidebar();
