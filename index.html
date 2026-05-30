@@ -1058,7 +1058,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v6.5 visible save/unsave controls + max 10 saved sessions -->
+<!-- VX VERSION: v6.7 Supabase session catalog shell + save/unsave max 10 -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1848,6 +1848,7 @@ async function vxHydrateSupabaseUser() {
     localStorage.setItem(VXK.u, JSON.stringify(vxUser));
     if (profile) vxApplySupabaseProfile(profile);
     if (access) vxApplySupabaseAccess(access);
+    if (typeof vxLoadSessionsFromSupabase === 'function') await vxLoadSessionsFromSupabase();
     if (typeof vxLoadUserSessionState === 'function') await vxLoadUserSessionState();
     if (typeof vxFlushEventQueue === 'function') vxFlushEventQueue();
     showDashBtn();
@@ -2873,6 +2874,7 @@ async function openMemberDashboard(defaultView) {
   // v6.1: always pull the latest user_access row before the dashboard renders.
   // This makes Supabase date changes show immediately after refresh/sign-in/dashboard open.
   await vxEnsureSupabaseHydrated(true);
+  if (typeof vxLoadSessionsFromSupabase === 'function') await vxLoadSessionsFromSupabase(true);
   if (typeof vxLoadUserSessionState === 'function') await vxLoadUserSessionState();
   if (typeof vxFlushEventQueue === 'function') vxFlushEventQueue();
   stored = localStorage.getItem(VXK.u);
@@ -3193,6 +3195,111 @@ var VX_SYNONYM_KEYWORDS = [
   ['emotional charge','triggered','reactive','staying calm','grounded'],
   ['negotiation pressure','deal terms','contract','walk away','leverage']
 ];
+
+// v6.7: Supabase-driven session catalog shell.
+// The dashboard now tries to load the real VisualizeX library architecture from
+// public.sessions first. If the table is empty or unavailable, it falls back to
+// the original hardcoded sessions so the MVP never goes blank.
+var VX_CATALOG_TABLE = 'sessions';
+var vxCatalogLoadedFromSupabase = false;
+var vxCatalogLoadAttempted = false;
+
+function vxArrayFromMaybe(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value === 'string') {
+    return value.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+  }
+  return [];
+}
+function vxCatalogDescription(row) {
+  var desc = row.description || row.session_description || '';
+  return String(desc || '').trim() || 'Description coming soon.';
+}
+function vxDurationToMinutes(label) {
+  var s = String(label || '').trim();
+  if (!s || s.toLowerCase() === 'unknown') return 7;
+  var m = s.match(/(\d+)\s*:\s*(\d+)/);
+  if (m) return Math.max(1, Number(m[1]) || 7);
+  m = s.match(/(\d+)/);
+  return m ? Math.max(1, Number(m[1])) : 7;
+}
+function vxNormalizeCatalogSession(row, index) {
+  var sort = Number(row.sort_order || 0);
+  var id = sort > 0 ? sort : (index + 1000);
+  var main = row.main_category || row.scenario_pod || row.category || 'The Vault';
+  var sub = row.subcategory || row.pressure_type || '';
+  var collection = row.collection || '';
+  var tags = vxArrayFromMaybe(row.tags);
+  var keywords = vxArrayFromMaybe(row.keywords);
+  var audience = row.audience || '';
+  var durationLabel = row.duration_label || row.duration || '';
+  return {
+    id: id,
+    catalogId: row.session_id || row.id || String(id),
+    cat: main,
+    main_category: main,
+    subcategory: sub,
+    collection: collection,
+    title: row.title || 'Untitled session',
+    dur: durationLabel || (row.duration_seconds ? Math.round(Number(row.duration_seconds)/60) + ' min' : '7 min'),
+    desc: vxCatalogDescription(row),
+    pressure_type: row.pressure_type || sub || collection || main,
+    audience: audience,
+    tags: tags,
+    keywords: keywords,
+    bunny_video_id: row.bunny_video_id || '',
+    bunny_embed_url: row.bunny_embed_url || '',
+    bunny_playback_url: row.bunny_playback_url || '',
+    thumbnail_url: row.thumbnail_url || '',
+    is_free_preview: !!row.is_free_preview,
+    is_active: row.is_active !== false
+  };
+}
+function vxRefreshSituationCatsFromSessions() {
+  if (typeof SITUATION_CATS === 'undefined' || !Array.isArray(SITUATION_CATS)) return;
+  var order = [];
+  var meta = {};
+  ALL_SESSIONS.forEach(function(s){
+    var cat = s.main_category || s.cat || 'The Vault';
+    if (order.indexOf(cat) === -1) order.push(cat);
+    if (!meta[cat]) meta[cat] = { subs:[], collections:[] };
+    if (s.subcategory && meta[cat].subs.indexOf(s.subcategory) === -1) meta[cat].subs.push(s.subcategory);
+    if (s.collection && meta[cat].collections.indexOf(s.collection) === -1) meta[cat].collections.push(s.collection);
+  });
+  if (!order.length) return;
+  var icons = ['◈','◉','◎','◐','◑','◒','◓','◇','◆','▣'];
+  SITUATION_CATS.splice(0, SITUATION_CATS.length);
+  order.forEach(function(cat, i){
+    var hints = (meta[cat].subs.length ? meta[cat].subs : meta[cat].collections).slice(0,3).join(' · ');
+    SITUATION_CATS.push({ icon: icons[i % icons.length], name: cat, cat: cat, hint: hints || 'Guided experiences' });
+  });
+}
+async function vxLoadSessionsFromSupabase(force) {
+  if (vxCatalogLoadAttempted && !force) return vxCatalogLoadedFromSupabase;
+  vxCatalogLoadAttempted = true;
+  if (!vxSupabase) return false;
+  try {
+    var result = await vxSupabase
+      .from(VX_CATALOG_TABLE)
+      .select('session_id,title,description,main_category,subcategory,collection,scenario_pod,pressure_type,audience,tags,keywords,duration_label,duration_seconds,bunny_video_id,bunny_embed_url,bunny_playback_url,thumbnail_url,is_free_preview,is_active,sort_order')
+      .eq('is_active', true)
+      .order('sort_order', { ascending:true });
+    if (result.error) throw result.error;
+    var rows = result.data || [];
+    if (!rows.length) return false;
+    var mapped = rows.map(vxNormalizeCatalogSession);
+    ALL_SESSIONS.splice(0, ALL_SESSIONS.length);
+    mapped.forEach(function(s){ ALL_SESSIONS.push(s); });
+    vxCatalogLoadedFromSupabase = true;
+    vxRefreshSituationCatsFromSessions();
+    try { localStorage.setItem('vx_catalog_loaded_at', new Date().toISOString()); } catch(e) {}
+    return true;
+  } catch(e) {
+    console.warn('VisualizeX session catalog fell back to built-in sessions:', e.message || e);
+    return false;
+  }
+}
 function vxUniqueWords(list) {
   var seen = {}, out = [];
   (list || []).forEach(function(item){
@@ -3218,181 +3325,18 @@ function vxHydrateSessionSearchFields() {
   });
 }
 function vxSessionSearchText(s) {
-  if (!s) return '';
-  return [s.title, s.cat, s.desc, (s.tags || []).join(' '), (s.keywords || []).join(' ')].join(' ').toLowerCase();
-}
-vxHydrateSessionSearchFields();
-
-// ══════════════════════════════════════════════
-// AUTH STATE
-// ══════════════════════════════════════════════
-const AUTH_KEY   = VXK.u;
-const TRIAL_KEY  = 'vx_trial_start';
-const ACCESS_KEY = 'vx_access';
-const SAVED_KEY  = 'vx_saved';
-const RECENT_KEY = 'vx_recent';
-const PROGRESS_KEY = 'vx_progress';
-const VX_MAX_SAVED_SESSIONS = 10;
-
-let isPlaying = false;
-let playerTimer = null;
-let playerProgress = 0;
-let currentSession = null;
-let savedSessions = JSON.parse(localStorage.getItem(SAVED_KEY)||'[]');
-let recentSessions = JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');
-
-// ══════════════════════════════════════════════
-// MVP1 USER ACTIVITY PERSISTENCE
-// Supabase owns saved sessions, recents, progress, completion, replay counts,
-// and search behavior. localStorage remains a fast cache/fallback.
-// ══════════════════════════════════════════════
-const VX_SESSION_STATE_TABLE = 'user_session_state';
-const VX_EVENTS_TABLE = 'vx_events';
-const VX_SESSION_STATE_CACHE_KEY = 'vx_session_state_cache';
-const VX_EVENT_QUEUE_KEY = 'vx_event_queue';
-let vxSessionStateCache = {};
-let vxLastProgressWrite = {};
-let vxMissingActivityTablesWarned = false;
-let vxSearchTrackTimer = null;
-let vxLastTrackedSearchSignature = '';
-
-function vxSafeJSON(raw, fallback) { try { return JSON.parse(raw || ''); } catch(e) { return fallback; } }
-function vxNowIso() { return new Date().toISOString(); }
-function vxCurrentUserId() {
-  if (vxUser && vxUser.id) return vxUser.id;
-  try { var stored = JSON.parse(localStorage.getItem(VXK.u) || 'null'); return stored && stored.id ? stored.id : null; } catch(e) { return null; }
-}
-function vxGetSessionStateCacheKey() { return VX_SESSION_STATE_CACHE_KEY + ':' + (vxCurrentUserId() || 'guest'); }
-function vxGetSessionRow(sessionId) { return vxSessionStateCache[String(sessionId)] || null; }
-function vxPersistSessionStateCacheToLocal() {
-  try { localStorage.setItem(vxGetSessionStateCacheKey(), JSON.stringify(Object.keys(vxSessionStateCache).map(function(k){return vxSessionStateCache[k];}))); } catch(e) {}
-}
-function vxApplySessionStateRows(rows, fromLocalOnly) {
-  rows = Array.isArray(rows) ? rows : [];
-  vxSessionStateCache = {};
-  rows.forEach(function(row){ if(row && row.session_id != null){ row.session_id = Number(row.session_id); vxSessionStateCache[String(row.session_id)] = row; } });
-  savedSessions = rows.filter(function(r){ return !!r.is_saved; })
-    .sort(function(a,b){ return Date.parse(b.saved_at || b.updated_at || 0) - Date.parse(a.saved_at || a.updated_at || 0); })
-    .map(function(r){ return Number(r.session_id); })
-    .filter(function(id){ return ALL_SESSIONS.some(function(s){ return s.id === id; }); })
-    .slice(0, VX_MAX_SAVED_SESSIONS);
-  recentSessions = rows.filter(function(r){ return !!r.last_played_at; })
-    .sort(function(a,b){ return Date.parse(b.last_played_at || 0) - Date.parse(a.last_played_at || 0); })
-    .map(function(r){ return Number(r.session_id); })
-    .filter(function(id){ return ALL_SESSIONS.some(function(s){ return s.id === id; }); })
-    .slice(0,50);
-  var progress = vxSafeJSON(localStorage.getItem(PROGRESS_KEY), {});
-  rows.forEach(function(r){
-    if (r && r.session_id != null && Number.isFinite(Number(r.completion_percent))) {
-      progress[String(r.session_id)] = Math.max(0, Math.min(100, Math.round(Number(r.completion_percent))));
-    }
+  var catWords = VX_CATEGORY_KEYWORDS[s.cat] || VX_CATEGORY_KEYWORDS[s.main_category] || [];
+  var derived = [];
+  VX_SYNONYM_KEYWORDS.forEach(function(group){
+    var hay = ((s.title || '') + ' ' + (s.desc || '') + ' ' + (s.cat || '') + ' ' + (s.subcategory || '') + ' ' + (s.collection || '') + ' ' + (s.pressure_type || '')).toLowerCase();
+    if (group.some(function(w){ return hay.indexOf(w) !== -1; })) derived = derived.concat(group);
   });
-  try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedSessions)); localStorage.setItem(RECENT_KEY, JSON.stringify(recentSessions)); localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch(e) {}
-  if (!fromLocalOnly) vxPersistSessionStateCacheToLocal();
+  return [
+    s.title, s.cat, s.main_category, s.subcategory, s.collection, s.pressure_type, s.audience, s.desc,
+    (s.tags || []).join(' '), (s.keywords || []).join(' '), catWords.join(' '), derived.join(' ')
+  ].filter(Boolean).join(' ').toLowerCase();
 }
-function vxLoadSessionStateCacheFromLocal() {
-  var cached = vxSafeJSON(localStorage.getItem(vxGetSessionStateCacheKey()), []);
-  vxApplySessionStateRows(Array.isArray(cached) ? cached : [], true);
-}
-async function vxLoadUserSessionState() {
-  vxLoadSessionStateCacheFromLocal();
-  if (!vxSupabase || !vxCurrentUserId()) return false;
-  try {
-    var result = await vxSupabase.from(VX_SESSION_STATE_TABLE).select('*').eq('user_id', vxCurrentUserId());
-    if (result.error) throw result.error;
-    vxApplySessionStateRows(result.data || [], false);
-    return true;
-  } catch(e) {
-    if (!vxMissingActivityTablesWarned) { console.warn('VisualizeX activity persistence using local fallback until MVP1 tables exist:', e.message || e); vxMissingActivityTablesWarned = true; }
-    return false;
-  }
-}
-function vxMergeLocalSessionRow(sessionId, fields) {
-  var id = String(sessionId), now = vxNowIso();
-  var existing = vxSessionStateCache[id] || { user_id:vxCurrentUserId(), session_id:Number(sessionId), play_count:0, completion_count:0, completion_percent:0, is_saved:false };
-  var merged = Object.assign({}, existing, fields || {}, { user_id:vxCurrentUserId(), session_id:Number(sessionId), updated_at: now });
-  vxSessionStateCache[id] = merged;
-  vxApplySessionStateRows(Object.keys(vxSessionStateCache).map(function(k){ return vxSessionStateCache[k]; }), false);
-  return merged;
-}
-async function vxPersistSessionRow(sessionId, fields) {
-  if (!sessionId) return false;
-  var merged = vxMergeLocalSessionRow(sessionId, fields || {});
-  if (!vxSupabase || !vxCurrentUserId()) return false;
-  try {
-    var result = await vxSupabase.from(VX_SESSION_STATE_TABLE).upsert(merged, { onConflict:'user_id,session_id' }).select().single();
-    if (result.error) throw result.error;
-    if (result.data) vxMergeLocalSessionRow(sessionId, result.data);
-    return true;
-  } catch(e) {
-    if (!vxMissingActivityTablesWarned) { console.warn('VisualizeX activity write deferred/local-only:', e.message || e); vxMissingActivityTablesWarned = true; }
-    return false;
-  }
-}
-function vxPersistSavedState(sessionId, isSaved) {
-  vxPersistSessionRow(sessionId, { is_saved:!!isSaved, saved_at:isSaved ? vxNowIso() : null });
-  vxQueueEvent(isSaved ? 'session_saved' : 'session_unsaved', { session_id:Number(sessionId) });
-}
-function vxRecordSessionPlay(sessionId) {
-  var row = vxGetSessionRow(sessionId) || {}, now = vxNowIso();
-  var nextCount = Number(row.play_count || 0) + 1;
-  vxPersistSessionRow(sessionId, {
-    first_played_at: row.first_played_at || now,
-    last_played_at: now,
-    play_count: nextCount,
-    completion_percent: Math.max(Number(row.completion_percent || 0), Number(vxSafeJSON(localStorage.getItem(PROGRESS_KEY), {})[sessionId] || 0))
-  });
-  vxQueueEvent(nextCount > 1 ? 'session_replayed' : 'session_played', { session_id:Number(sessionId), play_count:nextCount });
-}
-function vxPersistSessionProgress(sessionId, percent, force) {
-  if (!sessionId) return;
-  var nowMs = Date.now();
-  if (!force && vxLastProgressWrite[sessionId] && nowMs - vxLastProgressWrite[sessionId] < 15000) return;
-  vxLastProgressWrite[sessionId] = nowMs;
-  var durMins = parseInt((ALL_SESSIONS.find(function(s){return s.id===sessionId;}) || {}).dur || 7, 10);
-  var pct = Math.max(0, Math.min(100, Math.round(Number(percent || 0))));
-  vxPersistSessionRow(sessionId, { completion_percent:pct, last_position_seconds:Math.floor((pct/100)*durMins*60), last_played_at:vxNowIso() });
-}
-function vxMarkSessionCompleted(sessionId) {
-  if (!sessionId) return;
-  var row = vxGetSessionRow(sessionId) || {}, now = vxNowIso();
-  vxPersistSessionRow(sessionId, {
-    completion_percent:100,
-    last_position_seconds:parseInt((ALL_SESSIONS.find(function(s){return s.id===sessionId;}) || {}).dur || 7, 10) * 60,
-    completed_at:now,
-    completion_count:Number(row.completion_count || 0) + 1,
-    last_played_at:now
-  });
-  vxQueueEvent('session_completed', { session_id:Number(sessionId), completion_count:Number(row.completion_count || 0)+1 });
-}
-function vxGetOftenRevisitedSessions(limit) {
-  return Object.keys(vxSessionStateCache).map(function(k){ return vxSessionStateCache[k]; })
-    .filter(function(r){ return Number(r.play_count || 0) >= 2; })
-    .sort(function(a,b){ var c = Number(b.play_count||0)-Number(a.play_count||0); return c || (Date.parse(b.last_played_at||0)-Date.parse(a.last_played_at||0)); })
-    .slice(0, limit || 5)
-    .map(function(r){ return ALL_SESSIONS.find(function(s){ return s.id === Number(r.session_id); }); }).filter(Boolean);
-}
-function vxGetCompletedSessions(limit) {
-  return Object.keys(vxSessionStateCache).map(function(k){ return vxSessionStateCache[k]; })
-    .filter(function(r){ return !!r.completed_at || Number(r.completion_count || 0) > 0 || Number(r.completion_percent || 0) >= 100; })
-    .sort(function(a,b){ return Date.parse(b.completed_at || b.updated_at || 0) - Date.parse(a.completed_at || a.updated_at || 0); })
-    .slice(0, limit || 6)
-    .map(function(r){ return ALL_SESSIONS.find(function(s){ return s.id === Number(r.session_id); }); }).filter(Boolean);
-}
-function vxGetEventQueue(){ return vxSafeJSON(localStorage.getItem(VX_EVENT_QUEUE_KEY), []); }
-function vxSaveEventQueue(q){ try { localStorage.setItem(VX_EVENT_QUEUE_KEY, JSON.stringify((q || []).slice(-200))); } catch(e) {} }
-function vxQueueEvent(eventType, payload) {
-  var userId = vxCurrentUserId(); if (!userId) return;
-  payload = payload || {};
-  var event = { user_id:userId, event_type:eventType, session_id:payload.session_id || null, search_query:payload.search_query || null, event_payload:payload, created_at:vxNowIso() };
-  var q = vxGetEventQueue(); q.push(event); vxSaveEventQueue(q); vxFlushEventQueue();
-}
-async function vxFlushEventQueue() {
-  if (!vxSupabase || !vxCurrentUserId()) return false;
-  var q = vxGetEventQueue(); if (!q.length) return true;
-  try { var result = await vxSupabase.from(VX_EVENTS_TABLE).insert(q); if (result.error) throw result.error; vxSaveEventQueue([]); return true; }
-  catch(e) { return false; }
-}
+
 function vxTrackSearchQuery(query, matches, source) {
   query = String(query || '').trim(); if (query.length < 2) return;
   var ids = (matches || []).slice(0,10).map(function(s){return s.id;});
@@ -3892,6 +3836,15 @@ function showView(view) {
   const el = document.getElementById('main-content');
   el.className = 'content fade-in';
 
+  if (typeof vxLoadSessionsFromSupabase === 'function' && !vxCatalogLoadAttempted && vxSupabase) {
+    vxLoadSessionsFromSupabase().then(function(loaded){
+      if (loaded && window.vxCurrentView === view) {
+        window.vxViewRefreshSuppressed = true;
+        try { showView(view); } finally { window.vxViewRefreshSuppressed = false; }
+      }
+    });
+  }
+
   if (view === 'dashboard')  renderDashboard();
   else if (view === 'vault')    renderVault();
   else if (view === 'saved')      renderSaved();
@@ -4250,7 +4203,7 @@ function sessionCard(s) {
       <button class="sess-expand" onclick="toggleDesc(${s.id})" id="exp-${s.id}" title="Show description">▾</button>
     </div>
     <div class="sess-desc" id="desc-${s.id}">
-      <p>${s.desc}</p>
+      <p>${s.desc || 'Description coming soon.'}</p>
       <div class="sess-actions">
         <button class="btn-play-sm" onclick="openPlayer(${s.id})">▶ Play Now</button>
         <button class="btn-save-sm${isSaved?' saved':''}" onclick="event.stopPropagation(); toggleSave(${s.id})" data-save-id="${s.id}">${isSaved?'♥ Saved':'♡ Save'}</button>
@@ -4319,7 +4272,7 @@ async function openPlayer(id) {
 
   document.getElementById('p-cat').textContent   = s.cat;
   document.getElementById('p-title').textContent = s.title;
-  document.getElementById('p-desc').textContent  = s.desc;
+  document.getElementById('p-desc').textContent  = s.desc || 'Description coming soon.';
 
   const durMins = parseInt(s.dur);
   document.getElementById('pp-dur').textContent = `${durMins}:00`;
