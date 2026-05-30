@@ -1072,7 +1072,7 @@ body.vx-app-open{overflow-x:hidden}
 </style>
 </head>
 <body>
-<!-- VX VERSION: v6.8 Main-category Scenario Pods + Vault category/subcategory tabs -->
+<!-- VX VERSION: v6.9.1 External Library + Clickable Vault Category Flow -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1411,8 +1411,7 @@ body.vx-app-open{overflow-x:hidden}
     <div class="sb-nav">
       <span class="sb-section">Core</span>
       <div class="sb-link active" onclick="showView('dashboard')" id="nav-dashboard"><span class="sb-icon">◈</span> Home</div>
-      <div class="sb-link" onclick="showView('situations')" id="nav-situations"><span class="sb-icon">◎</span> Main Categories</div>
-      <div class="sb-link" onclick="showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
+      <div class="sb-link" onclick="vxVaultMainCategory=null;vxVaultSubcategory='All';showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
       <!-- Search now lives only in the top bar to keep the sidebar compact. -->
       <div class="sb-link" onclick="showView('saved')" id="nav-saved"><span class="sb-icon">♡</span> Saved Sessions</div>
       <div class="sb-link" onclick="showView('recent')" id="nav-recent"><span class="sb-icon">↺</span> Recent Sessions</div>
@@ -2823,7 +2822,7 @@ function ensureDashboardShell() {
 }
 
 function restoreMemberSidebar() {
-  var views = ['dashboard','situations','vault','saved','recent','account','billing','settings','support','admin'];
+  var views = ['dashboard','vault','saved','recent','account','billing','settings','support','admin'];
   views.forEach(function(v){
     var el = document.getElementById('nav-' + v);
     if (!el) return;
@@ -3946,7 +3945,7 @@ function showView(view) {
 
   const titles = {
     dashboard:'Home', vault:'The Vault', saved:'Saved Sessions',
-    recent:'Recent Sessions', situations:'Main Categories',
+    recent:'Recent Sessions', situations:'The Vault',
     account:'Membership', billing:'Billing History',
     settings:'Account Settings', support:'Help & Support', admin:'Admin Dashboard'
   };
@@ -4059,6 +4058,11 @@ function showVaultSubcategory(mainCat, subcat) {
 }
 
 function renderSituations() {
+  // v6.9.2: Main Categories is no longer a separate menu destination.
+  // Scenario Pods now live inside The Vault, so any old call lands on Vault overview.
+  vxVaultMainCategory = null;
+  vxVaultSubcategory = 'All';
+  return renderVault();
   const el = document.getElementById("main-content");
   var cats = vxGetMainCategories();
   el.innerHTML = `
@@ -4070,7 +4074,7 @@ function renderSituations() {
         var hint = shell.hint || vxSubcategoriesForMainCategory(cat).slice(0,3).join(' · ') || 'Sessions coming soon';
         var icon = shell.icon || ['◈','◉','◎','◐','◑','◒','◓'][i % 7];
         return `
-      <div class="sit-card" onclick="showCategory('${vxSafeOnclickArg(cat)}')">
+      <div class="sit-card" onclick="showVaultMainCategory('${vxSafeOnclickArg(cat)}')">
         <div class="sit-icon">${icon}</div>
         <p class="sit-name">${cat}</p>
         <p class="sit-count">${hint}${sessions.length ? ' · ' + sessions.length + ' sessions' : ''}</p>
@@ -4159,11 +4163,17 @@ function renderSupport() {
 }
 
 function showCategory(cat) {
+  // Backward-compatible helper used by older cards/search results.
+  // Main category cards should open inside The Vault, not a separate menu item.
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
-  document.getElementById('topbar-title').textContent = cat;
+  var navVault = document.getElementById('nav-vault');
+  if (navVault) navVault.classList.add('active');
+  vxVaultMainCategory = cat;
+  vxVaultSubcategory = 'All';
+  document.getElementById('topbar-title').textContent = 'The Vault';
   const el = document.getElementById('main-content');
   el.className = 'content fade-in';
-  renderCategoryView(cat);
+  renderVault();
 }
 
 function vxAccessLocked() {
@@ -4274,7 +4284,7 @@ function renderDashboard() {
     trialIntro + renderTrialTestPanel() +
     '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
     searchHomeHtml + continueHtml + savedPreview + recentHtml + oftenHtml +
-    (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
+    (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="vxVaultMainCategory=null;vxVaultSubcategory='All';showView('vault')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
     completedHtml +
     (accessOpen ? '<div class="section-head"><h2 class="fd">Recently Released <span class="section-mood">New in the vault</span></h2><span class="see-all" onclick="showView(\'vault\')">Open the vault &rarr;</span></div><div class="feat-grid">' + latestHtml + '</div>' : '');
 }
@@ -4300,6 +4310,31 @@ function getRecommended() {
 }
 
 
+function vxMainCategoryCardGrid() {
+  var cats = vxGetMainCategories();
+  if (!cats.length) {
+    return '<div class="empty-state"><p class="fd">The Vault is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Add sessions to data/library-data.js and they will appear here automatically.</span></p></div>';
+  }
+  return '<div class="sit-grid" style="margin-bottom:40px">' + cats.map(function(cat, i){
+    var shell = vxGetMainCategoryShell(cat) || {};
+    var sessions = vxSessionsForMainCategory(cat);
+    var hint = shell.hint || vxSubcategoriesForMainCategory(cat).slice(0,3).join(' · ') || 'Sessions coming soon';
+    var icon = shell.icon || ['◈','◉','◎','◐','◑','◒','◓'][i % 7];
+    return '<div class="sit-card" role="button" tabindex="0" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(cat) + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showVaultMainCategory(\'' + vxSafeOnclickArg(cat) + '\')}" style="cursor:pointer">' +
+      '<div class="sit-icon">' + icon + '</div>' +
+      '<p class="sit-name">' + cat + '</p>' +
+      '<p class="sit-count">' + hint + (sessions.length ? ' · ' + sessions.length + ' sessions' : '') + '</p>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function showVaultOverview() {
+  vxVaultMainCategory = null;
+  vxVaultSubcategory = 'All';
+  document.getElementById('topbar-title').textContent = 'The Vault';
+  renderVault();
+}
+
 function renderVault() {
   const el = document.getElementById('main-content');
   if (!hasVaultAccess()) {
@@ -4308,8 +4343,22 @@ function renderVault() {
       vxLockedRecentPreview(2);
     return;
   }
+
   var mainCats = vxGetMainCategories();
-  if (!vxVaultMainCategory || mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0] || 'The Vault';
+
+  // Default Vault landing: show the main category cards first.
+  // The user then clicks a main category and sees subcategory tabs + sessions.
+  if (!vxVaultMainCategory) {
+    el.innerHTML = `
+      <div class="welcome-row">
+        <h1 class="fd">The Vault</h1>
+        <p>Browse by main category. Choose a category to open its subcategories and experiences. Descriptions, tags and Bunny URLs can be added progressively.</p>
+      </div>
+      ${vxMainCategoryCardGrid()}`;
+    return;
+  }
+
+  if (mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0] || 'The Vault';
   var allForMain = vxSessionsForMainCategory(vxVaultMainCategory);
   var subcats = vxSubcategoriesForMainCategory(vxVaultMainCategory);
   if (vxVaultSubcategory !== 'All' && subcats.indexOf(vxVaultSubcategory) === -1) vxVaultSubcategory = 'All';
@@ -4318,11 +4367,11 @@ function renderVault() {
     return (s.subcategory || s.pressure_type || s.collection || 'Uncategorized') === vxVaultSubcategory;
   });
   var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
-  var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Import the titles for this category into Supabase and they will appear here automatically.</span></p></div>';
+  var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Add or check records for this category in data/library-data.js. Descriptions, tags and Bunny URLs can remain blank during MVP setup.</span></p></div>';
   el.innerHTML = `
     <div class="welcome-row">
-      <h1 class="fd">The Vault</h1>
-      <p>Switch between main categories, then narrow into subcategories inside each category.</p>
+      <h1 class="fd">${vxVaultMainCategory}</h1>
+      <p><span class="see-all" onclick="showVaultOverview()">← All main categories</span></p>
     </div>
     ${vxMainCategoryTabs(vxVaultMainCategory)}
     <div class="vx-category-summary"><p>${vxVaultMainCategory}</p><p>${shell.desc || 'Guided experiences grouped around this part of the VisualizeX library.'}</p></div>
