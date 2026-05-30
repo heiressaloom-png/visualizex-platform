@@ -948,7 +948,7 @@ body.vx-app-open{overflow-x:hidden}
 .vx-category-summary p:last-child{font-size:.84rem;font-weight:300;color:var(--c55);line-height:1.7}
 @media(max-width:700px){.vx-tab-row{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}.vx-main-tab,.vx-sub-tab{white-space:nowrap}}
 
-/* ── v7.0 VAULT BREADCRUMB + EXIT (cognitive-load reduction) ── */
+/* v7.1 VAULT BREADCRUMB + CLEAR FILTER */
 .vx-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:10px 14px;background:rgba(0,180,160,.04);border:1px solid rgba(0,180,160,.12);border-radius:4px}
 .vx-crumb{background:transparent;border:none;color:var(--c55);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;padding:4px 6px;border-radius:2px;transition:color .15s}
 .vx-crumb:hover{color:var(--tq)}
@@ -957,12 +957,6 @@ body.vx-app-open{overflow-x:hidden}
 .vx-crumb-sep{color:rgba(249,240,225,.2);font-size:.75rem;user-select:none}
 .vx-clear-filter{margin-left:auto;background:transparent;border:1px solid rgba(185,147,66,.35);color:var(--goldB);font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.05em;cursor:pointer;padding:5px 10px;border-radius:3px;transition:all .15s}
 .vx-clear-filter:hover{background:rgba(185,147,66,.1);border-color:var(--goldB)}
-.vx-subtab-row{margin-top:-6px}
-
-/* Session card v7.0: category row, subcategory pill, audience badge */
-.sess-cat-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:4px}
-.sess-sub{font-size:.65rem;font-weight:400;color:var(--c55);background:rgba(249,240,225,.045);border:1px solid rgba(249,240,225,.08);padding:2px 7px;border-radius:2px;letter-spacing:.02em}
-.sess-aud{font-size:.6rem;font-weight:500;color:var(--goldB);background:rgba(185,147,66,.08);border:1px solid rgba(185,147,66,.22);padding:2px 7px;border-radius:2px;letter-spacing:.06em;text-transform:uppercase}
 @media(max-width:700px){.vx-breadcrumb{padding:8px 10px}.vx-clear-filter{margin-left:0;margin-top:6px;width:100%;text-align:center}}
 
 </style>
@@ -1257,11 +1251,11 @@ body.vx-app-open{overflow-x:hidden}
       <p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:400px;margin:0 auto;line-height:1.85">Unlock a free pressure session.<br>No account needed.</p>
     </div>
     <div class="reveal-stagger vid-grid" id="site-preview-grid">
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 1 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/LK1NSddk4xU','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">The Hidden Dynamics</span><p class="vi-t">When the Room Tests the Limits of an Idea</p><p class="vi-d">Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 2 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/qAzPqF85W_w','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Building What's Next</span><p class="vi-t">Building a Category-Defining Brand</p><p class="vi-d">Category leaders don't just compete — they create the standards the market starts adapting to. This is how they think.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">9 min</div><div class="va-n">Preview 3 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/3gtwgTaOkn4','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Building What's Next</span><p class="vi-t">Scaling Without Burning the Team</p><p class="vi-d">The strongest organisations sustain performance through clarity and structure — not exhaustion.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 4 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/RYz_4qTmRR8','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">The Hidden Dynamics</span><p class="vi-t">When the Decision Isn't Made in the Room</p><p class="vi-d">Interest is high but authority sits elsewhere. Learn to uncover the real decision path.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">6 min</div><div class="va-n">Preview 5 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/PJxJ4zpQ-Cg','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Holding Your Ground</span><p class="vi-t">Let the Moment Pass Without Entering It</p><p class="vi-d">Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 1 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/LK1NSddk4xU','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Room Tests the Limits of an Idea</p><p class="vi-d">Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 2 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/qAzPqF85W_w','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Founder &amp; Investor Intelligence</span><p class="vi-t">Building a Category-Defining Brand</p><p class="vi-d">Category leaders don't just compete — they create the standards the market starts adapting to. This is how they think.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">9 min</div><div class="va-n">Preview 3 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/3gtwgTaOkn4','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Executive Thinking &amp; Leadership</span><p class="vi-t">Scaling Without Burning the Team</p><p class="vi-d">The strongest organisations sustain performance through clarity and structure — not exhaustion.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 4 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/RYz_4qTmRR8','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Decision Isn't Made in the Room</p><p class="vi-d">Interest is high but authority sits elsewhere. Learn to uncover the real decision path.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">6 min</div><div class="va-n">Preview 5 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/PJxJ4zpQ-Cg','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Self-Regulation Under Pressure</span><p class="vi-t">Let the Moment Pass Without Entering It</p><p class="vi-d">Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.</p><span class="vi-free">Free · No account needed</span></div></div>
     </div>
     <div style="padding:52px 40px;border:1px solid rgba(0,180,160,.15);border-radius:4px;text-align:center;background:rgba(0,180,160,.03);margin-top:12px"><p class="fd" style="font-size:clamp(1.3rem,3vw,2rem);font-weight:400;color:var(--cream);margin-bottom:12px">Unlock the full vault of immersive guided experiences</p><p style="font-size:.9rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto 28px;line-height:1.85">Your next pressure moment may not give you time to prepare. Open the members vault now and keep the right session close before the room changes.</p><a class="btn-primary" onclick="unlockVaultPrototype()" style="font-size:.8rem;padding:15px 36px">Unlock the Full Vault</a></div>
   </div>
@@ -2108,11 +2102,11 @@ function buildSitePreview() {
     }, { passive: true });
   }
   var PREVIEWS = [
-    {cat:'The Hidden Dynamics',     title:'When the Room Tests the Limits of an Idea',          dur:'6:06', desc:'Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.'},
-    {cat:"Building What's Next",    title:'Building a Category-Defining Brand',                  dur:'6:49', desc:'Category leaders create the standards the market starts adapting to. This is how they think.'},
-    {cat:"Building What's Next",    title:'Scaling Without Burning the Team',                    dur:'6:50', desc:'The strongest organisations sustain performance through clarity and structure — not exhaustion.'},
-    {cat:'The Hidden Dynamics',     title:"When the Decision Isn't Made in the Room",            dur:'4:43', desc:'Interest is high but authority sits elsewhere. Learn to uncover the real decision path.'},
-    {cat:'Holding Your Ground',     title:'Let the Moment Pass Without Entering It (Version 1)', dur:'6:18', desc:'Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.'},
+    {cat:'Room Dynamics & Influence', title:'When the Room Tests the Limits of an Idea', dur:'8 min', desc:'Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.'},
+    {cat:'Founder & Investor Intelligence', title:'Building a Category-Defining Brand', dur:'9 min', desc:'Category leaders create the standards the market starts adapting to. This is how they think.'},
+    {cat:'Executive Thinking & Leadership', title:'Scaling Without Burning the Team', dur:'9 min', desc:'The strongest organisations sustain performance through clarity and structure — not exhaustion.'},
+    {cat:'Room Dynamics & Influence', title:'When the Decision Isn\'t Made in the Room', dur:'7 min', desc:'Interest is high but authority sits elsewhere. Learn to uncover the real decision path.'},
+    {cat:'Self-Regulation Under Pressure', title:'Let the Moment Pass Without Entering It', dur:'6 min', desc:'Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.'},
   ];
   el.innerHTML = PREVIEWS.map(function(v,i) {
     return '<div style="border:1px solid rgba(185,147,66,.15);border-radius:4px;overflow:hidden;background:rgba(12,35,33,.7);transition:transform .3s,border-color .3s;cursor:pointer">' +
@@ -2953,9 +2947,9 @@ function renderGuestDashboard() {
   el.className = 'content fade-in';
 
   var freeSessions = [
-    {id:151,cat:'The Hidden Dynamics',       title:'When the Room Tests the Limits of an Idea', dur:'6:06'},
-    {id:99, cat:'Holding Your Ground',       title:'Let the Moment Pass Without Entering It (Version 1)', dur:'6:18'},
-    {id:148,cat:'The Hidden Dynamics',       title:'The Deal Gets Expensive Before the Contract',          dur:'6:59'},
+    {id:151,cat:'The Hidden Dynamics',  title:'When the Room Tests the Limits of an Idea',            dur:'6:06'},
+    {id:99, cat:'Holding Your Ground',  title:'Let the Moment Pass Without Entering It (Version 1)', dur:'6:18'},
+    {id:148,cat:'The Hidden Dynamics',  title:'The Deal Gets Expensive Before the Contract',          dur:'6:59'},
   ];
 
   var situations = [
@@ -3504,8 +3498,6 @@ const ALL_SESSIONS = [
   {id:355,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'How to Handle Mixed Signals in Business Conversations',dur:'5:57',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
 ];
 
-// SITUATION_CATS mirrors the 7 official VisualizeX main categories so the
-// dashboard discovery grid and the Vault tabs always tell the same story.
 const SITUATION_CATS = [
   {icon:"◈", name:"The Rest of Life",         cat:"The Rest of Life",         hint:"Family · relationships · identity · transitions"},
   {icon:"◉", name:"Holding Your Ground",      cat:"Holding Your Ground",      hint:"Boundaries · self-respect · composure"},
@@ -3631,16 +3623,11 @@ function vxRefreshSituationCatsFromSessions() {
   });
 }
 async function vxLoadSessionsFromSupabase(force) {
-  // v7.0: Bypass Supabase session catalog load entirely while Gabriella is
-  // building the structure manually and filling descriptions/tags from YouTube.
-  // The hardcoded ALL_SESSIONS array (355 sessions per the official architecture)
-  // is now the single source of truth. When the Supabase `sessions` table is
-  // populated with rows that match the new schema (main_category names matching
-  // VX_MAIN_CATEGORY_SHELL), remove this short-circuit to re-enable hydration.
+  // v7.1: Bypass Supabase session load while structure is being built manually.
+  // Hardcoded ALL_SESSIONS (355 entries from official architecture) is source of truth.
   vxCatalogLoadAttempted = true;
   vxCatalogLoadedFromSupabase = false;
   return false;
-  // --- original implementation kept below for re-enable ---
   if (vxCatalogLoadAttempted && !force) return vxCatalogLoadedFromSupabase;
   vxCatalogLoadAttempted = true;
   if (!vxSupabase) return false;
@@ -3720,27 +3707,15 @@ function vxOpenSearchResult(sessionId, query, source) {
   var input = document.getElementById('search-input'); if (input) input.value = '';
   openPlayer(Number(sessionId));
 }
-
-// v7.0 FIX: vxQueueEvent + vxFlushEventQueue were referenced in v6.8 but never
-// defined, which crashed the app at load time (ReferenceError at the
-// `window.addEventListener('online', vxFlushEventQueue)` line below).
-// These stubs maintain a simple in-memory queue so call sites keep working.
-// When you're ready to wire real analytics into Supabase or another sink,
-// replace the body of vxFlushEventQueue to POST window.__vxEventQueue and
-// clear it. Stored on window so future code can read/replace cleanly.
+// v7.1 FIX: stubs for analytics queue (referenced but never defined in v6.8)
 window.__vxEventQueue = window.__vxEventQueue || [];
 function vxQueueEvent(name, payload) {
   try {
     window.__vxEventQueue.push({ name:String(name||''), payload:payload||{}, ts:new Date().toISOString() });
-    // Cap the queue so a long session can't balloon memory.
     if (window.__vxEventQueue.length > 500) window.__vxEventQueue.splice(0, window.__vxEventQueue.length - 500);
-  } catch(e) { /* fail silent — analytics must never break the app */ }
+  } catch(e) {}
 }
-function vxFlushEventQueue() {
-  // Stub: nothing to send yet. When ready, drain window.__vxEventQueue here.
-  // Returning quickly keeps the 'online'/'focus' listeners cheap.
-  return;
-}
+function vxFlushEventQueue() { return; }
 window.addEventListener('online', vxFlushEventQueue);
 window.addEventListener('focus', function(){ vxFlushEventQueue(); });
 
@@ -4204,9 +4179,7 @@ function resetSimulatedAccess() {
 // VIEWS
 // ══════════════════════════════════════════════
 function showView(view) {
-  // v7.0: "Main Categories" sidebar link removed to reduce nav redundancy.
-  // Any leftover 'situations' calls are now aliased to the Vault so the dashboard
-  // category cards still work and any in-flight links don't break.
+  // v7.1: situations view consolidated into vault (removed redundant sidebar link)
   if (view === 'situations') view = 'vault';
   window.vxCurrentView = view || 'dashboard';
   if (window.innerWidth <= 860) closeMobileSidebar();
@@ -4217,7 +4190,7 @@ function showView(view) {
 
   const titles = {
     dashboard:'Home', vault:'The Vault', saved:'Saved Sessions',
-    recent:'Recent Sessions',
+    recent:'Recent Sessions', situations:'Main Categories',
     account:'Membership', billing:'Billing History',
     settings:'Account Settings', support:'Help & Support', admin:'Admin Dashboard'
   };
@@ -4239,6 +4212,7 @@ function showView(view) {
   else if (view === 'vault')    renderVault();
   else if (view === 'saved')      renderSaved();
   else if (view === 'recent')     renderRecent();
+  else if (view === 'situations') renderSituations();
   else if (view === 'account')    renderAccount();
   else if (view === 'billing')    renderBillingPage();
   else if (view === 'settings')   renderSettings();
@@ -4305,12 +4279,9 @@ function vxMainCategoryTabs(active) {
 function vxSubcategoryTabs(mainCat, activeSub) {
   var subs = vxSubcategoriesForMainCategory(mainCat);
   if (!subs.length) return '';
-  // v7.0: "All in [main cat]" is clearer than just "All" — users always know
-  // which scope the reset button drops them back into.
-  var allLabel = 'All in ' + mainCat;
-  var items = [{ key:'All', label:allLabel }].concat(subs.map(function(s){ return { key:s, label:s }; }));
-  return '<div class="vx-tab-row vx-subtab-row">' + items.map(function(item){
-    return '<button class="vx-sub-tab ' + (item.key===activeSub?'active':'') + '" onclick="showVaultSubcategory(\'' + vxSafeOnclickArg(mainCat) + '\',\'' + vxSafeOnclickArg(item.key) + '\')">' + item.label + '</button>';
+  var items = ['All'].concat(subs);
+  return '<div class="vx-tab-row">' + items.map(function(sub){
+    return '<button class="vx-sub-tab ' + (sub===activeSub?'active':'') + '" onclick="showVaultSubcategory(\'' + vxSafeOnclickArg(mainCat) + '\',\'' + vxSafeOnclickArg(sub) + '\')">' + sub + '</button>';
   }).join('') + '</div>';
 }
 function showVaultMainCategory(mainCat) {
@@ -4427,13 +4398,8 @@ function renderSupport() {
 }
 
 function showCategory(cat) {
-  // v7.0: dashboard category cards now land users inside The Vault (with that
-  // main category preselected) instead of an extra "Main Categories" view.
-  window.vxCurrentView = 'vault';
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
-  var navVault = document.getElementById('nav-vault');
-  if (navVault) navVault.classList.add('active');
-  document.getElementById('topbar-title').textContent = 'The Vault';
+  document.getElementById('topbar-title').textContent = cat;
   const el = document.getElementById('main-content');
   el.className = 'content fade-in';
   renderCategoryView(cat);
@@ -4505,7 +4471,7 @@ function renderDashboard() {
         '<div class="cc-info"><span class="cc-cat">' + lastRecent.cat + '</span><p class="cc-title">' + lastRecent.title + '</p><p class="cc-sub">' + lastRecent.dur + '</p>' +
         '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div><p class="cc-resume">' + (accessOpen ? continueSub : 'Saved — review access path to resume') + '</p></div></div></div>'
     : accessOpen
-      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)">' + vxSaveHeartButton(7, 'feat-save') + '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">The Hidden Dynamics</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
+      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)">' + vxSaveHeartButton(7, 'feat-save') + '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
       : '<div class="section-head"><h2 class="fd">Vault Access</h2></div><div class="continue-card" onclick="showExpiredOverlay()"><div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Playback Locked</span><p class="cc-title">Choose an access path to reopen the Vault.</p><p class="cc-sub">Your dashboard and activity stay visible.</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div><p class="cc-resume">Review Access Path</p></div></div></div>';
 
   var savedPreview = savedSessions.length > 0
@@ -4575,7 +4541,7 @@ function getRecommended() {
 
 function renderVault() {
   const el = document.getElementById('main-content');
-  if (!el) { console.error('[VX] renderVault: #main-content not found'); return; }
+  if (!el) { console.error('[VX] renderVault: #main-content missing'); return; }
   try {
     if (!hasVaultAccess()) {
       el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p>Your account stays open, but premium playback and the full vault archive require an active access path.</p></div>' +
@@ -4584,10 +4550,7 @@ function renderVault() {
       return;
     }
     var mainCats = vxGetMainCategories();
-    if (!mainCats.length) {
-      // Hard-coded shell fallback in case both ALL_SESSIONS and VX_MAIN_CATEGORY_SHELL get wiped
-      mainCats = ['The Rest of Life','Holding Your Ground','Navigating the System','The Hidden Dynamics','Presence in the Room','Seeing Around Corners',"Building What's Next"];
-    }
+    if (!mainCats.length) mainCats = ['The Rest of Life','Holding Your Ground','Navigating the System','The Hidden Dynamics','Presence in the Room','Seeing Around Corners',"Building What's Next"];
     if (!vxVaultMainCategory || mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0];
     var allForMain = vxSessionsForMainCategory(vxVaultMainCategory);
     var subcats = vxSubcategoriesForMainCategory(vxVaultMainCategory);
@@ -4597,22 +4560,16 @@ function renderVault() {
       return (s.subcategory || s.pressure_type || s.collection || 'Uncategorized') === vxVaultSubcategory;
     });
     var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
-    console.log('[VX] renderVault →', { mainCat:vxVaultMainCategory, subCat:vxVaultSubcategory, totalSessions:(ALL_SESSIONS||[]).length, inMain:allForMain.length, filtered:filtered.length, subcats:subcats.length });
-    var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Titles will appear here once they are imported.</span></p></div>';
-
-    // v7.0: breadcrumb gives users a one-tap exit at every level — no back-button trips,
-    // no nested clicks. Tapping "The Vault" clears all filters; tapping the main cat
-    // resets the subcategory; tapping the subcat does nothing (it's the active leaf).
+    console.log('[VX] renderVault', { mainCat:vxVaultMainCategory, subCat:vxVaultSubcategory, total:(ALL_SESSIONS||[]).length, inMain:allForMain.length, filtered:filtered.length });
+    var empty = '<div class="empty-state"><p class="fd">No sessions in this view yet.</p></div>';
     var crumbHtml = '<div class="vx-breadcrumb">' +
       '<button class="vx-crumb" onclick="clearVaultFilters()">The Vault</button>' +
       '<span class="vx-crumb-sep">/</span>' +
-      '<button class="vx-crumb' + (vxVaultSubcategory==='All' ? ' active' : '') + '" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">' + vxVaultMainCategory + '</button>' +
+      '<button class="vx-crumb ' + (vxVaultSubcategory==='All' ? 'active' : '') + '" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">' + vxVaultMainCategory + '</button>' +
       (vxVaultSubcategory !== 'All'
-        ? '<span class="vx-crumb-sep">/</span><span class="vx-crumb active leaf">' + vxVaultSubcategory + '</span>' +
-          '<button class="vx-clear-filter" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')" title="Clear subcategory filter">&times; Clear filter</button>'
+        ? '<span class="vx-crumb-sep">/</span><span class="vx-crumb active leaf">' + vxVaultSubcategory + '</span><button class="vx-clear-filter" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">&times; Clear filter</button>'
         : '') +
       '</div>';
-
     el.innerHTML = `
       <div class="welcome-row">
         <h1 class="fd">The Vault</h1>
@@ -4625,20 +4582,18 @@ function renderVault() {
       <p class="vx-vault-filter-note">${filtered.length} experience${filtered.length===1?'':'s'} ${vxVaultSubcategory==='All' ? 'across all subcategories in ' + vxVaultMainCategory : 'in ' + vxVaultSubcategory}.</p>
       <div class="session-list">${filtered.length ? filtered.map(s=>sessionCard(s)).join('') : empty}</div>`;
   } catch (err) {
-    // Never let an error leave the Vault blank — render a diagnostic message
-    // so Gabriella sees what's happening instead of a black screen.
     console.error('[VX] renderVault threw:', err);
-    el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p style="color:#E97462">Something went wrong rendering the Vault. Check the browser console for details, or refresh the page.</p><p style="font-family:monospace;font-size:.78rem;color:var(--c55);background:rgba(233,116,98,.06);padding:10px 14px;border-radius:4px;margin-top:12px">' + (err && err.message ? err.message : String(err)) + '</p></div>';
+    el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p style="color:#E97462">Render error: ' + (err && err.message ? err.message : String(err)) + '</p></div>';
   }
 }
 
-// v7.0: full reset — user lands on the first main category, no subcategory filter,
-// no scroll position confusion. One click to clear everything.
 function clearVaultFilters() {
   var mainCats = vxGetMainCategories();
-  vxVaultMainCategory = mainCats[0] || 'The Vault';
+  if (!mainCats.length) mainCats = ['The Rest of Life'];
+  vxVaultMainCategory = mainCats[0];
   vxVaultSubcategory = 'All';
-  document.getElementById('topbar-title').textContent = 'The Vault';
+  var t = document.getElementById('topbar-title');
+  if (t) t.textContent = 'The Vault';
   renderVault();
 }
 
@@ -4691,12 +4646,6 @@ function vxRefreshSaveControls(id) {
 
 function sessionCard(s) {
   const isSaved = savedSessions.includes(s.id);
-  // v7.0: audience badge shows the intended reader (Adults / Professionals / Founders…).
-  // Description placeholder is honest about the data state — Gabriella is filling
-  // descriptions and tags from YouTube manually as Bunny links go live.
-  var audience = s.audience ? '<span class="sess-aud">' + s.audience + '</span>' : '';
-  var subcat = (s.subcategory && s.subcategory !== s.cat) ? '<span class="sess-sub">' + s.subcategory + '</span>' : '';
-  var descText = (s.desc && s.desc.trim()) ? s.desc : '<em style="color:var(--c35)">Description coming soon — being added from the YouTube channel.</em>';
   return `
   <div class="sess" id="sess-${s.id}">
     <div class="sess-header">
@@ -4704,11 +4653,7 @@ function sessionCard(s) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg>
       </div>
       <div class="sess-meta">
-        <div class="sess-cat-row">
-          <span class="sess-cat">${s.cat}</span>
-          ${subcat}
-          ${audience}
-        </div>
+        <span class="sess-cat">${s.cat}</span>
         <p class="sess-title">${s.title}</p>
         <span class="sess-dur">⏱ ${s.dur}</span>
       </div>
@@ -4716,7 +4661,7 @@ function sessionCard(s) {
       <button class="sess-expand" onclick="toggleDesc(${s.id})" id="exp-${s.id}" title="Show description">▾</button>
     </div>
     <div class="sess-desc" id="desc-${s.id}">
-      <p>${descText}</p>
+      <p>${s.desc || 'Description coming soon.'}</p>
       <div class="sess-actions">
         <button class="btn-play-sm" onclick="openPlayer(${s.id})">▶ Play Now</button>
         <button class="btn-save-sm${isSaved?' saved':''}" onclick="event.stopPropagation(); toggleSave(${s.id})" data-save-id="${s.id}">${isSaved?'♥ Saved':'♡ Save'}</button>
@@ -5492,18 +5437,15 @@ function triggerSearch(term) {
   document.querySelector('.topbar') && document.querySelector('.topbar').scrollIntoView({behavior:'smooth'});
 }
 
-// P6: REFLECTION PROMPTS — keyed by the 7 official VisualizeX main categories.
-// One prompt set per category; getReflectionPrompt randomly selects one after a
-// session ends so reflection stays varied but always feels coherent with the
-// part of the library the user just spent time in.
+// P6: REFLECTION PROMPTS
 var REFLECTION_PROMPTS = {
-  'The Rest of Life':       ['Which relationship is asking something of you that you have not yet named?','Where are you carrying weight that was never yours to hold?','What would it look like to return to yourself in the middle of this?'],
-  'Holding Your Ground':    ['What was the first physical signal that charge was building?','Where did precision matter more than volume?','What would staying anchored have made possible?'],
-  'Navigating the System':  ['Who in the system has quiet influence over the outcome you care about?','Where are you adapting to the environment in ways that cost you?','What would clarity inside this complexity actually look like?'],
-  'The Hidden Dynamics':    ['Who in the room was shaping the outcome without speaking?','When did the energy shift — and what caused it?','What signal were you reading — and what might you have missed?'],
-  'Presence in the Room':   ['What was the moment you felt pressure to fill silence?','Where did you operate from clarity — and where from habit?','What would a leader one level above have noticed first?'],
-  'Seeing Around Corners':  ['What signal are you noticing early that others are still ignoring?','Where did urgency start to override clarity?','What would slowing down to see further actually require?'],
-  "Building What's Next":   ['Where did you feel the urge to defend rather than clarify?','What decision were you making that only you could make?','What signal tells you the terms are right?']
+  'Founder & Investor Intelligence': ['Where did you feel the urge to defend rather than clarify?','What would staying grounded have looked like in that room?','What signal were you reading — and what might you have missed?'],
+  'Room Dynamics & Influence': ['Who in the room was shaping the outcome without speaking?','When did the energy shift — and what caused it?','What would you do differently in the first 90 seconds?'],
+  'High-Stakes Communication': ['What was the moment you felt pressure to fill silence?','Where did precision matter more than volume?','What would composure have sounded like in that moment?'],
+  'Self-Regulation Under Pressure': ['What was the first physical signal that charge was building?','What is the cost of entering that moment — and the cost of not?','What would staying anchored have made possible?'],
+  'Commercial & Business Decisions': ['Where did urgency start to override clarity?','What would you need to slow down and check before proceeding?','What signal tells you the terms are right?'],
+  'Executive Thinking & Leadership': ['What decision were you making that only you could make?','Where did you operate from clarity — and where from habit?','What would a leader one level above have noticed first?'],
+  'Recovery & Reset': ['What story were you telling yourself — and how much of it was true?','What would it take to return to the room with authority?','What needs to be said — and what needs to be released?']
 };
 function getReflectionPrompt(cat) {
   var prompts = REFLECTION_PROMPTS[cat] || ['What will you carry into your next high-pressure moment?'];
@@ -5610,7 +5552,7 @@ function dismissSticky() {
 // Guest player by ID
 function openGuestPlayerById(id) {
   var s=typeof ALL_SESSIONS!=='undefined'?ALL_SESSIONS.find(function(x){return x.id===id;}):null;
-  if (!s) s={id:id,cat:'Holding Your Ground',title:'Let the Moment Pass Without Entering It',dur:'6 min'};
+  if (!s) s={id:id,cat:'Self-Regulation Under Pressure',title:'Let the Moment Pass Without Entering It',dur:'6 min'};
   var ps=document.getElementById('player-playing-state'); var cs=document.getElementById('player-complete-state');
   if (ps){ps.style.display='block';ps.style.opacity='';}
   if (cs) cs.classList.remove('show');
