@@ -1070,6 +1070,12 @@ body.vx-app-open{overflow-x:hidden}
 }
 #vx-setup-overlay select option{background:#0A1F1D;color:#F9F0E1;}
 </style>
+
+<style>
+/* v7.2.1 landing nav safety: fixed header offset for anchor jumps */
+#s-vault,#s-how,#s-pricing,#s-faq,#s-previews{scroll-margin-top:86px;}
+@media(max-width:768px){#s-vault,#s-how,#s-pricing,#s-faq,#s-previews{scroll-margin-top:78px;}}
+</style>
 </head>
 <body>
 <!-- VX VERSION: v6.9.1 External Library + Clickable Vault Category Flow -->
@@ -1084,10 +1090,10 @@ body.vx-app-open{overflow-x:hidden}
     <span class="logo-name fd">Visualize<span class="logo-x">X</span></span>
   </div>
   <div class="nav-links hide-mob">
-    <span class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'})">The Vault</span>
-    <span class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'})">How It Works</span>
-    <span class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</span>
-    <span class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'})">FAQ</span>
+    <a class="nl" href="#s-vault">The Vault</a>
+    <a class="nl" href="#s-how">How It Works</a>
+    <a class="nl" href="#s-pricing">Pricing</a>
+    <a class="nl" href="#s-faq">FAQ</a>
     <button id="dash-btn" onclick="goDashboard()" style="display:none;align-items:center;gap:7px;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.28);color:#00B4A0;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:8px 15px;border-radius:2px;cursor:pointer;transition:all .2s">&#x25C8; My Dashboard</button>
     <button id="cta-main" onclick="openVXAuth('login')" class="btn-secondary" style="padding:9px 18px;font-size:.74rem;display:none">Sign In</button>
   </div>
@@ -1096,10 +1102,10 @@ body.vx-app-open{overflow-x:hidden}
 
 <!-- MOB MENU -->
 <div id="mob-menu" style="display:none;position:fixed;top:60px;left:0;right:0;z-index:998;background:rgba(12,35,33,.99);padding:28px 24px;border-bottom:1px solid var(--c08)">
-  <a class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">The Vault</a>
-  <a class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">How It Works</a>
-  <a class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">Pricing</a>
-  <a class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:28px;font-size:.95rem" onclick="closeMob()">FAQ</a>
+  <a class="nl" href="#s-vault" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">The Vault</a>
+  <a class="nl" href="#s-how" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">How It Works</a>
+  <a class="nl" href="#s-pricing" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">Pricing</a>
+  <a class="nl" href="#s-faq" onclick="closeMob()" style="display:block;margin-bottom:28px;font-size:.95rem">FAQ</a>
   <a class="btn-tq" onclick="document.getElementById('s-previews')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;width:100%;text-align:center;box-sizing:border-box">Try a Free Experience</a>
   <a onclick="openVXAuth('login');closeMob()" style="display:block;text-align:center;margin-top:10px;color:rgba(249,240,225,.5);font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(249,240,225,.15);border-radius:2px;padding:11px;cursor:pointer">Sign In</a>
   <button id="mob-dash-btn" onclick="goDashboard();closeMob()" style="display:none;width:100%;text-align:center;margin-top:10px;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.28);color:#00B4A0;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:11px;border-radius:2px;cursor:pointer;box-sizing:border-box">&#x25C8; My Dashboard</button>
