@@ -7,6 +7,7 @@
 <title>VisualizeX — Guided Cognitive Experiences</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="./data/library-data.js"></script>
 <style>
 :root {
   --bg:      #0C2321;
@@ -1070,15 +1071,9 @@ body.vx-app-open{overflow-x:hidden}
 }
 #vx-setup-overlay select option{background:#0A1F1D;color:#F9F0E1;}
 </style>
-
-<style>
-/* v7.2.1 landing nav safety: fixed header offset for anchor jumps */
-#s-vault,#s-how,#s-pricing,#s-faq,#s-previews{scroll-margin-top:86px;}
-@media(max-width:768px){#s-vault,#s-how,#s-pricing,#s-faq,#s-previews{scroll-margin-top:78px;}}
-</style>
 </head>
 <body>
-<!-- VX VERSION: v6.9.1 External Library + Clickable Vault Category Flow -->
+<!-- VX VERSION: v6.8 Main-category Scenario Pods + Vault category/subcategory tabs -->
 <!-- VX VERSION: v5.5 access-state tester + paid-renewal/lapse gating -->
 
 
@@ -1090,10 +1085,10 @@ body.vx-app-open{overflow-x:hidden}
     <span class="logo-name fd">Visualize<span class="logo-x">X</span></span>
   </div>
   <div class="nav-links hide-mob">
-    <a class="nl" href="#s-vault">The Vault</a>
-    <a class="nl" href="#s-how">How It Works</a>
-    <a class="nl" href="#s-pricing">Pricing</a>
-    <a class="nl" href="#s-faq">FAQ</a>
+    <span class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'})">The Vault</span>
+    <span class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'})">How It Works</span>
+    <span class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'})">Pricing</span>
+    <span class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'})">FAQ</span>
     <button id="dash-btn" onclick="goDashboard()" style="display:none;align-items:center;gap:7px;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.28);color:#00B4A0;font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:8px 15px;border-radius:2px;cursor:pointer;transition:all .2s">&#x25C8; My Dashboard</button>
     <button id="cta-main" onclick="openVXAuth('login')" class="btn-secondary" style="padding:9px 18px;font-size:.74rem;display:none">Sign In</button>
   </div>
@@ -1102,10 +1097,10 @@ body.vx-app-open{overflow-x:hidden}
 
 <!-- MOB MENU -->
 <div id="mob-menu" style="display:none;position:fixed;top:60px;left:0;right:0;z-index:998;background:rgba(12,35,33,.99);padding:28px 24px;border-bottom:1px solid var(--c08)">
-  <a class="nl" href="#s-vault" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">The Vault</a>
-  <a class="nl" href="#s-how" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">How It Works</a>
-  <a class="nl" href="#s-pricing" onclick="closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem">Pricing</a>
-  <a class="nl" href="#s-faq" onclick="closeMob()" style="display:block;margin-bottom:28px;font-size:.95rem">FAQ</a>
+  <a class="nl" onclick="document.getElementById('s-vault')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">The Vault</a>
+  <a class="nl" onclick="document.getElementById('s-how')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">How It Works</a>
+  <a class="nl" onclick="document.getElementById('s-pricing')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:20px;font-size:.95rem" onclick="closeMob()">Pricing</a>
+  <a class="nl" onclick="document.getElementById('s-faq')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;margin-bottom:28px;font-size:.95rem" onclick="closeMob()">FAQ</a>
   <a class="btn-tq" onclick="document.getElementById('s-previews')?.scrollIntoView({behavior:'smooth'});closeMob()" style="display:block;width:100%;text-align:center;box-sizing:border-box">Try a Free Experience</a>
   <a onclick="openVXAuth('login');closeMob()" style="display:block;text-align:center;margin-top:10px;color:rgba(249,240,225,.5);font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(249,240,225,.15);border-radius:2px;padding:11px;cursor:pointer">Sign In</a>
   <button id="mob-dash-btn" onclick="goDashboard();closeMob()" style="display:none;width:100%;text-align:center;margin-top:10px;background:rgba(0,180,160,.12);border:1px solid rgba(0,180,160,.28);color:#00B4A0;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:11px;border-radius:2px;cursor:pointer;box-sizing:border-box">&#x25C8; My Dashboard</button>
@@ -1417,7 +1412,7 @@ body.vx-app-open{overflow-x:hidden}
     <div class="sb-nav">
       <span class="sb-section">Core</span>
       <div class="sb-link active" onclick="showView('dashboard')" id="nav-dashboard"><span class="sb-icon">◈</span> Home</div>
-      <div class="sb-link" onclick="vxVaultMainCategory=null;vxVaultSubcategory='All';showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
+      <div class="sb-link" onclick="showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
       <!-- Search now lives only in the top bar to keep the sidebar compact. -->
       <div class="sb-link" onclick="showView('saved')" id="nav-saved"><span class="sb-icon">♡</span> Saved Sessions</div>
       <div class="sb-link" onclick="showView('recent')" id="nav-recent"><span class="sb-icon">↺</span> Recent Sessions</div>
@@ -1547,8 +1542,6 @@ body.vx-app-open{overflow-x:hidden}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- VisualizeX content catalogue: update /data/library-data.js in GitHub, not index.html -->
-<script src="./data/library-data.js"></script>
 <script>
 // ═══════════════════════════════════
 // VX BRIDGE — connects site ↔ dashboard  
@@ -3137,51 +3130,43 @@ var vxUser = window.vxUser || null;
 // ══════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════
-const ALL_SESSIONS = [
-  // Founder & Investor Intelligence
-  {id:1,cat:"Founder & Investor Intelligence",title:"When Investors Test Your Conviction",dur:"7 min",desc:"Stay grounded when an investor challenges your core belief about the business. Navigate the challenge without crumbling or becoming defensive. Learn how sophisticated founders hold conviction under scrutiny while remaining genuinely open to legitimate challenge."},
-  {id:2,cat:"Founder & Investor Intelligence",title:"Building a Category-Defining Brand",dur:"9 min",desc:"Category leaders don\'t just compete — they create the standards the market starts adapting to. This experience explores how sophisticated founders recognise emerging demand, create language the market repeats, and build brands strong enough to influence how customers understand value."},
-  {id:3,cat:"Founder & Investor Intelligence",title:"How Investors Evaluate Founder Energy",dur:"6 min",desc:"Beyond the numbers, investors are reading you. Your energy, composure, and the way you hold uncertainty in the room all signal whether you're someone they can back for the long term."},
-  {id:4,cat:"Founder & Investor Intelligence",title:"When a Powerful Person Signals Doubt",dur:"8 min",desc:"The moment a senior figure in the room signals scepticism — and the room's energy shifts. How you respond in this moment determines whether you recover authority or lose it completely."},
-  {id:5,cat:"Founder & Investor Intelligence",title:"The Walk-Away Decision",dur:"5 min",desc:"How do you know when a deal isn\'t right — and how do you walk away without burning a relationship? This experience explores the clarity required for the most difficult commercial decisions."},
-  {id:6,cat:"Founder & Investor Intelligence",title:"Valuation Justification Under Pressure",dur:"7 min",desc:"When someone challenges your valuation in the room and wants a number justified in real time. Learn to hold your position with data and composure rather than anxiety."},
-
-  // Room Dynamics
-  {id:7,cat:"Room Dynamics & Influence",title:"When the Room Tests the Limits of an Idea",dur:"8 min",desc:"This guided visualization explores how influential conversations quietly test the strength of an idea. Experience the moment when curiosity turns into scrutiny as participants examine assumptions, challenge risks, and explore whether a concept can survive pressure."},
-  {id:8,cat:"Room Dynamics & Influence",title:"When the Decision Isn\'t Made in the Room",dur:"7 min",desc:"A guided communication scenario that helps you recognise when a meeting is shaping a decision rather than making it. Learn how to uncover the real decision path, ask the right questions about stakeholders and process, and prepare your idea to travel beyond the room effectively."},
-  {id:9,cat:"Room Dynamics & Influence",title:"The Five Hidden Roles in Every Room",dur:"6 min",desc:"Every influential room has power structures that aren\'t visible on the surface. Understanding who actually holds influence, who defers, who tests, and who decides — changes everything about how you show up."},
-  {id:10,cat:"Room Dynamics & Influence",title:"When Status Dynamics Shape Decisions",dur:"8 min",desc:"Status doesn\'t always announce itself. This experience helps you read the invisible hierarchy in any room and understand how decisions are really being shaped."},
-  {id:11,cat:"Room Dynamics & Influence",title:"When a New Participant Changes the Balance",dur:"5 min",desc:"A new person enters the room and the energy shifts. The alliances change. How do you recalibrate quickly without losing your footing?"},
-
-  // High-Stakes Communication
-  {id:12,cat:"High-Stakes Communication",title:"When You\'re Put on the Spot Under Pressure",dur:"7 min",desc:"You didn\'t see the question coming. The room is watching. Every second of hesitation compounds. This experience trains the reset response — how to return to clarity instantly when pressure spikes."},
-  {id:13,cat:"High-Stakes Communication",title:"When You Start Over-Explaining to Be Understood",dur:"6 min",desc:"The moment you realise you're talking too much — and every additional word is making it worse. Learn to stop, reset, and communicate with precision when the pressure to be understood is highest."},
-  {id:14,cat:"High-Stakes Communication",title:"When Someone More Senior Repeats Your Insight",dur:"6 min",desc:"Your idea was just presented back to the room by someone more senior — without attribution. How you handle this moment says more about your professional maturity than the idea itself."},
-  {id:15,cat:"High-Stakes Communication",title:"When Someone Interrupts Mid-Explanation",dur:"5 min",desc:"Being interrupted is a power signal. How you respond — whether you cede ground or hold your thread — determines the dynamic for the rest of the conversation."},
-
-  // Self-Regulation
-  {id:16,cat:"Self-Regulation Under Pressure",title:"Let the Moment Pass Without Entering It",dur:"6 min",desc:"This guided visualization helps you remain steady when strong emotions arise. Instead of suppressing the reaction or getting pulled into it, you practice noticing the emotional charge while keeping part of your awareness anchored and clear."},
-  {id:17,cat:"Self-Regulation Under Pressure",title:"The Pattern Breaker: Strategic Calm",dur:"8 min",desc:"When emotional charge is running the show and you need to interrupt the pattern — without shutting down or exploding. This experience guides you through the exact moment of intervention."},
-  {id:18,cat:"Self-Regulation Under Pressure",title:"When You Almost Give Away Your Position",dur:"7 min",desc:"The moment you feel the urge to concede — not because it\'s right, but because the discomfort of holding has become unbearable. Learn to recognise this moment and stay."},
-  {id:19,cat:"Self-Regulation Under Pressure",title:"Re-Centering Emotionally Charged Discussions",dur:"9 min",desc:"When a conversation has become emotionally loaded and you need to bring it back to productive ground — without dismissing what\'s real or losing the relationship in the process."},
-
-  // Commercial
-  {id:20,cat:"Commercial & Business Decisions",title:"The Deal Gets Expensive Before the Contract",dur:"7 min",desc:"A guided visualization on negotiation psychology, strategic pacing, and protecting long-term leverage. Learn how sophisticated negotiators slow the room down, separate excitement from structure, and recognise when polished language hides expensive terms."},
-  {id:21,cat:"Commercial & Business Decisions",title:"When the Deal Looks Right But Feels Off",dur:"7 min",desc:"The numbers make sense. The terms are fine. But something is off and you can\'t name it. This experience helps you trust and investigate that signal before it costs you."},
-  {id:22,cat:"Commercial & Business Decisions",title:"Deciding When the Data Is Incomplete",dur:"8 min",desc:"The decision can\'t wait for complete information. How do you move forward without recklessness — and without paralysis? This experience explores the quality of decision-making under uncertainty."},
-
-  // Executive
-  {id:23,cat:"Executive Thinking & Leadership",title:"Scaling Without Burning the Team",dur:"9 min",desc:"The strongest organisations sustain performance through clarity and structure — not exhaustion. This experience explores how sophisticated leaders remove friction, strengthen workflows, and create environments where ambitious teams can perform consistently."},
-  {id:24,cat:"Executive Thinking & Leadership",title:"Learning to Operate at Bigger Levels",dur:"9 min",desc:"A guided visualization on leadership expansion and executive capacity. Learn how sophisticated leaders think in longer timelines, strengthen systems before pressure demands it, and build the internal capacity required for bigger rooms and heavier decisions."},
-  {id:25,cat:"Executive Thinking & Leadership",title:"The Shift Into Executive Thinking",dur:"9 min",desc:"One of the most difficult transitions in a career — when the skills that got you here are no longer the skills required. This experience guides you through the cognitive shift itself."},
-  {id:26,cat:"Executive Thinking & Leadership",title:"When a Founder Becomes Their Own Bottleneck",dur:"8 min",desc:"The business has outgrown the founder's capacity to control everything — but letting go feels like loss of quality. This experience explores the decision to delegate as a leadership act, not an abdication."},
-
-  // Recovery
-  {id:27,cat:"Recovery & Reset",title:"After a Public Failure: Rebuilding Narrative",dur:"8 min",desc:"Something went wrong publicly. The narrative is set — unless you set a better one. This experience explores how leaders rebuild credibility, frame failure productively, and return to the room with authority."},
-  {id:28,cat:"Recovery & Reset",title:"When Waiting Reveals the Real Signal",dur:"7 min",desc:"The discomfort of not knowing — and the impulse to force resolution too early. This experience helps you sit with uncertainty long enough to let the real signal emerge."},
-  {id:29,cat:"Recovery & Reset",title:"Confusing Motion With Progress",dur:"5 min",desc:"Busy is not the same as productive. This experience interrupts the cycle of activity that feels like momentum but is actually avoidance — and helps you return to what actually matters."},
-  {id:30,cat:"Recovery & Reset",title:"How Founders Burn Out After They Win",dur:"9 min",desc:"The success arrived. So why does it feel empty? This experience explores the psychological aftermath of achieving major goals — and how to reconnect with purpose on the other side of winning."},
-];
+// ── ALL_SESSIONS: built from library-data.js (window.LIBRARY_DATA) ──
+// To add new experiences, update /data/library-data.js only — do not edit this block.
+const ALL_SESSIONS = (function() {
+  var src = (window.LIBRARY_DATA || []);
+  if (!src.length) return []; // library-data.js not loaded — will show empty vault
+  return src.filter(function(r){ return r.is_active !== false; }).map(function(r) {
+    return {
+      id:                   r.sort_order,
+      session_id:           r.session_id || '',
+      cat:                  r.pressure_type || r.subcategory || r.main_category || 'The Vault',
+      main_category:        r.main_category || '',
+      main_category_slug:   r.main_category_slug || '',
+      subcategory:          r.subcategory || '',
+      subcategory_slug:     r.subcategory_slug || '',
+      collection:           r.collection || '',
+      collection_slug:      r.collection_slug || '',
+      pressure_type:        r.pressure_type || '',
+      title:                r.title || '',
+      dur:                  r.duration_label || '7 min',
+      duration_seconds:     r.duration_seconds || 420,
+      desc:                 r.description || '',
+      tags:                 r.tags || [],
+      keywords:             r.keywords || [],
+      audience:             r.audience || [],
+      is_free_preview:      r.is_free_preview || false,
+      featured:             r.featured || false,
+      is_recently_released: r.is_recently_released || false,
+      video_url:            r.video_url || '',
+      bunny_embed_url:      r.bunny_embed_url || '',
+      bunny_playback_url:   r.bunny_playback_url || '',
+      bunny_video_id:       r.bunny_video_id || '',
+      thumbnail_url:        r.thumbnail_url || '',
+      access_level:         r.access_level || 'paid',
+      show_in_vault:        r.show_in_vault !== false
+    };
+  });
+})();
 
 const SITUATION_CATS = [
   {icon:"◈", name:"Authority & Power Dynamics",   cat:"Founder & Investor Intelligence",  hint:"Investor rooms · Board pressure · Signals of doubt"},
@@ -3223,19 +3208,29 @@ var VX_SYNONYM_KEYWORDS = [
 // the original hardcoded sessions so the MVP never goes blank.
 var VX_CATALOG_TABLE = 'sessions';
 var vxCatalogLoadedFromSupabase = false;
-var vxCatalogLoadedFromDataFile = false;
 var vxCatalogLoadAttempted = false;
 var vxVaultMainCategory = null;
 var vxVaultSubcategory = 'All';
-var VX_MAIN_CATEGORY_SHELL = [
-  {icon:'◈', name:'The Rest of Life', hint:'Relationships · family · identity · transitions', desc:'The realities beyond work that still shape how we think, feel, decide, perform, and show up.'},
-  {icon:'◉', name:'Holding Your Ground', hint:'Boundaries · self-respect · composure', desc:'Boundaries, self-respect, confidence, self-trust, emotional composure, difficult conversations, and maintaining your values under pressure.'},
-  {icon:'◎', name:'Navigating the System', hint:'Workplace dynamics · politics · responsibility', desc:'Workplace dynamics, organizational complexity, difficult colleagues, politics, competing agendas, collaboration, and responsibility.'},
-  {icon:'◐', name:'The Hidden Dynamics', hint:'Influence · power · status · resistance', desc:'The unspoken forces shaping decisions, influence, negotiations, stakeholder behavior, power, status, and group dynamics.'},
-  {icon:'◑', name:'Presence in the Room', hint:'Leadership · communication · visibility', desc:'Leadership, influence, communication, executive presence, visibility, stakeholder management, and being heard when it matters most.'},
-  {icon:'◒', name:'Seeing Around Corners', hint:'Product strategy · insight · systems thinking', desc:'Product strategy, innovation, customer insight, prioritization, systems thinking, experimentation, and decision-making in uncertain environments.'},
-  {icon:'◓', name:"Building What's Next", hint:'Founders · growth · scaling · monetization', desc:'Growth, strategy, scaling, founders, entrepreneurs, and business builders navigating the realities of creating and sustaining something meaningful.'}
-];
+// ── VX_MAIN_CATEGORY_SHELL: built from library-data.js (window.MAIN_CATEGORY_DATA) ──
+// To update categories, edit /data/library-data.js only — do not edit this block.
+var VX_MAIN_CATEGORY_SHELL = (function() {
+  var src = window.MAIN_CATEGORY_DATA || [];
+  if (src.length) {
+    return src.map(function(c) {
+      return { icon: c.icon, name: c.name, slug: c.slug || '', hint: c.hint, desc: c.description || '' };
+    });
+  }
+  // Fallback if library-data.js not loaded
+  return [
+    {icon:'◈', name:'The Rest of Life', hint:'Relationships · family · identity · transitions', desc:'The realities beyond work that still shape how we think, feel, decide, perform, and show up.'},
+    {icon:'◉', name:'Holding Your Ground', hint:'Boundaries · self-respect · composure', desc:'Boundaries, self-respect, confidence, self-trust, emotional composure, difficult conversations, and maintaining your values under pressure.'},
+    {icon:'◎', name:'Navigating the System', hint:'Workplace dynamics · politics · responsibility', desc:'Workplace dynamics, organizational complexity, difficult colleagues, politics, competing agendas, collaboration, and responsibility.'},
+    {icon:'◐', name:'The Hidden Dynamics', hint:'Influence · power · status · resistance', desc:'The unspoken forces shaping decisions, influence, negotiations, stakeholder behavior, power, status, and group dynamics.'},
+    {icon:'◑', name:'Presence in the Room', hint:'Leadership · communication · visibility', desc:'Leadership, influence, communication, executive presence, visibility, stakeholder management, and being heard when it matters most.'},
+    {icon:'◒', name:'Seeing Around Corners', hint:'Product strategy · insight · systems thinking', desc:'Product strategy, innovation, customer insight, prioritization, systems thinking, experimentation, and decision-making in uncertain environments.'},
+    {icon:'◓', name:"Building What's Next", hint:'Founders · growth · scaling · monetization', desc:'Growth, strategy, scaling, founders, entrepreneurs, and business builders navigating the realities of creating and sustaining something meaningful.'}
+  ];
+})();
 
 function vxArrayFromMaybe(value) {
   if (!value) return [];
@@ -3249,35 +3244,6 @@ function vxCatalogDescription(row) {
   var desc = row.description || row.session_description || '';
   return String(desc || '').trim() || 'Description coming soon.';
 }
-function vxAudienceLabel(value) {
-  if (!value) return '';
-  if (Array.isArray(value)) return value.filter(Boolean).join(', ');
-  return String(value || '');
-}
-function vxDataFileRows() {
-  return (window.LIBRARY_DATA && Array.isArray(window.LIBRARY_DATA)) ? window.LIBRARY_DATA : ((window.VX_LIBRARY && Array.isArray(window.VX_LIBRARY)) ? window.VX_LIBRARY : []);
-}
-function vxDataFileMainCategories() {
-  return (window.MAIN_CATEGORY_DATA && Array.isArray(window.MAIN_CATEGORY_DATA)) ? window.MAIN_CATEGORY_DATA : ((window.VX_MAIN_CATEGORIES && Array.isArray(window.VX_MAIN_CATEGORIES)) ? window.VX_MAIN_CATEGORIES : []);
-}
-function vxApplyMainCategoryDataFile() {
-  var rows = vxDataFileMainCategories();
-  if (!rows.length) return;
-  var icons = ['◈','◉','◎','◐','◑','◒','◓','◇','◆','▣'];
-  var existing = {};
-  VX_MAIN_CATEGORY_SHELL.forEach(function(x){ existing[x.name] = x; });
-  rows.forEach(function(row, i){
-    var name = row.name || row.main_category || row.title;
-    if (!name) return;
-    var shell = existing[name] || { icon:icons[i % icons.length], name:name };
-    shell.name = name;
-    shell.slug = row.slug || row.main_category_slug || shell.slug || '';
-    shell.desc = row.description || row.main_category_description || shell.desc || '';
-    shell.hint = row.hint || shell.hint || 'Guided experiences';
-    shell.icon = shell.icon || icons[i % icons.length];
-    if (!existing[name]) { VX_MAIN_CATEGORY_SHELL.push(shell); existing[name] = shell; }
-  });
-}
 function vxDurationToMinutes(label) {
   var s = String(label || '').trim();
   if (!s || s.toLowerCase() === 'unknown') return 7;
@@ -3288,86 +3254,35 @@ function vxDurationToMinutes(label) {
 }
 function vxNormalizeCatalogSession(row, index) {
   var sort = Number(row.sort_order || 0);
-  var id = index + 1;
+  var id = sort > 0 ? sort : (index + 1000);
   var main = row.main_category || row.scenario_pod || row.category || 'The Vault';
   var sub = row.subcategory || row.pressure_type || '';
   var collection = row.collection || '';
   var tags = vxArrayFromMaybe(row.tags);
   var keywords = vxArrayFromMaybe(row.keywords);
-  var audience = vxAudienceLabel(row.audience || '');
+  var audience = row.audience || '';
   var durationLabel = row.duration_label || row.duration || '';
-  var videoUrl = row.video_url || row.bunny_url || row.bunny_embed_url || row.bunny_playback_url || '';
   return {
     id: id,
-    catalogId: row.session_id || row.catalog_id || row.id || String(id),
-    sourceId: row.id || row.session_id || String(id),
+    catalogId: row.session_id || row.id || String(id),
     cat: main,
     main_category: main,
-    main_category_slug: row.main_category_slug || '',
-    main_category_description: row.main_category_description || '',
     subcategory: sub,
-    subcategory_slug: row.subcategory_slug || '',
     collection: collection,
-    collection_slug: row.collection_slug || '',
     title: row.title || 'Untitled session',
     dur: durationLabel || (row.duration_seconds ? Math.round(Number(row.duration_seconds)/60) + ' min' : '7 min'),
-    duration: durationLabel || '',
     desc: vxCatalogDescription(row),
-    description: vxCatalogDescription(row),
     pressure_type: row.pressure_type || sub || collection || main,
     audience: audience,
     tags: tags,
     keywords: keywords,
     bunny_video_id: row.bunny_video_id || '',
-    bunny_embed_url: row.bunny_embed_url || videoUrl,
-    bunny_playback_url: row.bunny_playback_url || videoUrl,
-    video_url: videoUrl,
+    bunny_embed_url: row.bunny_embed_url || '',
+    bunny_playback_url: row.bunny_playback_url || '',
     thumbnail_url: row.thumbnail_url || '',
-    access_level: row.access_level || 'paid',
-    is_free_preview: !!(row.is_free_preview || row.is_preview || row.access_level === 'free'),
-    is_recently_released: !!row.is_recently_released,
-    featured: !!row.featured,
-    sort_order: sort || id,
-    is_active: row.is_active !== false && row.status !== 'inactive' && row.status !== 'draft',
-    show_in_vault: row.show_in_vault !== false
+    is_free_preview: !!row.is_free_preview,
+    is_active: row.is_active !== false
   };
-}
-function vxExpandLibraryDataRows(rows) {
-  var out = [];
-  (rows || []).forEach(function(row){
-    if (!row || row.status === 'inactive' || row.show_in_vault === false) return;
-    var cats = Array.isArray(row.categories) && row.categories.length ? row.categories : [null];
-    cats.forEach(function(catEntry){
-      if (catEntry && catEntry.show_in_vault === false) return;
-      var merged = Object.assign({}, row, catEntry || {});
-      delete merged.categories;
-      if (merged.status === 'inactive') return;
-      out.push(merged);
-    });
-  });
-  return out;
-}
-function vxLoadSessionsFromLibraryData(force) {
-  var rows = vxDataFileRows();
-  if (!rows.length) return false;
-  try {
-    vxApplyMainCategoryDataFile();
-    var expanded = vxExpandLibraryDataRows(rows);
-    var mapped = expanded.map(vxNormalizeCatalogSession).filter(function(s){ return s.is_active && s.show_in_vault !== false; });
-    if (!mapped.length) return false;
-    mapped.sort(function(a,b){ return (a.sort_order || a.id) - (b.sort_order || b.id); });
-    ALL_SESSIONS.splice(0, ALL_SESSIONS.length);
-    mapped.forEach(function(s, i){ s.id = i + 1; ALL_SESSIONS.push(s); });
-    vxCatalogLoadedFromDataFile = true;
-    vxCatalogLoadedFromSupabase = false;
-    vxRefreshSituationCatsFromSessions();
-    vxHydrateSessionSearchFields();
-    try { localStorage.setItem('vx_catalog_loaded_from', 'data/library-data.js'); localStorage.setItem('vx_catalog_loaded_at', new Date().toISOString()); } catch(e) {}
-    return true;
-  } catch(e) {
-    console.warn('VisualizeX data/library-data.js could not be loaded:', e.message || e);
-    return false;
-  }
 }
 function vxRefreshSituationCatsFromSessions() {
   if (typeof SITUATION_CATS === 'undefined' || !Array.isArray(SITUATION_CATS)) return;
@@ -3389,15 +3304,8 @@ function vxRefreshSituationCatsFromSessions() {
   });
 }
 async function vxLoadSessionsFromSupabase(force) {
-  if (vxCatalogLoadAttempted && !force) return (vxCatalogLoadedFromDataFile || vxCatalogLoadedFromSupabase);
+  if (vxCatalogLoadAttempted && !force) return vxCatalogLoadedFromSupabase;
   vxCatalogLoadAttempted = true;
-
-  // Primary MVP catalogue source: /data/library-data.js.
-  // This keeps the 16k+ line content library out of index.html.
-  // Updating the GitHub data file updates the dashboard on the next Vercel deploy.
-  if (vxLoadSessionsFromLibraryData(force)) return true;
-
-  // Optional future fallback/source: Supabase sessions table.
   if (!vxSupabase) return false;
   try {
     var result = await vxSupabase
@@ -3478,10 +3386,6 @@ function vxOpenSearchResult(sessionId, query, source) {
 window.addEventListener('online', vxFlushEventQueue);
 window.addEventListener('focus', function(){ vxFlushEventQueue(); });
 
-
-// Load /data/library-data.js immediately if it is available before the app bridge starts.
-// The async loader above will also call this, but this gives the dashboard content straight away.
-try { vxLoadSessionsFromLibraryData(false); } catch(e) {}
 
 // init() handled by VX bridge
 
@@ -3951,7 +3855,7 @@ function showView(view) {
 
   const titles = {
     dashboard:'Home', vault:'The Vault', saved:'Saved Sessions',
-    recent:'Recent Sessions', situations:'The Vault',
+    recent:'Recent Sessions', situations:'Main Categories',
     account:'Membership', billing:'Billing History',
     settings:'Account Settings', support:'Help & Support', admin:'Admin Dashboard'
   };
@@ -4004,17 +3908,12 @@ function renderRecent() {
 
 
 function vxGetMainCategoryShell(name) {
-  var shell = VX_MAIN_CATEGORY_SHELL.find(function(x){ return x.name === name; }) || null;
-  if (!shell && vxDataFileMainCategories().length) {
-    var row = vxDataFileMainCategories().find(function(x){ return (x.name || x.main_category) === name; });
-    if (row) shell = { name:name, desc: row.description || row.main_category_description || '', hint: row.hint || 'Guided experiences' };
-  }
-  return shell;
+  return VX_MAIN_CATEGORY_SHELL.find(function(x){ return x.name === name; }) || null;
 }
 function vxGetMainCategories() {
   var names = [];
   // Once real catalog data is loaded, it becomes the source for which categories are populated.
-  if ((vxCatalogLoadedFromSupabase || vxCatalogLoadedFromDataFile) && Array.isArray(ALL_SESSIONS) && ALL_SESSIONS.length) {
+  if (vxCatalogLoadedFromSupabase && Array.isArray(ALL_SESSIONS) && ALL_SESSIONS.length) {
     ALL_SESSIONS.forEach(function(s){
       var n = s.main_category || s.cat || 'The Vault';
       if (names.indexOf(n) === -1) names.push(n);
@@ -4064,11 +3963,6 @@ function showVaultSubcategory(mainCat, subcat) {
 }
 
 function renderSituations() {
-  // v6.9.2: Main Categories is no longer a separate menu destination.
-  // Scenario Pods now live inside The Vault, so any old call lands on Vault overview.
-  vxVaultMainCategory = null;
-  vxVaultSubcategory = 'All';
-  return renderVault();
   const el = document.getElementById("main-content");
   var cats = vxGetMainCategories();
   el.innerHTML = `
@@ -4080,7 +3974,7 @@ function renderSituations() {
         var hint = shell.hint || vxSubcategoriesForMainCategory(cat).slice(0,3).join(' · ') || 'Sessions coming soon';
         var icon = shell.icon || ['◈','◉','◎','◐','◑','◒','◓'][i % 7];
         return `
-      <div class="sit-card" onclick="showVaultMainCategory('${vxSafeOnclickArg(cat)}')">
+      <div class="sit-card" onclick="showCategory('${vxSafeOnclickArg(cat)}')">
         <div class="sit-icon">${icon}</div>
         <p class="sit-name">${cat}</p>
         <p class="sit-count">${hint}${sessions.length ? ' · ' + sessions.length + ' sessions' : ''}</p>
@@ -4169,17 +4063,11 @@ function renderSupport() {
 }
 
 function showCategory(cat) {
-  // Backward-compatible helper used by older cards/search results.
-  // Main category cards should open inside The Vault, not a separate menu item.
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
-  var navVault = document.getElementById('nav-vault');
-  if (navVault) navVault.classList.add('active');
-  vxVaultMainCategory = cat;
-  vxVaultSubcategory = 'All';
-  document.getElementById('topbar-title').textContent = 'The Vault';
+  document.getElementById('topbar-title').textContent = cat;
   const el = document.getElementById('main-content');
   el.className = 'content fade-in';
-  renderVault();
+  renderCategoryView(cat);
 }
 
 function vxAccessLocked() {
@@ -4274,8 +4162,11 @@ function renderDashboard() {
       completedSessions.map(function(s){ return '<div class="rc" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'rc-save') + '<span class="rc-cat">' + s.cat + '</span><p class="rc-title">' + s.title + '</p><span class="rc-meta">' + s.dur + ' · Completed</span></div>'; }).join('') + '</div>'
     : '';
 
-  var latestIds = [30,29,28,27,26,25];
-  var latestHtml = latestIds.map(function(id){return ALL_SESSIONS.find(function(s){return s.id===id;});}).filter(Boolean).slice(0,3).map(function(s){ return '<div class="feat-card" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'feat-save') + '<div class="feat-label">Recently Released</div><p class="feat-title">' + s.title + '</p><p class="feat-sub">' + s.desc.slice(0,110) + '&hellip;</p><div class="feat-meta"><span class="feat-dur">⌚ ' + s.dur + '</span><div class="feat-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:1px"><polygon points="6,3 20,12 6,21"/></svg></div></div></div>'; }).join('');
+  // Recently Released: driven by is_recently_released flag in library-data.js
+  var latestSessions = ALL_SESSIONS.filter(function(s){ return s.is_recently_released; }).slice(0, 6);
+  // Fallback to last 6 by sort_order if no items are flagged
+  if (!latestSessions.length) latestSessions = ALL_SESSIONS.slice(-6).reverse();
+  var latestHtml = latestSessions.slice(0,3).map(function(s){ return '<div class="feat-card" onclick="openPlayer(' + s.id + ')">' + vxSaveHeartButton(s.id, 'feat-save') + '<div class="feat-label">Recently Released</div><p class="feat-title">' + s.title + '</p><p class="feat-sub">' + s.desc.slice(0,110) + '&hellip;</p><div class="feat-meta"><span class="feat-dur">⌚ ' + s.dur + '</span><div class="feat-play"><svg width="10" height="10" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:1px"><polygon points="6,3 20,12 6,21"/></svg></div></div></div>'; }).join('');
 
   el.className = 'content fade-in dashboard-home';
   var trialState = checkTrial();
@@ -4290,7 +4181,7 @@ function renderDashboard() {
     trialIntro + renderTrialTestPanel() +
     '<div class="time-banner"><div class="tb-line"></div><div class="tb-inner"><p>The Vault</p><p>' + contextLine + '</p></div></div>' +
     searchHomeHtml + continueHtml + savedPreview + recentHtml + oftenHtml +
-    (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="vxVaultMainCategory=null;vxVaultSubcategory='All';showView('vault')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
+    (accessOpen ? '<div class="section-head"><h2 class="fd">Scenario Pods</h2><span class="see-all" onclick="showView(\'situations\')">All scenario pods &rarr;</span></div><div class="sit-grid">' + sitHtml + '</div>' : '') +
     completedHtml +
     (accessOpen ? '<div class="section-head"><h2 class="fd">Recently Released <span class="section-mood">New in the vault</span></h2><span class="see-all" onclick="showView(\'vault\')">Open the vault &rarr;</span></div><div class="feat-grid">' + latestHtml + '</div>' : '');
 }
@@ -4316,31 +4207,6 @@ function getRecommended() {
 }
 
 
-function vxMainCategoryCardGrid() {
-  var cats = vxGetMainCategories();
-  if (!cats.length) {
-    return '<div class="empty-state"><p class="fd">The Vault is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Add sessions to data/library-data.js and they will appear here automatically.</span></p></div>';
-  }
-  return '<div class="sit-grid" style="margin-bottom:40px">' + cats.map(function(cat, i){
-    var shell = vxGetMainCategoryShell(cat) || {};
-    var sessions = vxSessionsForMainCategory(cat);
-    var hint = shell.hint || vxSubcategoriesForMainCategory(cat).slice(0,3).join(' · ') || 'Sessions coming soon';
-    var icon = shell.icon || ['◈','◉','◎','◐','◑','◒','◓'][i % 7];
-    return '<div class="sit-card" role="button" tabindex="0" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(cat) + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showVaultMainCategory(\'' + vxSafeOnclickArg(cat) + '\')}" style="cursor:pointer">' +
-      '<div class="sit-icon">' + icon + '</div>' +
-      '<p class="sit-name">' + cat + '</p>' +
-      '<p class="sit-count">' + hint + (sessions.length ? ' · ' + sessions.length + ' sessions' : '') + '</p>' +
-    '</div>';
-  }).join('') + '</div>';
-}
-
-function showVaultOverview() {
-  vxVaultMainCategory = null;
-  vxVaultSubcategory = 'All';
-  document.getElementById('topbar-title').textContent = 'The Vault';
-  renderVault();
-}
-
 function renderVault() {
   const el = document.getElementById('main-content');
   if (!hasVaultAccess()) {
@@ -4349,22 +4215,8 @@ function renderVault() {
       vxLockedRecentPreview(2);
     return;
   }
-
   var mainCats = vxGetMainCategories();
-
-  // Default Vault landing: show the main category cards first.
-  // The user then clicks a main category and sees subcategory tabs + sessions.
-  if (!vxVaultMainCategory) {
-    el.innerHTML = `
-      <div class="welcome-row">
-        <h1 class="fd">The Vault</h1>
-        <p>Browse by main category. Choose a category to open its subcategories and experiences. Descriptions, tags and Bunny URLs can be added progressively.</p>
-      </div>
-      ${vxMainCategoryCardGrid()}`;
-    return;
-  }
-
-  if (mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0] || 'The Vault';
+  if (!vxVaultMainCategory || mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0] || 'The Vault';
   var allForMain = vxSessionsForMainCategory(vxVaultMainCategory);
   var subcats = vxSubcategoriesForMainCategory(vxVaultMainCategory);
   if (vxVaultSubcategory !== 'All' && subcats.indexOf(vxVaultSubcategory) === -1) vxVaultSubcategory = 'All';
@@ -4373,11 +4225,11 @@ function renderVault() {
     return (s.subcategory || s.pressure_type || s.collection || 'Uncategorized') === vxVaultSubcategory;
   });
   var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
-  var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Add or check records for this category in data/library-data.js. Descriptions, tags and Bunny URLs can remain blank during MVP setup.</span></p></div>';
+  var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Import the titles for this category into Supabase and they will appear here automatically.</span></p></div>';
   el.innerHTML = `
     <div class="welcome-row">
-      <h1 class="fd">${vxVaultMainCategory}</h1>
-      <p><span class="see-all" onclick="showVaultOverview()">← All main categories</span></p>
+      <h1 class="fd">The Vault</h1>
+      <p>Switch between main categories, then narrow into subcategories inside each category.</p>
     </div>
     ${vxMainCategoryTabs(vxVaultMainCategory)}
     <div class="vx-category-summary"><p>${vxVaultMainCategory}</p><p>${shell.desc || 'Guided experiences grouped around this part of the VisualizeX library.'}</p></div>
