@@ -1573,6 +1573,14 @@ var ACCESS_KEY = 'vx_a';
 var VX_MAX_SAVED_SESSIONS = 10;
 var PROGRESS_KEY = 'vx_progress';
 var TRIAL_KEY = 'vx_t';
+var SAVED_KEY = 'vx_saved';
+var RECENT_KEY = 'vx_recent';
+
+// Runtime session state
+var savedSessions  = JSON.parse(localStorage.getItem('vx_saved')  || '[]');
+var recentSessions = JSON.parse(localStorage.getItem('vx_recent') || '[]');
+var currentSession = null;
+var playerProgress = 0;
 
 // Supabase connection for the live VisualizeX project.
 // These are public browser keys; data access is protected by Supabase Row Level Security.
@@ -3639,36 +3647,52 @@ function vxRefreshSituationCatsFromSessions() {
   });
 }
 // ── LIBRARY DATA BRIDGE ──
-// Enriches ALL_SESSIONS entries with rich data from data/library-data.js (LIBRARY_DATA).
-// Matched by title. When LIBRARY_DATA is updated, the dashboard automatically reflects it.
-// Also appends any LIBRARY_DATA sessions that don't yet exist in the static ALL_SESSIONS.
+// LIBRARY_DATA (data/library-data.js) is the source of truth for rich session content.
+// This bridge runs on page load and:
+//   1. Matches LIBRARY_DATA entries to ALL_SESSIONS shells by normalized title
+//   2. Fully overwrites the shell with LIBRARY_DATA values (description, tags, category, etc.)
+//   3. Appends any LIBRARY_DATA session whose title doesn't exist in ALL_SESSIONS at all
+// To update the dashboard: edit library-data.js only. No changes to index.html needed.
+function vxNormalizeTitle(t) {
+  // Normalize apostrophes, curly quotes, and whitespace for reliable matching
+  return String(t || '').toLowerCase()
+    .replace(/[‘’ʼ`\']/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/\s+/g, ' ').trim();
+}
 function vxHydrateFromLibraryData() {
   if (!window.LIBRARY_DATA || !Array.isArray(window.LIBRARY_DATA)) return;
+  // Build a normalized-title → index map of ALL_SESSIONS
   var titleMap = {};
-  ALL_SESSIONS.forEach(function(s) { titleMap[s.title] = s; });
+  ALL_SESSIONS.forEach(function(s, i) {
+    titleMap[vxNormalizeTitle(s.title)] = i;
+  });
   window.LIBRARY_DATA.forEach(function(row, idx) {
-    var existing = titleMap[row.title];
-    if (existing) {
-      // Enrich existing entry
-      if (row.description) existing.desc = row.description;
-      if (row.tags && row.tags.length) existing.tags = row.tags;
-      if (row.keywords && row.keywords.length) existing.keywords = row.keywords;
-      if (row.bunny_video_id) existing.bunny_video_id = row.bunny_video_id;
-      if (row.bunny_embed_url) existing.bunny_embed_url = row.bunny_embed_url;
-      if (row.bunny_playback_url) existing.bunny_playback_url = row.bunny_playback_url;
-      if (row.video_url) existing.video_url = row.video_url;
-      if (row.thumbnail_url) existing.thumbnail_url = row.thumbnail_url;
-      if (row.duration_label) existing.dur = row.duration_label;
-      if (row.subcategory) existing.subcategory = row.subcategory;
-      if (row.collection) existing.collection = row.collection;
-      if (row.main_category) { existing.main_category = row.main_category; existing.cat = row.main_category; }
-      existing.is_free_preview = !!row.is_free_preview;
-      existing.is_active = row.is_active !== false;
+    var key = vxNormalizeTitle(row.title);
+    var existingIdx = titleMap[key];
+    if (existingIdx !== undefined) {
+      // Overwrite shell with full LIBRARY_DATA values
+      var s = ALL_SESSIONS[existingIdx];
+      s.desc          = row.description || s.desc || '';
+      s.tags          = (row.tags && row.tags.length)     ? row.tags     : s.tags;
+      s.keywords      = (row.keywords && row.keywords.length) ? row.keywords : s.keywords;
+      s.dur           = row.duration_label || s.dur;
+      s.subcategory   = row.subcategory   || s.subcategory;
+      s.collection    = row.collection    || s.collection;
+      s.pressure_type = row.pressure_type || s.pressure_type;
+      if (row.main_category) { s.main_category = row.main_category; s.cat = row.main_category; }
+      s.bunny_video_id    = row.bunny_video_id    || s.bunny_video_id    || '';
+      s.bunny_embed_url   = row.bunny_embed_url   || s.bunny_embed_url   || '';
+      s.bunny_playback_url= row.bunny_playback_url|| s.bunny_playback_url|| '';
+      s.video_url         = row.video_url         || s.video_url         || '';
+      s.thumbnail_url     = row.thumbnail_url     || s.thumbnail_url     || '';
+      s.is_free_preview   = !!row.is_free_preview;
+      s.is_active         = row.is_active !== false;
     } else {
-      // Add new session not yet in static list
+      // Genuinely new session — normalize and append
       var normalized = vxNormalizeCatalogSession(row, idx);
       ALL_SESSIONS.push(normalized);
-      titleMap[row.title] = normalized;
+      titleMap[key] = ALL_SESSIONS.length - 1;
     }
   });
 }
