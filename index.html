@@ -948,6 +948,23 @@ body.vx-app-open{overflow-x:hidden}
 .vx-category-summary p:last-child{font-size:.84rem;font-weight:300;color:var(--c55);line-height:1.7}
 @media(max-width:700px){.vx-tab-row{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}.vx-main-tab,.vx-sub-tab{white-space:nowrap}}
 
+/* ── v7.0 VAULT BREADCRUMB + EXIT (cognitive-load reduction) ── */
+.vx-breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:10px 14px;background:rgba(0,180,160,.04);border:1px solid rgba(0,180,160,.12);border-radius:4px}
+.vx-crumb{background:transparent;border:none;color:var(--c55);font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:400;cursor:pointer;padding:4px 6px;border-radius:2px;transition:color .15s}
+.vx-crumb:hover{color:var(--tq)}
+.vx-crumb.active{color:var(--cream);font-weight:500}
+.vx-crumb.leaf{color:var(--goldB);cursor:default;font-style:italic;padding:4px 6px}
+.vx-crumb-sep{color:rgba(249,240,225,.2);font-size:.75rem;user-select:none}
+.vx-clear-filter{margin-left:auto;background:transparent;border:1px solid rgba(185,147,66,.35);color:var(--goldB);font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.05em;cursor:pointer;padding:5px 10px;border-radius:3px;transition:all .15s}
+.vx-clear-filter:hover{background:rgba(185,147,66,.1);border-color:var(--goldB)}
+.vx-subtab-row{margin-top:-6px}
+
+/* Session card v7.0: category row, subcategory pill, audience badge */
+.sess-cat-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.sess-sub{font-size:.65rem;font-weight:400;color:var(--c55);background:rgba(249,240,225,.045);border:1px solid rgba(249,240,225,.08);padding:2px 7px;border-radius:2px;letter-spacing:.02em}
+.sess-aud{font-size:.6rem;font-weight:500;color:var(--goldB);background:rgba(185,147,66,.08);border:1px solid rgba(185,147,66,.22);padding:2px 7px;border-radius:2px;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:700px){.vx-breadcrumb{padding:8px 10px}.vx-clear-filter{margin-left:0;margin-top:6px;width:100%;text-align:center}}
+
 </style>
 
 <style>
@@ -1240,11 +1257,11 @@ body.vx-app-open{overflow-x:hidden}
       <p style="font-size:.95rem;font-weight:300;color:var(--c55);max-width:400px;margin:0 auto;line-height:1.85">Unlock a free pressure session.<br>No account needed.</p>
     </div>
     <div class="reveal-stagger vid-grid" id="site-preview-grid">
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 1 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/LK1NSddk4xU','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Room Tests the Limits of an Idea</p><p class="vi-d">Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 2 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/qAzPqF85W_w','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Founder &amp; Investor Intelligence</span><p class="vi-t">Building a Category-Defining Brand</p><p class="vi-d">Category leaders don't just compete — they create the standards the market starts adapting to. This is how they think.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">9 min</div><div class="va-n">Preview 3 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/3gtwgTaOkn4','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Executive Thinking &amp; Leadership</span><p class="vi-t">Scaling Without Burning the Team</p><p class="vi-d">The strongest organisations sustain performance through clarity and structure — not exhaustion.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 4 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/RYz_4qTmRR8','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Room Dynamics &amp; Influence</span><p class="vi-t">When the Decision Isn't Made in the Room</p><p class="vi-d">Interest is high but authority sits elsewhere. Learn to uncover the real decision path.</p><span class="vi-free">Free · No account needed</span></div></div>
-      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">6 min</div><div class="va-n">Preview 5 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/PJxJ4zpQ-Cg','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Self-Regulation Under Pressure</span><p class="vi-t">Let the Moment Pass Without Entering It</p><p class="vi-d">Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 1 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/LK1NSddk4xU','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">The Hidden Dynamics</span><p class="vi-t">When the Room Tests the Limits of an Idea</p><p class="vi-d">Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 2 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/qAzPqF85W_w','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Building What's Next</span><p class="vi-t">Building a Category-Defining Brand</p><p class="vi-d">Category leaders don't just compete — they create the standards the market starts adapting to. This is how they think.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">9 min</div><div class="va-n">Preview 3 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/3gtwgTaOkn4','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Building What's Next</span><p class="vi-t">Scaling Without Burning the Team</p><p class="vi-d">The strongest organisations sustain performance through clarity and structure — not exhaustion.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">7 min</div><div class="va-n">Preview 4 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/RYz_4qTmRR8','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">The Hidden Dynamics</span><p class="vi-t">When the Decision Isn't Made in the Room</p><p class="vi-d">Interest is high but authority sits elsewhere. Learn to uncover the real decision path.</p><span class="vi-free">Free · No account needed</span></div></div>
+      <div class="vc" style="min-height:420px;display:flex;flex-direction:column;"><div class="va" style="position:relative"><div class="va-glow"></div><div class="va-dur">6 min</div><div class="va-n">Preview 5 of 5</div><button onclick="event.stopPropagation();window.open('https://youtu.be/PJxJ4zpQ-Cg','_blank')" class="preview-play-btn">▶</button><div class="va-fade"></div></div><div class="vi"><span class="vi-cat">Holding Your Ground</span><p class="vi-t">Let the Moment Pass Without Entering It</p><p class="vi-d">Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.</p><span class="vi-free">Free · No account needed</span></div></div>
     </div>
     <div style="padding:52px 40px;border:1px solid rgba(0,180,160,.15);border-radius:4px;text-align:center;background:rgba(0,180,160,.03);margin-top:12px"><p class="fd" style="font-size:clamp(1.3rem,3vw,2rem);font-weight:400;color:var(--cream);margin-bottom:12px">Unlock the full vault of immersive guided experiences</p><p style="font-size:.9rem;font-weight:300;color:var(--c55);max-width:520px;margin:0 auto 28px;line-height:1.85">Your next pressure moment may not give you time to prepare. Open the members vault now and keep the right session close before the room changes.</p><a class="btn-primary" onclick="unlockVaultPrototype()" style="font-size:.8rem;padding:15px 36px">Unlock the Full Vault</a></div>
   </div>
@@ -1411,7 +1428,6 @@ body.vx-app-open{overflow-x:hidden}
     <div class="sb-nav">
       <span class="sb-section">Core</span>
       <div class="sb-link active" onclick="showView('dashboard')" id="nav-dashboard"><span class="sb-icon">◈</span> Home</div>
-      <div class="sb-link" onclick="showView('situations')" id="nav-situations"><span class="sb-icon">◎</span> Main Categories</div>
       <div class="sb-link" onclick="showView('vault')" id="nav-vault"><span class="sb-icon">▤</span> The Vault</div>
       <!-- Search now lives only in the top bar to keep the sidebar compact. -->
       <div class="sb-link" onclick="showView('saved')" id="nav-saved"><span class="sb-icon">♡</span> Saved Sessions</div>
@@ -2092,11 +2108,11 @@ function buildSitePreview() {
     }, { passive: true });
   }
   var PREVIEWS = [
-    {cat:'Room Dynamics & Influence', title:'When the Room Tests the Limits of an Idea', dur:'8 min', desc:'Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.'},
-    {cat:'Founder & Investor Intelligence', title:'Building a Category-Defining Brand', dur:'9 min', desc:'Category leaders create the standards the market starts adapting to. This is how they think.'},
-    {cat:'Executive Thinking & Leadership', title:'Scaling Without Burning the Team', dur:'9 min', desc:'The strongest organisations sustain performance through clarity and structure — not exhaustion.'},
-    {cat:'Room Dynamics & Influence', title:'When the Decision Isn\'t Made in the Room', dur:'7 min', desc:'Interest is high but authority sits elsewhere. Learn to uncover the real decision path.'},
-    {cat:'Self-Regulation Under Pressure', title:'Let the Moment Pass Without Entering It', dur:'6 min', desc:'Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.'},
+    {cat:'The Hidden Dynamics',     title:'When the Room Tests the Limits of an Idea',          dur:'6:06', desc:'Curiosity turns to scrutiny. Experience the moment when influential conversations quietly evaluate whether your idea can survive pressure.'},
+    {cat:"Building What's Next",    title:'Building a Category-Defining Brand',                  dur:'6:49', desc:'Category leaders create the standards the market starts adapting to. This is how they think.'},
+    {cat:"Building What's Next",    title:'Scaling Without Burning the Team',                    dur:'6:50', desc:'The strongest organisations sustain performance through clarity and structure — not exhaustion.'},
+    {cat:'The Hidden Dynamics',     title:"When the Decision Isn't Made in the Room",            dur:'4:43', desc:'Interest is high but authority sits elsewhere. Learn to uncover the real decision path.'},
+    {cat:'Holding Your Ground',     title:'Let the Moment Pass Without Entering It (Version 1)', dur:'6:18', desc:'Notice the emotional charge. Stay anchored. Let the reaction pass — and restore calm and choice.'},
   ];
   el.innerHTML = PREVIEWS.map(function(v,i) {
     return '<div style="border:1px solid rgba(185,147,66,.15);border-radius:4px;overflow:hidden;background:rgba(12,35,33,.7);transition:transform .3s,border-color .3s;cursor:pointer">' +
@@ -2937,26 +2953,26 @@ function renderGuestDashboard() {
   el.className = 'content fade-in';
 
   var freeSessions = [
-    {id:7,  cat:'Room Dynamics & Influence',       title:'When the Room Tests the Limits of an Idea', dur:'8 min'},
-    {id:16, cat:'Self-Regulation Under Pressure',  title:'Let the Moment Pass Without Entering It',   dur:'6 min'},
-    {id:5,  cat:'Founder & Investor Intelligence', title:'The Walk-Away Decision',                     dur:'5 min'},
+    {id:151,cat:'The Hidden Dynamics',       title:'When the Room Tests the Limits of an Idea', dur:'6:06'},
+    {id:99, cat:'Holding Your Ground',       title:'Let the Moment Pass Without Entering It (Version 1)', dur:'6:18'},
+    {id:148,cat:'The Hidden Dynamics',       title:'The Deal Gets Expensive Before the Contract',          dur:'6:59'},
   ];
 
   var situations = [
-    {icon:'&#x25C8;', name:'Investor Rooms',            cat:'Founder & Investor Intelligence',  locked:false},
-    {icon:'&#x25C9;', name:'Navigating the Room',        cat:'Room Dynamics & Influence',        locked:false},
-    {icon:'&#x25CE;', name:'Communication Pressure',     cat:'High-Stakes Communication',        locked:false},
-    {icon:'&#x25D0;', name:'Emotional Regulation',        cat:'Self-Regulation Under Pressure',  locked:true},
-    {icon:'&#x25D1;', name:'Commercial Decisions',        cat:'Commercial & Business Decisions', locked:true},
-    {icon:'&#x25D2;', name:'Executive Presence',          cat:'Executive Thinking & Leadership', locked:true},
-    {icon:'&#x25D3;', name:'Recovery & Reset',            cat:'Recovery & Reset',                locked:true},
+    {icon:'&#x25C8;', name:'The Rest of Life',          cat:'The Rest of Life',          locked:false},
+    {icon:'&#x25C9;', name:'Holding Your Ground',       cat:'Holding Your Ground',       locked:false},
+    {icon:'&#x25CE;', name:'Navigating the System',     cat:'Navigating the System',     locked:false},
+    {icon:'&#x25D0;', name:'The Hidden Dynamics',       cat:'The Hidden Dynamics',       locked:true},
+    {icon:'&#x25D1;', name:'Presence in the Room',      cat:'Presence in the Room',      locked:true},
+    {icon:'&#x25D2;', name:'Seeing Around Corners',     cat:'Seeing Around Corners',     locked:true},
+    {icon:'&#x25D3;', name:"Building What's Next",      cat:"Building What's Next",      locked:true},
   ];
 
   var lockedTitles = [
-    {cat:'High-Stakes Communication',       title:'When You Are Put on the Spot Under Pressure'},
-    {cat:'Commercial & Business Decisions', title:'The Deal Gets Expensive Before the Contract'},
-    {cat:'Executive Thinking & Leadership', title:'The Shift Into Executive Thinking'},
-    {cat:'Recovery & Reset',               title:'After a Public Failure: Rebuilding Narrative'},
+    {cat:'Holding Your Ground',     title:'When You Are Put on the Spot Under Pressure'},
+    {cat:'The Hidden Dynamics',     title:'The Deal Gets Expensive Before the Contract'},
+    {cat:'Presence in the Room',    title:'The Shift Into Executive Thinking'},
+    {cat:"Building What's Next",    title:'After the Win: A Guided Visualization for Founders Facing Success Burnout'},
   ];
 
   var freeHtml = freeSessions.map(function(s) {
@@ -3131,72 +3147,386 @@ var vxUser = window.vxUser || null;
 // DATA
 // ══════════════════════════════════════════════
 const ALL_SESSIONS = [
-  // Founder & Investor Intelligence
-  {id:1,cat:"Founder & Investor Intelligence",title:"When Investors Test Your Conviction",dur:"7 min",desc:"Stay grounded when an investor challenges your core belief about the business. Navigate the challenge without crumbling or becoming defensive. Learn how sophisticated founders hold conviction under scrutiny while remaining genuinely open to legitimate challenge."},
-  {id:2,cat:"Founder & Investor Intelligence",title:"Building a Category-Defining Brand",dur:"9 min",desc:"Category leaders don\'t just compete — they create the standards the market starts adapting to. This experience explores how sophisticated founders recognise emerging demand, create language the market repeats, and build brands strong enough to influence how customers understand value."},
-  {id:3,cat:"Founder & Investor Intelligence",title:"How Investors Evaluate Founder Energy",dur:"6 min",desc:"Beyond the numbers, investors are reading you. Your energy, composure, and the way you hold uncertainty in the room all signal whether you're someone they can back for the long term."},
-  {id:4,cat:"Founder & Investor Intelligence",title:"When a Powerful Person Signals Doubt",dur:"8 min",desc:"The moment a senior figure in the room signals scepticism — and the room's energy shifts. How you respond in this moment determines whether you recover authority or lose it completely."},
-  {id:5,cat:"Founder & Investor Intelligence",title:"The Walk-Away Decision",dur:"5 min",desc:"How do you know when a deal isn\'t right — and how do you walk away without burning a relationship? This experience explores the clarity required for the most difficult commercial decisions."},
-  {id:6,cat:"Founder & Investor Intelligence",title:"Valuation Justification Under Pressure",dur:"7 min",desc:"When someone challenges your valuation in the room and wants a number justified in real time. Learn to hold your position with data and composure rather than anxiety."},
-
-  // Room Dynamics
-  {id:7,cat:"Room Dynamics & Influence",title:"When the Room Tests the Limits of an Idea",dur:"8 min",desc:"This guided visualization explores how influential conversations quietly test the strength of an idea. Experience the moment when curiosity turns into scrutiny as participants examine assumptions, challenge risks, and explore whether a concept can survive pressure."},
-  {id:8,cat:"Room Dynamics & Influence",title:"When the Decision Isn\'t Made in the Room",dur:"7 min",desc:"A guided communication scenario that helps you recognise when a meeting is shaping a decision rather than making it. Learn how to uncover the real decision path, ask the right questions about stakeholders and process, and prepare your idea to travel beyond the room effectively."},
-  {id:9,cat:"Room Dynamics & Influence",title:"The Five Hidden Roles in Every Room",dur:"6 min",desc:"Every influential room has power structures that aren\'t visible on the surface. Understanding who actually holds influence, who defers, who tests, and who decides — changes everything about how you show up."},
-  {id:10,cat:"Room Dynamics & Influence",title:"When Status Dynamics Shape Decisions",dur:"8 min",desc:"Status doesn\'t always announce itself. This experience helps you read the invisible hierarchy in any room and understand how decisions are really being shaped."},
-  {id:11,cat:"Room Dynamics & Influence",title:"When a New Participant Changes the Balance",dur:"5 min",desc:"A new person enters the room and the energy shifts. The alliances change. How do you recalibrate quickly without losing your footing?"},
-
-  // High-Stakes Communication
-  {id:12,cat:"High-Stakes Communication",title:"When You\'re Put on the Spot Under Pressure",dur:"7 min",desc:"You didn\'t see the question coming. The room is watching. Every second of hesitation compounds. This experience trains the reset response — how to return to clarity instantly when pressure spikes."},
-  {id:13,cat:"High-Stakes Communication",title:"When You Start Over-Explaining to Be Understood",dur:"6 min",desc:"The moment you realise you're talking too much — and every additional word is making it worse. Learn to stop, reset, and communicate with precision when the pressure to be understood is highest."},
-  {id:14,cat:"High-Stakes Communication",title:"When Someone More Senior Repeats Your Insight",dur:"6 min",desc:"Your idea was just presented back to the room by someone more senior — without attribution. How you handle this moment says more about your professional maturity than the idea itself."},
-  {id:15,cat:"High-Stakes Communication",title:"When Someone Interrupts Mid-Explanation",dur:"5 min",desc:"Being interrupted is a power signal. How you respond — whether you cede ground or hold your thread — determines the dynamic for the rest of the conversation."},
-
-  // Self-Regulation
-  {id:16,cat:"Self-Regulation Under Pressure",title:"Let the Moment Pass Without Entering It",dur:"6 min",desc:"This guided visualization helps you remain steady when strong emotions arise. Instead of suppressing the reaction or getting pulled into it, you practice noticing the emotional charge while keeping part of your awareness anchored and clear."},
-  {id:17,cat:"Self-Regulation Under Pressure",title:"The Pattern Breaker: Strategic Calm",dur:"8 min",desc:"When emotional charge is running the show and you need to interrupt the pattern — without shutting down or exploding. This experience guides you through the exact moment of intervention."},
-  {id:18,cat:"Self-Regulation Under Pressure",title:"When You Almost Give Away Your Position",dur:"7 min",desc:"The moment you feel the urge to concede — not because it\'s right, but because the discomfort of holding has become unbearable. Learn to recognise this moment and stay."},
-  {id:19,cat:"Self-Regulation Under Pressure",title:"Re-Centering Emotionally Charged Discussions",dur:"9 min",desc:"When a conversation has become emotionally loaded and you need to bring it back to productive ground — without dismissing what\'s real or losing the relationship in the process."},
-
-  // Commercial
-  {id:20,cat:"Commercial & Business Decisions",title:"The Deal Gets Expensive Before the Contract",dur:"7 min",desc:"A guided visualization on negotiation psychology, strategic pacing, and protecting long-term leverage. Learn how sophisticated negotiators slow the room down, separate excitement from structure, and recognise when polished language hides expensive terms."},
-  {id:21,cat:"Commercial & Business Decisions",title:"When the Deal Looks Right But Feels Off",dur:"7 min",desc:"The numbers make sense. The terms are fine. But something is off and you can\'t name it. This experience helps you trust and investigate that signal before it costs you."},
-  {id:22,cat:"Commercial & Business Decisions",title:"Deciding When the Data Is Incomplete",dur:"8 min",desc:"The decision can\'t wait for complete information. How do you move forward without recklessness — and without paralysis? This experience explores the quality of decision-making under uncertainty."},
-
-  // Executive
-  {id:23,cat:"Executive Thinking & Leadership",title:"Scaling Without Burning the Team",dur:"9 min",desc:"The strongest organisations sustain performance through clarity and structure — not exhaustion. This experience explores how sophisticated leaders remove friction, strengthen workflows, and create environments where ambitious teams can perform consistently."},
-  {id:24,cat:"Executive Thinking & Leadership",title:"Learning to Operate at Bigger Levels",dur:"9 min",desc:"A guided visualization on leadership expansion and executive capacity. Learn how sophisticated leaders think in longer timelines, strengthen systems before pressure demands it, and build the internal capacity required for bigger rooms and heavier decisions."},
-  {id:25,cat:"Executive Thinking & Leadership",title:"The Shift Into Executive Thinking",dur:"9 min",desc:"One of the most difficult transitions in a career — when the skills that got you here are no longer the skills required. This experience guides you through the cognitive shift itself."},
-  {id:26,cat:"Executive Thinking & Leadership",title:"When a Founder Becomes Their Own Bottleneck",dur:"8 min",desc:"The business has outgrown the founder's capacity to control everything — but letting go feels like loss of quality. This experience explores the decision to delegate as a leadership act, not an abdication."},
-
-  // Recovery
-  {id:27,cat:"Recovery & Reset",title:"After a Public Failure: Rebuilding Narrative",dur:"8 min",desc:"Something went wrong publicly. The narrative is set — unless you set a better one. This experience explores how leaders rebuild credibility, frame failure productively, and return to the room with authority."},
-  {id:28,cat:"Recovery & Reset",title:"When Waiting Reveals the Real Signal",dur:"7 min",desc:"The discomfort of not knowing — and the impulse to force resolution too early. This experience helps you sit with uncertainty long enough to let the real signal emerge."},
-  {id:29,cat:"Recovery & Reset",title:"Confusing Motion With Progress",dur:"5 min",desc:"Busy is not the same as productive. This experience interrupts the cycle of activity that feels like momentum but is actually avoidance — and helps you return to what actually matters."},
-  {id:30,cat:"Recovery & Reset",title:"How Founders Burn Out After They Win",dur:"9 min",desc:"The success arrived. So why does it feel empty? This experience explores the psychological aftermath of achieving major goals — and how to reconnect with purpose on the other side of winning."},
+  {id:1,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Family Relationships',collection:'Family Dynamics',title:'When You Become Childlike Under Pressure with a Parent',dur:'4:20',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:2,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Family Relationships',collection:'Family Dynamics',title:'Holding Your Truth in an Environment That Distorts It',dur:'5:46',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:3,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Family Relationships',collection:'Family Dynamics',title:'Choosing Yourself Without Guilt',dur:'5:02',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:4,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Family Relationships',collection:'Family Dynamics',title:'Protecting Yourself Without Losing Your Values',dur:'2:55',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:5,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'Why Chasing People Lowers Your Value',dur:'5:15',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:6,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'How to Let Go After Investing So Much',dur:'5:46',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:7,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'When There Is No Response, Stop Overthinking the Silence',dur:'6:35',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:8,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'Waiting for the Response: How to Stay Calm When Nothing Comes Back',dur:'6:20',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:9,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'Stuck Between Two Truths',dur:'6:59',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:10,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Relationships & Attachment',collection:'Relational Patterns',title:'When Uncertainty Feels Overwhelming',dur:'8:00',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:11,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Acts Like They\'re Doing You a Favor',dur:'3:35',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:12,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Uses Busyness to Make You Feel Less Important',dur:'3:34',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:13,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Dismisses Something That Matters to You',dur:'3:13',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:14,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Sees You but Does Not Support You',dur:'4:10',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:15,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Controls the Access and You Feel Yourself Chasing',dur:'3:12',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:16,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Difficult People',collection:'Everyday Human Behaviour',title:'When Someone Uses Support Against You',dur:'3:40',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:17,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Personal Transitions',collection:'Moving Forward',title:'Burning Bridge Reset',dur:'2:38',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:18,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Personal Transitions',collection:'Moving Forward',title:'How to Deal with a Job or Project Coming to an End',dur:'7:11',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:19,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Personal Transitions',collection:'Moving Forward',title:'From Surviving to Rising',dur:'5:23',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:20,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Personal Transitions',collection:'Moving Forward',title:'Becoming Unrecognizable',dur:'6:53',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:21,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Personal Transitions',collection:'Moving Forward',title:'Stepping Into Unfamiliar Paths',dur:'7:03',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:22,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'Releasing Comparison and Returning to Yourself',dur:'5:14',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:23,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'Staying Focused When Others Compare Themselves to You',dur:'3:34',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:24,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'How to Deal When Others Compare Themselves to You',dur:'3:34',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:25,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'When You Are Being Compared to an Invisible Standard',dur:'3:15',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:26,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'When You Feel You Need to Prove Your Worth in the Moment',dur:'2:42',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:27,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Identity & Self-Worth',collection:'Returning to Yourself',title:'Stop Negotiating Your Worth Emotionally',dur:'6:50',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:28,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'The Moment It Hits: Sudden Pressure and Disruption',dur:'7:35',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:29,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You Feel the Urge to Fix Everything at Once',dur:'3:04',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:30,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You Want Relief So Badly That You Almost Give Away Your Position',dur:'3:20',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:31,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You Are Holding All of It',dur:'6:20',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:32,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You Realize You Are Learning While Under Pressure',dur:'5:29',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:33,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When Nothing Has Been Resolved, Continue Forward, Hold the Ground',dur:'5:52',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:34,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When the Loop Won\'t Stop, Return to the Present, Slow the System Down',dur:'5:40',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:35,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When It Keeps Coming Back, Return Again, Let the System Settle',dur:'5:47',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:36,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'Before You Sleep, Let the Day Settle, Release What\'s Unresolved',dur:'3:21',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:37,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You See the Patterns Clearly, You Break the Cycle',dur:'8:00',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:38,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Overthinking & Uncertainty',collection:'Navigating Ambiguity',title:'When You Refocus on What Matters, Move with Clarity',dur:'5:58',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:39,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Emotional Exhaustion',dur:'18:34',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:40,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Invisible Weight',dur:'15:16',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:41,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Resonance Fatigue',dur:'14:49',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:42,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Longing for Space to Breathe',dur:'13:24',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:43,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Burnt by Pushing On',dur:'16:36',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:44,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Afraid to Burden Others',dur:'17:40',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:45,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Internalized Burden',dur:'16:49',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:46,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Need for a Sounding Board',dur:'9:03',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:47,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Needing to Trust the Process',dur:'15:57',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:48,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Echo Chamber',dur:'17:03',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:49,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Drowning in What-Ifs',dur:'17:47',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:50,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Overwhelmed by Racing Thoughts',dur:'17:02',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:51,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Mental Traffic Jam',dur:'15:54',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:52,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Embracing the Present: A Moment of Peace',dur:'13:15',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:53,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Finding Inner Strength',dur:'16:36',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:54,cat:'The Rest of Life',main_category:'The Rest of Life',subcategory:'Recovery & Restoration',collection:'Restoring Capacity',title:'Guided Visualization: Facing the Diagnosis',dur:'13:46',desc:'',audience:'Adults',tags:[],keywords:[]},
+  {id:55,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'When Someone Tests Your Boundaries',dur:'6:32',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:56,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Boundary Without Battle',dur:'4:09',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:57,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Respect When the Power Is in the Room',dur:'6:29',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:58,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Choosing Yourself Without Guilt',dur:'5:02',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:59,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Protecting Yourself Without Losing Your Values',dur:'2:55',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:60,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Holding Your Truth in an Environment That Distorts It',dur:'5:46',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:61,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Stop Negotiating Your Worth Emotionally',dur:'6:50',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:62,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Boundaries & Self-Respect',collection:'Holding Your Ground',title:'Power Practically: Calm Boundaries and Self-Trust',dur:'4:05',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:63,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'Becoming Unrecognizable',dur:'6:53',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:64,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'When You Feel You Need to Prove Your Worth in the Moment',dur:'2:42',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:65,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'Staying Grounded When You Are Being Watched',dur:'6:24',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:66,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'When You Realize You Actually Hold Influence',dur:'6:06',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:67,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'From Surviving to Rising',dur:'5:23',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:68,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'Learning to Operate at a Bigger Level',dur:'7:15',desc:'',audience:'Professionals, Founders',tags:[],keywords:[]},
+  {id:69,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Confidence & Self-Trust',collection:'Personal Authority',title:'When Your Authority Is Tested While You Are Still Becoming',dur:'3:59',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:70,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'Why Chasing People Lowers Your Value',dur:'5:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:71,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'Staying Focused When Others Compare Themselves to You',dur:'3:34',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:72,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'How to Deal When Others Compare Themselves to You',dur:'3:34',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:73,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'Releasing Comparison and Returning to Yourself',dur:'5:14',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:74,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'When You Are Being Compared to an Invisible Standard',dur:'3:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:75,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'When Someone Sees You but Does Not Support You',dur:'4:10',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:76,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Comparison & External Validation',collection:'Returning to Yourself',title:'When Someone Uses Busyness to Make You Feel Less Important',dur:'3:34',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:77,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Dismisses Something That Matters to You',dur:'3:13',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:78,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Acts Like They\'re Doing You a Favor',dur:'3:35',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:79,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Controls the Access and You Feel Yourself Chasing',dur:'3:12',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:80,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Uses Support Against You',dur:'3:40',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:81,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Reframes the Conversation to Their Advantage',dur:'5:08',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:82,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Changes the Topic to Avoid the Real Question',dur:'4:50',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:83,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Difficult Interactions',collection:'Personal Composure',title:'When Someone Asks for More Information Than They Need',dur:'5:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:84,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'How to Deal with Anger and Frustration When You Feel the Urge to Fight Back',dur:'6:44',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:85,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'When You Want to React, Choose Control Instead, Stay Calm Under Pressure',dur:'5:58',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:86,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'Let the Moment Pass Without Entering It (Version 1)',dur:'6:18',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:87,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'Let the Moment Pass Without Entering It (Version 2)',dur:'6:21',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:88,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'Break Toxic Conversation Patterns and Respond with Calm Clarity',dur:'3:43',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:89,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'When You Are Put on the Spot Under Pressure',dur:'4:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:90,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'How to Be Performative Under Pressure',dur:'4:52',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:91,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Emotional Self-Management',collection:'Staying in Control',title:'Performing Under Pressure When You Need To',dur:'3:48',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:92,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'The Identity Shift',dur:'4:20',desc:'',audience:'Professionals, Founders',tags:[],keywords:[]},
+  {id:93,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'Stepping Into Unfamiliar Paths',dur:'7:03',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:94,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'When You Start Overexplaining to Be Understood',dur:'3:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:95,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'How to Stop Overthinking and Take the Next Step',dur:'4:56',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:96,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'How to Stop Obsessing Over One Outcome',dur:'6:12',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:97,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'How to Let Go After Investing So Much',dur:'5:46',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:98,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Identity & Personal Growth',collection:'Becoming More',title:'The Walkaway Decision for Entrepreneurs',dur:'4:36',desc:'',audience:'Entrepreneurs',tags:[],keywords:[]},
+  {id:99,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Family & Personal Dynamics',collection:'Personal Relationships',title:'When You Become Childlike Under Pressure with a Parent',dur:'4:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:100,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Family & Personal Dynamics',collection:'Personal Relationships',title:'Choosing Yourself Without Guilt',dur:'5:02',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:101,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Family & Personal Dynamics',collection:'Personal Relationships',title:'Protecting Yourself Without Losing Your Values',dur:'2:55',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:102,cat:'Holding Your Ground',main_category:'Holding Your Ground',subcategory:'Family & Personal Dynamics',collection:'Personal Relationships',title:'Holding Your Truth in an Environment That Distorts It',dur:'5:46',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:103,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'Workplace Manipulation Part 1',dur:'7:29',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:104,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Deal with Competitive Coworkers',dur:'6:39',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:105,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Handle Envy of a Colleague',dur:'6:41',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:106,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Deal with the Insecurity of Others in the Workplace',dur:'12:27',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:107,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Deal with Condescending Behaviour in the Business Environment',dur:'8:16',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:108,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Deal When Your Boss Has a Favourite Colleague',dur:'5:41',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:109,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Handle When You Feel Your Ideas Have Been Stolen',dur:'8:03',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:110,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'How to Deal with a Job or Project Coming to an End',dur:'7:11',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:111,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Workplace Dynamics',collection:'Workplace Reality',title:'Improving Self-Awareness in a Political Environment Part 1',dur:'8:57',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:112,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'Stepping Out of Triangulation',dur:'5:17',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:113,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Cooperates Publicly but Competes Quietly',dur:'6:09',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:114,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Uses Support Against You',dur:'3:40',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:115,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Reframes the Conversation to Their Advantage',dur:'5:08',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:116,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Changes the Topic to Avoid the Real Question',dur:'4:50',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:117,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Asks for More Information Than They Need',dur:'5:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:118,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Someone Publicly Supports an Idea but Privately Hesitates',dur:'4:18',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:119,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Responsibility Quietly Starts Shifting Towards You',dur:'7:07',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:120,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Politics',collection:'Political Awareness',title:'When Everyone Waits for Someone Else to Decide',dur:'5:30',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:121,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'How to Deal with Conflict Part 1',dur:'7:08',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:122,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'How to Deal with Conflict Between the Product Team and Sales Team',dur:'8:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:123,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'Handling Difficult Conversations as a Founder',dur:'5:04',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:124,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'When Cooperation Feels Risky',dur:'5:56',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:125,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'When Two Partners Want Different Things from the Same Deal',dur:'5:44',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:126,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'How to Handle When Your Message Is Not Landing with Your Colleague',dur:'7:52',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:127,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'When Someone Supports the Idea but Avoids the Responsibility',dur:'4:17',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:128,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Team Relationships',collection:'Working With Others',title:'When Agreement Doesn\'t Turn Into Action',dur:'4:27',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:129,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When Everyone Has Input but No One Owns the Decision',dur:'5:15',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:130,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When Someone Supports the Idea but Avoids the Responsibility',dur:'4:17',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:131,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When Responsibility Quietly Starts Shifting Towards You',dur:'7:07',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:132,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When Everything Lands on an Already Overloaded System',dur:'3:42',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:133,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When a Practical Need Becomes a Moral Judgment',dur:'4:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:134,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When No One Wants to Deliver the Bad News',dur:'4:22',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:135,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Responsibility & Ownership',collection:'Accountability Dynamics',title:'When a Conversation Keeps Returning to Process',dur:'4:33',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:136,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Someone Speaks After the Meeting Ends',dur:'5:19',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:137,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Two People Quietly Align Before Speaking',dur:'5:44',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:138,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Two People Exchange a Look',dur:'6:13',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:139,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When the Room Looks to One Voice Before Responding',dur:'5:29',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:140,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Influence Sits with the Quietest Voice',dur:'3:53',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:141,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Alignment Starts Quietly Shifting',dur:'5:07',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:142,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Energy in the Room Drops',dur:'4:53',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:143,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Organizational Awareness',collection:'Reading the Environment',title:'When Momentum Slows Without Explanation',dur:'4:35',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:144,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'Internal Exit Strategy Before You Leave a Job',dur:'5:52',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:145,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'How Do I Manage Up?',dur:'5:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:146,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'The Burning Bridge Mindset for Managers When Managing Up',dur:'5:02',desc:'',audience:'Managers',tags:[],keywords:[]},
+  {id:147,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'Staying Grounded When You Are Being Watched',dur:'6:24',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:148,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'When Your Authority Is Tested While You Are Still Becoming',dur:'3:59',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:149,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'The Company You Become Known For',dur:'6:59',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:150,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Career Navigation',collection:'Professional Growth',title:'Reputation Is a Long Game',dur:'6:46',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:151,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'How to Navigate Economic Uncertainty',dur:'6:55',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:152,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When a Powerful Customer Begins Shaping Your Strategy',dur:'5:48',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:153,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When Talking Isn\'t Helping Anymore',dur:'5:05',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:154,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When a Meeting Starts Drifting Away From the Real Issue',dur:'5:31',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:155,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When a Conversation Sounds Positive but No Decision Appears',dur:'5:54',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:156,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When Someone Uses Delay as a Strategy',dur:'5:18',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:157,cat:'Navigating the System',main_category:'Navigating the System',subcategory:'Difficult Environments',collection:'Navigating Complexity',title:'When Urgency Enters the Conversation',dur:'4:56',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:158,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When the Decision Isn\'t Made in the Room',dur:'4:43',desc:'',audience:'Leaders, Professionals, Founders',tags:[],keywords:[]},
+  {id:159,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When a Decision Is Framed as the Only Option',dur:'5:17',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:160,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When a Late Concern Changes the Direction of a Decision',dur:'4:10',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:161,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When Early Momentum Starts Driving the Decision',dur:'4:33',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:162,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When Loss Starts Driving the Decision',dur:'4:18',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:163,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'Navigating Discussions Where Past Decisions Have Been Influenced by Present Thinking',dur:'4:47',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:164,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When Quiet Voices Shift the Direction of a Decision',dur:'4:42',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:165,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When Reputation Begins Influencing the Decision',dur:'4:53',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:166,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When a Decision Suddenly Moves Faster Than Expected',dur:'6:21',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:167,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Decision Psychology',collection:'Decision Room Dynamics',title:'When a Decision Keeps Moving to the Next Meeting',dur:'5:11',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:168,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When the Room Looks to One Voice Before Responding',dur:'5:29',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:169,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Influence Sits with the Quietest Voice',dur:'3:53',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:170,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When a Leader Signals Doubt Without Saying It',dur:'7:40',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:171,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Someone Quietly Changes Their Position',dur:'4:10',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:172,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Two People Quietly Align Before Speaking',dur:'5:44',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:173,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Two People Exchange a Look',dur:'6:13',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:174,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Someone Publicly Supports an Idea but Privately Hesitates',dur:'4:18',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:175,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When People Agree in the Meeting but Resist Afterwards',dur:'7:55',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:176,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Someone Supports the Idea but Avoids the Responsibility',dur:'4:17',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:177,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Stakeholder Influence',collection:'Influence Signals',title:'When Agreement Doesn\'t Turn into Action',dur:'4:27',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:178,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'The Deal Gets Expensive Before the Contract',dur:'6:59',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:179,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When the Other Side Signals They Have Other Options',dur:'5:12',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:180,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Alternatives Are Quietly Introduced into a Negotiation',dur:'4:44',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:181,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Someone Asks for Your Price Too Early',dur:'5:20',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:182,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Someone Tests How Badly You Want the Deal',dur:'6:06',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:183,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When the First Number Shapes the Negotiation',dur:'5:01',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:184,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Fairness and Power Collide in Negotiations',dur:'4:21',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:185,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Two Partners Want Different Things from the Same Deal',dur:'5:44',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:186,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When a Customer Asks for Too Much',dur:'7:00',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:187,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Negotiation Dynamics',collection:'Negotiation Intelligence',title:'When Cooperation Feels Risky',dur:'5:56',desc:'',audience:'Founders, Professionals',tags:[],keywords:[]},
+  {id:188,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Status Dynamics Shape Decisions in a Room',dur:'6:42',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:189,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Ideas Follow Status in Group Discussions',dur:'5:28',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:190,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When a Strong Voice Begins Steering the Room',dur:'4:49',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:191,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When the Decision Maker Isn\'t in the Room',dur:'6:12',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:192,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Someone Controls the Access and You Feel Yourself Chasing',dur:'3:12',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:193,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'Respect When the Power Is in the Room',dur:'6:29',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:194,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Someone Uses Busyness to Make You Feel Less Important',dur:'3:34',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:195,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Someone Acts Like They\'re Doing You a Favor',dur:'3:35',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:196,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Status & Power Dynamics',collection:'Power Signals',title:'When Someone Sees You but Does Not Support You',dur:'4:10',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:197,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When the Room Tests the Limits of an Idea',dur:'6:06',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:198,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'Handling Subtle Challenges in Idea Discussions',dur:'5:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:199,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When the First Objection Isn\'t the Real Concern',dur:'5:04',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:200,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When a Question Is Answered Without Being Answered',dur:'5:52',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:201,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When Small Questions Reveal Bigger Priorities',dur:'5:00',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:202,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When Questions Reveal What Really Matters',dur:'4:20',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:203,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When Someone Asks a Question They Already Know the Answer To',dur:'4:31',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:204,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When a Conversation Begins to Protect Someone\'s Reputation',dur:'5:02',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:205,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Reading the Room',collection:'Room Intelligence',title:'When a Room Avoids Embarrassing Someone',dur:'4:13',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:206,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When a Proposal Receives Praise but No Resources',dur:'5:09',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:207,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When a Proposal Receives Polite Support but Little Energy',dur:'4:15',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:208,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When a Conversation Sounds Positive but No Decision Appears',dur:'5:54',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:209,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When Someone Avoids Saying No',dur:'5:16',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:210,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When Silence Follows Your Proposal',dur:'5:01',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:211,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When No One Wants to Deliver the Bad News',dur:'4:22',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:212,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When Urgency Enters the Conversation',dur:'4:56',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:213,cat:'The Hidden Dynamics',main_category:'The Hidden Dynamics',subcategory:'Hidden Resistance',collection:'Unspoken Friction',title:'When Someone Uses Delay as a Strategy',dur:'5:18',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:214,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'Executive Presence: How to Be Heard in the Room',dur:'6:07',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:215,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'Presence in the Room',dur:'6:06',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:216,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'How to Influence People in a Room Without Dominating',dur:'5:44',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:217,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'Influence Without Authority for Product Managers',dur:'6:21',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:218,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'Staying Grounded When You Are Being Watched',dur:'6:24',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:219,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'When You\'re No Longer the Smartest Person in the Room',dur:'4:55',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:220,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'The Shift Into Executive Thinking',dur:'5:58',desc:'',audience:'Leaders, Product Managers',tags:[],keywords:[]},
+  {id:221,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Executive Presence',collection:'Executive Presence',title:'Presenting Options to Senior Management',dur:'10:03',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:222,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'Stop Overexplaining in High-Stakes Meetings',dur:'5:36',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:223,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'When Talking Isn\'t Helping Anymore',dur:'5:05',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:224,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'How Do I Manage Up?',dur:'5:20',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:225,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'The Burning Bridge Mindset for Managers When Managing Up',dur:'5:02',desc:'',audience:'Managers, Leaders',tags:[],keywords:[]},
+  {id:226,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'How to Handle When Your Message Is Not Landing with Your Colleague',dur:'7:52',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:227,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Communication',collection:'Leadership Communication',title:'Handling Difficult Conversations as a Founder',dur:'5:04',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:228,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'Reputation Is a Long Game',dur:'6:46',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:229,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'How to Explain Why You\'re the Right Founder',dur:'5:43',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:230,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'Trusting Your Design Intuition',dur:'4:50',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:231,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'When You Realize You Actually Hold Influence',dur:'6:06',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:232,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'When an Invitation to the Next Room Appears',dur:'5:46',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:233,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Influence',collection:'Influence & Credibility',title:'When You Leave the Room with New Strategic Clarity',dur:'5:48',desc:'',audience:'Leaders, Professionals',tags:[],keywords:[]},
+  {id:234,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'When Your Authority Is Tested While You Are Still Becoming',dur:'3:59',desc:'',audience:'Professionals, Leaders',tags:[],keywords:[]},
+  {id:235,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'Stop Negotiating Your Worth Emotionally',dur:'6:50',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:236,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'Becoming Unrecognizable',dur:'6:53',desc:'',audience:'Professionals',tags:[],keywords:[]},
+  {id:237,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'The Company You Become Known For',dur:'6:59',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:238,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'Hiring People Better Than You',dur:'6:45',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:239,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'When Founders Think Clearly in Investor Meetings',dur:'5:32',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:240,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Visibility & Authority',collection:'Professional Growth',title:'Investor Meeting Mindset: Thinking Clearly Under Pressure',dur:'5:23',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:241,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'Avoiding Groupthink in a High-Performing Team',dur:'6:44',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:242,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When Energy in the Room Drops',dur:'4:53',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:243,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When Alignment Starts Quietly Shifting',dur:'5:07',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:244,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When Influence Sits with the Quietest Voice',dur:'3:53',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:245,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When People Agree in the Meeting but Resist Afterwards',dur:'7:55',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:246,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When Agreement Doesn\'t Turn into Action',dur:'4:27',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:247,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Leadership Team Dynamics',collection:'Leading Others',title:'When Momentum Slows Without Explanation',dur:'4:35',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:248,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'Deciding When the Data Is Incomplete',dur:'4:26',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:249,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'Framework for Multiple Future Scenarios',dur:'10:17',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:250,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'Strategic Thinking for Disruption',dur:'11:45',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:251,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'Slowing Down to Speed Up',dur:'10:01',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:252,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'When Vision Meets Constraints',dur:'4:55',desc:'',audience:'Leaders',tags:[],keywords:[]},
+  {id:253,cat:'Presence in the Room',main_category:'Presence in the Room',subcategory:'Strategic Leadership',collection:'Leadership Judgment',title:'When a Powerful Customer Begins Shaping Your Strategy',dur:'5:48',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:254,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Adjusting OKRs',dur:'9:36',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:255,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Prioritizing Using the Right Framework',dur:'—',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:256,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Theme-Based Roadmapping Part 1',dur:'8:57',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:257,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Theme-Based Roadmapping',dur:'9:06',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:258,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Presenting Options to Senior Management',dur:'10:03',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:259,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Balancing Retention, Growth and Monetization',dur:'6:21',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:260,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Pricing Strategy and OKRs',dur:'8:37',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:261,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Challenges Post-Product Launch',dur:'7:27',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:262,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Strategy & Prioritization',collection:'Strategic Product Thinking',title:'Slowing Down to Speed Up',dur:'10:01',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:263,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'Learning From Customers Part 1',dur:'6:32',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:264,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'Customer Segmentation Part 1',dur:'4:41',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:265,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'Customer Validation Visualization',dur:'7:46',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:266,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'Why Friendly Customers Aren\'t Real Validation',dur:'7:46',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:267,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'Designing for the Moment a Customer Decides',dur:'4:52',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:268,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Customer Insight & Discovery',collection:'Customer Intelligence',title:'The Customer Choice Palace',dur:'5:54',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:269,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Growth & Adoption',collection:'Growth Thinking',title:'Product-Led Growth Part 1',dur:'6:07',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:270,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Growth & Adoption',collection:'Growth Thinking',title:'From Freemium to Premium',dur:'9:15',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:271,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Growth & Adoption',collection:'Growth Thinking',title:'Why Your Customer Acquisition Strategy Isn\'t Working',dur:'6:48',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:272,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Growth & Adoption',collection:'Growth Thinking',title:'The Growth Framework Smart Founders Use: LTV Over CAC',dur:'5:41',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:273,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Growth & Adoption',collection:'Growth Thinking',title:'When LTV Is Greater Than CAC',dur:'5:41',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:274,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'Systems Thinking',dur:'7:31',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:275,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'Framework for Multiple Future Scenarios',dur:'10:17',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:276,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'Strategic Thinking for Disruption',dur:'11:45',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:277,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'Deciding When the Data Is Incomplete',dur:'4:26',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:278,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'When a Competitor Suddenly Copies Your Product',dur:'4:57',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:279,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'Diversification',dur:'8:00',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:280,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Systems Thinking & Strategic Foresight',collection:'Seeing the Bigger Picture',title:'HealthTech AI Go-To-Market',dur:'—',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:281,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Leadership',collection:'Product Influence',title:'Influence Without Authority for Product Managers',dur:'6:21',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:282,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Leadership',collection:'Product Influence',title:'The Shift Into Executive Thinking',dur:'5:58',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:283,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Leadership',collection:'Product Influence',title:'Presenting Options to Senior Management',dur:'10:03',desc:'',audience:'Product Managers, Leaders',tags:[],keywords:[]},
+  {id:284,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Leadership',collection:'Product Influence',title:'How to Deal with Conflict Between the Product Team and Sales Team',dur:'8:20',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:285,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Leadership',collection:'Product Influence',title:'When a Powerful Customer Begins Shaping Your Strategy',dur:'5:48',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:286,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Execution & Delivery',collection:'Building the Right Thing',title:'Good Enough Approach',dur:'10:18',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:287,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Execution & Delivery',collection:'Building the Right Thing',title:'Mental Traffic Jam',dur:'15:54',desc:'',audience:'Product Managers, Professionals',tags:[],keywords:[]},
+  {id:288,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Execution & Delivery',collection:'Building the Right Thing',title:'Overwhelmed by Racing Thoughts',dur:'17:02',desc:'',audience:'Product Managers, Professionals',tags:[],keywords:[]},
+  {id:289,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Execution & Delivery',collection:'Building the Right Thing',title:'Challenges Post-Product Launch',dur:'7:27',desc:'',audience:'Product Managers',tags:[],keywords:[]},
+  {id:290,cat:'Seeing Around Corners',main_category:'Seeing Around Corners',subcategory:'Product Execution & Delivery',collection:'Building the Right Thing',title:'Crafting Brand Microscript Part 1',dur:'8:21',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:291,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'Learning to Operate at a Bigger Level',dur:'7:15',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:292,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'Building a Category-Defining Brand',dur:'6:49',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:293,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'Enhancing Brand Value',dur:'8:22',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:294,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'How Do I Differentiate My Business?',dur:'6:40',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:295,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'The Differentiation Guided Visualization for Entrepreneurs',dur:'3:59',desc:'',audience:'Entrepreneurs',tags:[],keywords:[]},
+  {id:296,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'The Customer Choice Palace',dur:'5:54',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:297,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'Why Friendly Customers Aren\'t Real Validation',dur:'7:46',desc:'',audience:'Founders, Entrepreneurs, Product Managers',tags:[],keywords:[]},
+  {id:298,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Brand, Positioning & Market Fit',collection:'Founder Intelligence',title:'Customer Validation Visualization',dur:'7:46',desc:'',audience:'Founders, Entrepreneurs, Product Managers',tags:[],keywords:[]},
+  {id:299,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Customer Growth & Market Understanding',collection:'Customer Intelligence',title:'Designing for the Moment a Customer Decides',dur:'4:52',desc:'',audience:'Founders, Product Managers',tags:[],keywords:[]},
+  {id:300,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Customer Growth & Market Understanding',collection:'Customer Intelligence',title:'Why Your Customer Acquisition Strategy Isn\'t Working',dur:'6:48',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:301,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Customer Growth & Market Understanding',collection:'Customer Intelligence',title:'Learning from Customers Part 1',dur:'6:32',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:302,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Customer Growth & Market Understanding',collection:'Customer Intelligence',title:'Customer Segmentation Part 1',dur:'4:41',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:303,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Scaling Without Burning the Team',dur:'6:50',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:304,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'When the Vision Becomes Bigger Than You',dur:'6:50',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:305,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Designing a Company You Don\'t Outgrow',dur:'6:36',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:306,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'When a Founder Is a Bottleneck in Their Business Growth',dur:'3:37',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:307,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'When Should Founders Delegate?',dur:'4:31',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:308,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'The One Big Break: How to Be Ready When It Comes',dur:'6:12',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:309,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Staying Ahead Without Burning Yourself',dur:'5:49',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:310,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Seeing Ahead Without Burning Yourself',dur:'5:49',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:311,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'When Vision Meets Constraints',dur:'4:55',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:312,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Scalability Strategy Visualization',dur:'6:32',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:313,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Scaling & Growth',collection:'Scaling Companies',title:'Diversification',dur:'8:00',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:314,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'From Freemium to Premium',dur:'9:15',desc:'',audience:'Founders, Product Managers',tags:[],keywords:[]},
+  {id:315,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Pricing Strategy and OKRs',dur:'8:37',desc:'',audience:'Founders, Product Managers',tags:[],keywords:[]},
+  {id:316,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Run Rate and Runway for Founders',dur:'5:59',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:317,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Why Profitable Businesses Still Run Out of Cash',dur:'4:54',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:318,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Unit Economics for Founders When Growth Still Feels Tight',dur:'5:41',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:319,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'The Growth Framework Smart Founders Use: LTV Over CAC',dur:'5:41',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:320,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'When LTV Is Greater Than CAC',dur:'5:41',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:321,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Balancing Retention, Growth and Monetization',dur:'6:21',desc:'',audience:'Founders, Product Managers',tags:[],keywords:[]},
+  {id:322,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Revenue, Monetization & Business Models',collection:'Revenue & Growth',title:'Product-Led Growth Part 1',dur:'6:07',desc:'',audience:'Product Managers, Founders',tags:[],keywords:[]},
+  {id:323,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'Investor Meeting Mindset: Thinking Clearly Under Pressure',dur:'5:23',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:324,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'When Founders Think Clearly in Investor Meetings',dur:'5:32',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:325,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'After Raising Funding: Navigating Capital Control and Board Oversight',dur:'6:25',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:326,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'Startup Valuation Explained: How to Justify Your Valuation with Exit Math',dur:'5:17',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:327,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'Valuation Justification: TAM, SAM, SOM Plus Exit Maths',dur:'5:21',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:328,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'Evaluation Justification',dur:'5:21',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:329,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'When an Investor Asks What Is Your Pivot?',dur:'3:39',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:330,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Fundraising & Investors',collection:'Investor Intelligence',title:'How to Explain Why You\'re the Right Founder',dur:'5:43',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:331,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'Why Growth Is Making Founders Miserable',dur:'6:32',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:332,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'When a Founder Confuses Motion with Progress',dur:'4:21',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:333,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'The Walkaway Decision for Founders',dur:'3:32',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:334,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'The Walkaway Decision for Entrepreneurs',dur:'4:36',desc:'',audience:'Entrepreneurs',tags:[],keywords:[]},
+  {id:335,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'After the Win: A Guided Visualization for Founders Facing Success Burnout',dur:'6:00',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:336,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'The Why Not Question Every Founder Must Answer',dur:'7:10',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:337,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'Stepping Into Unfamiliar Paths',dur:'7:03',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:338,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'Internal Exit Strategy Before You Leave a Job',dur:'5:52',desc:'',audience:'Professionals, Founders',tags:[],keywords:[]},
+  {id:339,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Psychology',collection:'Founder Mindset',title:'Bootstrap Advantage: Building Profit First',dur:'5:54',desc:'',audience:'Founders, Entrepreneurs',tags:[],keywords:[]},
+  {id:340,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'Stop Overexplaining in High-Stakes Meetings',dur:'5:36',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:341,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'How to Influence People in a Room Without Dominating',dur:'5:44',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:342,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'When You\'re No Longer the Smartest Person in the Room',dur:'4:55',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:343,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'Reputation Is a Long Game',dur:'6:46',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:344,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'Trusting Your Design Intuition',dur:'4:50',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:345,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'Handling Difficult Conversations as a Founder',dur:'5:04',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:346,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Founder Communication & Influence',collection:'Founder Leadership',title:'Staying Grounded When You Are Being Watched',dur:'6:24',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:347,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'Framework for Multiple Future Scenarios',dur:'10:17',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:348,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'Strategic Thinking for Disruption',dur:'11:45',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:349,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'How to Avoid Costly Business Decisions That Create Lock-In',dur:'4:22',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:350,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'The Shift Into Executive Thinking',dur:'5:58',desc:'',audience:'Leaders, Founders',tags:[],keywords:[]},
+  {id:351,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'When a Powerful Customer Begins Shaping Your Strategy',dur:'5:48',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:352,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'Deciding When the Data Is Incomplete',dur:'4:26',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
+  {id:353,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'When a Competitor Suddenly Copies Your Product',dur:'4:57',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:354,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'When Cooperation Feels Risky',dur:'5:56',desc:'',audience:'Founders',tags:[],keywords:[]},
+  {id:355,cat:'Building What\'s Next',main_category:'Building What\'s Next',subcategory:'Strategic Business Thinking',collection:'Strategic Growth',title:'How to Handle Mixed Signals in Business Conversations',dur:'5:57',desc:'',audience:'Founders, Leaders',tags:[],keywords:[]},
 ];
 
+// SITUATION_CATS mirrors the 7 official VisualizeX main categories so the
+// dashboard discovery grid and the Vault tabs always tell the same story.
 const SITUATION_CATS = [
-  {icon:"◈", name:"Authority & Power Dynamics",   cat:"Founder & Investor Intelligence",  hint:"Investor rooms · Board pressure · Signals of doubt"},
-  {icon:"◉", name:"Difficult Conversations",      cat:"Room Dynamics & Influence",         hint:"What needs to be said · Charged exchanges · Avoidance"},
-  {icon:"◎", name:"Performance Under Pressure",   cat:"High-Stakes Communication",         hint:"Being challenged · Public scrutiny · The spot"},
-  {icon:"◐", name:"Emotional Regulation",         cat:"Self-Regulation Under Pressure",    hint:"Charge · Overwhelm · Holding your position"},
-  {icon:"◑", name:"Ambiguity & Decision-Making",  cat:"Commercial & Business Decisions",   hint:"Incomplete data · Complex dynamics · The right call"},
-  {icon:"◒", name:"Visibility & Self-Doubt",      cat:"Executive Thinking & Leadership",   hint:"Comparison · Confidence under scrutiny · Presence"},
-  {icon:"◓", name:"Recovery & Reset",             cat:"Recovery & Reset",                  hint:"After failure · Draining dynamics · Rebuilding clarity"},
+  {icon:"◈", name:"The Rest of Life",         cat:"The Rest of Life",         hint:"Family · relationships · identity · transitions"},
+  {icon:"◉", name:"Holding Your Ground",      cat:"Holding Your Ground",      hint:"Boundaries · self-respect · composure"},
+  {icon:"◎", name:"Navigating the System",    cat:"Navigating the System",    hint:"Workplace · politics · responsibility"},
+  {icon:"◐", name:"The Hidden Dynamics",      cat:"The Hidden Dynamics",      hint:"Influence · power · status · resistance"},
+  {icon:"◑", name:"Presence in the Room",     cat:"Presence in the Room",     hint:"Leadership · communication · visibility"},
+  {icon:"◒", name:"Seeing Around Corners",    cat:"Seeing Around Corners",    hint:"Product strategy · insight · systems"},
+  {icon:"◓", name:"Building What's Next",     cat:"Building What's Next",     hint:"Founders · growth · scaling · monetization"},
 ];
 
 // MVP1 SEARCH INTELLIGENCE
 // Tags and keywords are derived locally so users can search by situation,
 // pressure, feeling, room dynamic, or common language — not only exact titles.
 var VX_CATEGORY_KEYWORDS = {
-  'Founder & Investor Intelligence': ['founder','investor','board','authority','power','fundraising','pitch','doubt','category','walk away','senior stakeholder'],
-  'Room Dynamics & Influence': ['room dynamic','influence','decision maker','stakeholder','hidden authority','difficult conversation','social pressure','group dynamics','power dynamic'],
-  'High-Stakes Communication': ['communication','presentation','public challenge','being challenged','interruptions','over explaining','confidence','sounding clear','speaking under pressure'],
-  'Self-Regulation Under Pressure': ['emotional regulation','calm','reacting','triggered','charge','urge to concede','stay anchored','overwhelm','self control'],
-  'Commercial & Business Decisions': ['deal','negotiation','business decision','contract','terms','data incomplete','decision making','uncertainty','commercial pressure'],
-  'Executive Thinking & Leadership': ['leadership','executive presence','scaling','team pressure','delegation','visibility','bottleneck','operating bigger','founder leadership'],
-  'Recovery & Reset': ['recovery','reset','after failure','burnout','overthinking','waiting','uncertainty','rebuilding','progress','purpose']
+  'The Rest of Life': ['family','parents','relationships','attachment','identity','self worth','transitions','overthinking','uncertainty','recovery','restoration','exhaustion','emotional load'],
+  'Holding Your Ground': ['boundaries','self respect','self trust','confidence','composure','comparison','validation','difficult interactions','emotional regulation','authority','self worth'],
+  'Navigating the System': ['workplace','politics','team','colleagues','organisation','responsibility','ownership','career','manager','manage up','conflict','reputation','difficult environment','economic uncertainty'],
+  'The Hidden Dynamics': ['decision','stakeholder','influence','negotiation','status','power','reading the room','resistance','hidden friction','political','room dynamics'],
+  'Presence in the Room': ['executive presence','leadership','communication','influence','credibility','visibility','authority','team dynamics','strategic leadership','groupthink','manage up'],
+  'Seeing Around Corners': ['product strategy','prioritization','okrs','roadmap','customer insight','discovery','validation','product growth','adoption','systems thinking','foresight','product leadership','execution','delivery'],
+  "Building What's Next": ['founder','entrepreneur','brand','positioning','market fit','customer growth','scaling','revenue','monetization','business model','pricing','fundraising','investor','valuation','psychology','strategic business','differentiation']
 };
 var VX_SYNONYM_KEYWORDS = [
   ['being challenged','challenged publicly','questioned','scrutiny','put on the spot'],
@@ -3379,6 +3709,27 @@ function vxOpenSearchResult(sessionId, query, source) {
   closeSearchDropdown();
   var input = document.getElementById('search-input'); if (input) input.value = '';
   openPlayer(Number(sessionId));
+}
+
+// v7.0 FIX: vxQueueEvent + vxFlushEventQueue were referenced in v6.8 but never
+// defined, which crashed the app at load time (ReferenceError at the
+// `window.addEventListener('online', vxFlushEventQueue)` line below).
+// These stubs maintain a simple in-memory queue so call sites keep working.
+// When you're ready to wire real analytics into Supabase or another sink,
+// replace the body of vxFlushEventQueue to POST window.__vxEventQueue and
+// clear it. Stored on window so future code can read/replace cleanly.
+window.__vxEventQueue = window.__vxEventQueue || [];
+function vxQueueEvent(name, payload) {
+  try {
+    window.__vxEventQueue.push({ name:String(name||''), payload:payload||{}, ts:new Date().toISOString() });
+    // Cap the queue so a long session can't balloon memory.
+    if (window.__vxEventQueue.length > 500) window.__vxEventQueue.splice(0, window.__vxEventQueue.length - 500);
+  } catch(e) { /* fail silent — analytics must never break the app */ }
+}
+function vxFlushEventQueue() {
+  // Stub: nothing to send yet. When ready, drain window.__vxEventQueue here.
+  // Returning quickly keeps the 'online'/'focus' listeners cheap.
+  return;
 }
 window.addEventListener('online', vxFlushEventQueue);
 window.addEventListener('focus', function(){ vxFlushEventQueue(); });
@@ -3843,6 +4194,10 @@ function resetSimulatedAccess() {
 // VIEWS
 // ══════════════════════════════════════════════
 function showView(view) {
+  // v7.0: "Main Categories" sidebar link removed to reduce nav redundancy.
+  // Any leftover 'situations' calls are now aliased to the Vault so the dashboard
+  // category cards still work and any in-flight links don't break.
+  if (view === 'situations') view = 'vault';
   window.vxCurrentView = view || 'dashboard';
   if (window.innerWidth <= 860) closeMobileSidebar();
   closeSearchDropdown && closeSearchDropdown();
@@ -3852,7 +4207,7 @@ function showView(view) {
 
   const titles = {
     dashboard:'Home', vault:'The Vault', saved:'Saved Sessions',
-    recent:'Recent Sessions', situations:'Main Categories',
+    recent:'Recent Sessions',
     account:'Membership', billing:'Billing History',
     settings:'Account Settings', support:'Help & Support', admin:'Admin Dashboard'
   };
@@ -3874,7 +4229,6 @@ function showView(view) {
   else if (view === 'vault')    renderVault();
   else if (view === 'saved')      renderSaved();
   else if (view === 'recent')     renderRecent();
-  else if (view === 'situations') renderSituations();
   else if (view === 'account')    renderAccount();
   else if (view === 'billing')    renderBillingPage();
   else if (view === 'settings')   renderSettings();
@@ -3941,9 +4295,12 @@ function vxMainCategoryTabs(active) {
 function vxSubcategoryTabs(mainCat, activeSub) {
   var subs = vxSubcategoriesForMainCategory(mainCat);
   if (!subs.length) return '';
-  var items = ['All'].concat(subs);
-  return '<div class="vx-tab-row">' + items.map(function(sub){
-    return '<button class="vx-sub-tab ' + (sub===activeSub?'active':'') + '" onclick="showVaultSubcategory(\'' + vxSafeOnclickArg(mainCat) + '\',\'' + vxSafeOnclickArg(sub) + '\')">' + sub + '</button>';
+  // v7.0: "All in [main cat]" is clearer than just "All" — users always know
+  // which scope the reset button drops them back into.
+  var allLabel = 'All in ' + mainCat;
+  var items = [{ key:'All', label:allLabel }].concat(subs.map(function(s){ return { key:s, label:s }; }));
+  return '<div class="vx-tab-row vx-subtab-row">' + items.map(function(item){
+    return '<button class="vx-sub-tab ' + (item.key===activeSub?'active':'') + '" onclick="showVaultSubcategory(\'' + vxSafeOnclickArg(mainCat) + '\',\'' + vxSafeOnclickArg(item.key) + '\')">' + item.label + '</button>';
   }).join('') + '</div>';
 }
 function showVaultMainCategory(mainCat) {
@@ -4060,8 +4417,13 @@ function renderSupport() {
 }
 
 function showCategory(cat) {
+  // v7.0: dashboard category cards now land users inside The Vault (with that
+  // main category preselected) instead of an extra "Main Categories" view.
+  window.vxCurrentView = 'vault';
   document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
-  document.getElementById('topbar-title').textContent = cat;
+  var navVault = document.getElementById('nav-vault');
+  if (navVault) navVault.classList.add('active');
+  document.getElementById('topbar-title').textContent = 'The Vault';
   const el = document.getElementById('main-content');
   el.className = 'content fade-in';
   renderCategoryView(cat);
@@ -4133,7 +4495,7 @@ function renderDashboard() {
         '<div class="cc-info"><span class="cc-cat">' + lastRecent.cat + '</span><p class="cc-title">' + lastRecent.title + '</p><p class="cc-sub">' + lastRecent.dur + '</p>' +
         '<div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:' + pct + '%"></div></div><p class="cc-resume">' + (accessOpen ? continueSub : 'Saved — review access path to resume') + '</p></div></div></div>'
     : accessOpen
-      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)">' + vxSaveHeartButton(7, 'feat-save') + '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Room Dynamics &amp; Influence</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
+      ? '<div class="section-head"><h2 class="fd">Start Here</h2></div><div class="continue-card" onclick="openPlayer(7)">' + vxSaveHeartButton(7, 'feat-save') + '<div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">The Hidden Dynamics</span><p class="cc-title">When the Room Tests the Limits of an Idea</p><p class="cc-sub">8 min &nbsp;&middot;&nbsp; A strong place to start</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:0%"></div></div><p class="cc-resume">Begin your first guided experience</p></div></div></div>'
       : '<div class="section-head"><h2 class="fd">Vault Access</h2></div><div class="continue-card" onclick="showExpiredOverlay()"><div class="cc-play"><svg width="15" height="15" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg></div><div class="cc-info"><span class="cc-cat">Playback Locked</span><p class="cc-title">Choose an access path to reopen the Vault.</p><p class="cc-sub">Your dashboard and activity stay visible.</p><div class="cc-prog"><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div><p class="cc-resume">Review Access Path</p></div></div></div>';
 
   var savedPreview = savedSessions.length > 0
@@ -4220,16 +4582,41 @@ function renderVault() {
   });
   var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
   var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Import the titles for this category into Supabase and they will appear here automatically.</span></p></div>';
+
+  // v7.0: breadcrumb gives users a one-tap exit at every level — no back-button trips,
+  // no nested clicks. Tapping "The Vault" clears all filters; tapping the main cat
+  // resets the subcategory; tapping the subcat does nothing (it's the active leaf).
+  var crumbHtml = '<div class="vx-breadcrumb">' +
+    '<button class="vx-crumb" onclick="clearVaultFilters()">The Vault</button>' +
+    '<span class="vx-crumb-sep">/</span>' +
+    '<button class="vx-crumb' + (vxVaultSubcategory==='All' ? ' active' : '') + '" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">' + vxVaultMainCategory + '</button>' +
+    (vxVaultSubcategory !== 'All'
+      ? '<span class="vx-crumb-sep">/</span><span class="vx-crumb active leaf">' + vxVaultSubcategory + '</span>' +
+        '<button class="vx-clear-filter" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')" title="Clear subcategory filter">&times; Clear filter</button>'
+      : '') +
+    '</div>';
+
   el.innerHTML = `
     <div class="welcome-row">
       <h1 class="fd">The Vault</h1>
       <p>Switch between main categories, then narrow into subcategories inside each category.</p>
     </div>
+    ${crumbHtml}
     ${vxMainCategoryTabs(vxVaultMainCategory)}
     <div class="vx-category-summary"><p>${vxVaultMainCategory}</p><p>${shell.desc || 'Guided experiences grouped around this part of the VisualizeX library.'}</p></div>
     ${vxSubcategoryTabs(vxVaultMainCategory, vxVaultSubcategory)}
-    <p class="vx-vault-filter-note">${filtered.length} experience${filtered.length===1?'':'s'} ${vxVaultSubcategory==='All' ? 'in this main category' : 'in ' + vxVaultSubcategory}.</p>
+    <p class="vx-vault-filter-note">${filtered.length} experience${filtered.length===1?'':'s'} ${vxVaultSubcategory==='All' ? 'across all subcategories in ' + vxVaultMainCategory : 'in ' + vxVaultSubcategory}.</p>
     <div class="session-list">${filtered.length ? filtered.map(s=>sessionCard(s)).join('') : empty}</div>`;
+}
+
+// v7.0: full reset — user lands on the first main category, no subcategory filter,
+// no scroll position confusion. One click to clear everything.
+function clearVaultFilters() {
+  var mainCats = vxGetMainCategories();
+  vxVaultMainCategory = mainCats[0] || 'The Vault';
+  vxVaultSubcategory = 'All';
+  document.getElementById('topbar-title').textContent = 'The Vault';
+  renderVault();
 }
 
 // ── CATEGORY VIEW ──
@@ -4281,6 +4668,12 @@ function vxRefreshSaveControls(id) {
 
 function sessionCard(s) {
   const isSaved = savedSessions.includes(s.id);
+  // v7.0: audience badge shows the intended reader (Adults / Professionals / Founders…).
+  // Description placeholder is honest about the data state — Gabriella is filling
+  // descriptions and tags from YouTube manually as Bunny links go live.
+  var audience = s.audience ? '<span class="sess-aud">' + s.audience + '</span>' : '';
+  var subcat = (s.subcategory && s.subcategory !== s.cat) ? '<span class="sess-sub">' + s.subcategory + '</span>' : '';
+  var descText = (s.desc && s.desc.trim()) ? s.desc : '<em style="color:var(--c35)">Description coming soon — being added from the YouTube channel.</em>';
   return `
   <div class="sess" id="sess-${s.id}">
     <div class="sess-header">
@@ -4288,7 +4681,11 @@ function sessionCard(s) {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="#0C2321" style="margin-left:2px"><polygon points="6,3 20,12 6,21"/></svg>
       </div>
       <div class="sess-meta">
-        <span class="sess-cat">${s.cat}</span>
+        <div class="sess-cat-row">
+          <span class="sess-cat">${s.cat}</span>
+          ${subcat}
+          ${audience}
+        </div>
         <p class="sess-title">${s.title}</p>
         <span class="sess-dur">⏱ ${s.dur}</span>
       </div>
@@ -4296,7 +4693,7 @@ function sessionCard(s) {
       <button class="sess-expand" onclick="toggleDesc(${s.id})" id="exp-${s.id}" title="Show description">▾</button>
     </div>
     <div class="sess-desc" id="desc-${s.id}">
-      <p>${s.desc || 'Description coming soon.'}</p>
+      <p>${descText}</p>
       <div class="sess-actions">
         <button class="btn-play-sm" onclick="openPlayer(${s.id})">▶ Play Now</button>
         <button class="btn-save-sm${isSaved?' saved':''}" onclick="event.stopPropagation(); toggleSave(${s.id})" data-save-id="${s.id}">${isSaved?'♥ Saved':'♡ Save'}</button>
@@ -5072,15 +5469,18 @@ function triggerSearch(term) {
   document.querySelector('.topbar') && document.querySelector('.topbar').scrollIntoView({behavior:'smooth'});
 }
 
-// P6: REFLECTION PROMPTS
+// P6: REFLECTION PROMPTS — keyed by the 7 official VisualizeX main categories.
+// One prompt set per category; getReflectionPrompt randomly selects one after a
+// session ends so reflection stays varied but always feels coherent with the
+// part of the library the user just spent time in.
 var REFLECTION_PROMPTS = {
-  'Founder & Investor Intelligence': ['Where did you feel the urge to defend rather than clarify?','What would staying grounded have looked like in that room?','What signal were you reading — and what might you have missed?'],
-  'Room Dynamics & Influence': ['Who in the room was shaping the outcome without speaking?','When did the energy shift — and what caused it?','What would you do differently in the first 90 seconds?'],
-  'High-Stakes Communication': ['What was the moment you felt pressure to fill silence?','Where did precision matter more than volume?','What would composure have sounded like in that moment?'],
-  'Self-Regulation Under Pressure': ['What was the first physical signal that charge was building?','What is the cost of entering that moment — and the cost of not?','What would staying anchored have made possible?'],
-  'Commercial & Business Decisions': ['Where did urgency start to override clarity?','What would you need to slow down and check before proceeding?','What signal tells you the terms are right?'],
-  'Executive Thinking & Leadership': ['What decision were you making that only you could make?','Where did you operate from clarity — and where from habit?','What would a leader one level above have noticed first?'],
-  'Recovery & Reset': ['What story were you telling yourself — and how much of it was true?','What would it take to return to the room with authority?','What needs to be said — and what needs to be released?']
+  'The Rest of Life':       ['Which relationship is asking something of you that you have not yet named?','Where are you carrying weight that was never yours to hold?','What would it look like to return to yourself in the middle of this?'],
+  'Holding Your Ground':    ['What was the first physical signal that charge was building?','Where did precision matter more than volume?','What would staying anchored have made possible?'],
+  'Navigating the System':  ['Who in the system has quiet influence over the outcome you care about?','Where are you adapting to the environment in ways that cost you?','What would clarity inside this complexity actually look like?'],
+  'The Hidden Dynamics':    ['Who in the room was shaping the outcome without speaking?','When did the energy shift — and what caused it?','What signal were you reading — and what might you have missed?'],
+  'Presence in the Room':   ['What was the moment you felt pressure to fill silence?','Where did you operate from clarity — and where from habit?','What would a leader one level above have noticed first?'],
+  'Seeing Around Corners':  ['What signal are you noticing early that others are still ignoring?','Where did urgency start to override clarity?','What would slowing down to see further actually require?'],
+  "Building What's Next":   ['Where did you feel the urge to defend rather than clarify?','What decision were you making that only you could make?','What signal tells you the terms are right?']
 };
 function getReflectionPrompt(cat) {
   var prompts = REFLECTION_PROMPTS[cat] || ['What will you carry into your next high-pressure moment?'];
@@ -5187,7 +5587,7 @@ function dismissSticky() {
 // Guest player by ID
 function openGuestPlayerById(id) {
   var s=typeof ALL_SESSIONS!=='undefined'?ALL_SESSIONS.find(function(x){return x.id===id;}):null;
-  if (!s) s={id:id,cat:'Self-Regulation Under Pressure',title:'Let the Moment Pass Without Entering It',dur:'6 min'};
+  if (!s) s={id:id,cat:'Holding Your Ground',title:'Let the Moment Pass Without Entering It',dur:'6 min'};
   var ps=document.getElementById('player-playing-state'); var cs=document.getElementById('player-complete-state');
   if (ps){ps.style.display='block';ps.style.opacity='';}
   if (cs) cs.classList.remove('show');
