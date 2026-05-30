@@ -3631,6 +3631,16 @@ function vxRefreshSituationCatsFromSessions() {
   });
 }
 async function vxLoadSessionsFromSupabase(force) {
+  // v7.0: Bypass Supabase session catalog load entirely while Gabriella is
+  // building the structure manually and filling descriptions/tags from YouTube.
+  // The hardcoded ALL_SESSIONS array (355 sessions per the official architecture)
+  // is now the single source of truth. When the Supabase `sessions` table is
+  // populated with rows that match the new schema (main_category names matching
+  // VX_MAIN_CATEGORY_SHELL), remove this short-circuit to re-enable hydration.
+  vxCatalogLoadAttempted = true;
+  vxCatalogLoadedFromSupabase = false;
+  return false;
+  // --- original implementation kept below for re-enable ---
   if (vxCatalogLoadAttempted && !force) return vxCatalogLoadedFromSupabase;
   vxCatalogLoadAttempted = true;
   if (!vxSupabase) return false;
@@ -4565,48 +4575,61 @@ function getRecommended() {
 
 function renderVault() {
   const el = document.getElementById('main-content');
-  if (!hasVaultAccess()) {
-    el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p>Your account stays open, but premium playback and the full vault archive require an active access path.</p></div>' +
-      vxLockedAccessBanner('The full Vault is locked right now.', 'Choose an access path to reopen every guided experience. Until then, we keep a light trail of your recent activity visible without exposing the full paid library.') +
-      vxLockedRecentPreview(2);
-    return;
+  if (!el) { console.error('[VX] renderVault: #main-content not found'); return; }
+  try {
+    if (!hasVaultAccess()) {
+      el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p>Your account stays open, but premium playback and the full vault archive require an active access path.</p></div>' +
+        vxLockedAccessBanner('The full Vault is locked right now.', 'Choose an access path to reopen every guided experience. Until then, we keep a light trail of your recent activity visible without exposing the full paid library.') +
+        vxLockedRecentPreview(2);
+      return;
+    }
+    var mainCats = vxGetMainCategories();
+    if (!mainCats.length) {
+      // Hard-coded shell fallback in case both ALL_SESSIONS and VX_MAIN_CATEGORY_SHELL get wiped
+      mainCats = ['The Rest of Life','Holding Your Ground','Navigating the System','The Hidden Dynamics','Presence in the Room','Seeing Around Corners',"Building What's Next"];
+    }
+    if (!vxVaultMainCategory || mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0];
+    var allForMain = vxSessionsForMainCategory(vxVaultMainCategory);
+    var subcats = vxSubcategoriesForMainCategory(vxVaultMainCategory);
+    if (vxVaultSubcategory !== 'All' && subcats.indexOf(vxVaultSubcategory) === -1) vxVaultSubcategory = 'All';
+    var filtered = allForMain.filter(function(s){
+      if (vxVaultSubcategory === 'All') return true;
+      return (s.subcategory || s.pressure_type || s.collection || 'Uncategorized') === vxVaultSubcategory;
+    });
+    var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
+    console.log('[VX] renderVault →', { mainCat:vxVaultMainCategory, subCat:vxVaultSubcategory, totalSessions:(ALL_SESSIONS||[]).length, inMain:allForMain.length, filtered:filtered.length, subcats:subcats.length });
+    var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Titles will appear here once they are imported.</span></p></div>';
+
+    // v7.0: breadcrumb gives users a one-tap exit at every level — no back-button trips,
+    // no nested clicks. Tapping "The Vault" clears all filters; tapping the main cat
+    // resets the subcategory; tapping the subcat does nothing (it's the active leaf).
+    var crumbHtml = '<div class="vx-breadcrumb">' +
+      '<button class="vx-crumb" onclick="clearVaultFilters()">The Vault</button>' +
+      '<span class="vx-crumb-sep">/</span>' +
+      '<button class="vx-crumb' + (vxVaultSubcategory==='All' ? ' active' : '') + '" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">' + vxVaultMainCategory + '</button>' +
+      (vxVaultSubcategory !== 'All'
+        ? '<span class="vx-crumb-sep">/</span><span class="vx-crumb active leaf">' + vxVaultSubcategory + '</span>' +
+          '<button class="vx-clear-filter" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')" title="Clear subcategory filter">&times; Clear filter</button>'
+        : '') +
+      '</div>';
+
+    el.innerHTML = `
+      <div class="welcome-row">
+        <h1 class="fd">The Vault</h1>
+        <p>Switch between main categories, then narrow into subcategories inside each category.</p>
+      </div>
+      ${crumbHtml}
+      ${vxMainCategoryTabs(vxVaultMainCategory)}
+      <div class="vx-category-summary"><p>${vxVaultMainCategory}</p><p>${shell.desc || 'Guided experiences grouped around this part of the VisualizeX library.'}</p></div>
+      ${vxSubcategoryTabs(vxVaultMainCategory, vxVaultSubcategory)}
+      <p class="vx-vault-filter-note">${filtered.length} experience${filtered.length===1?'':'s'} ${vxVaultSubcategory==='All' ? 'across all subcategories in ' + vxVaultMainCategory : 'in ' + vxVaultSubcategory}.</p>
+      <div class="session-list">${filtered.length ? filtered.map(s=>sessionCard(s)).join('') : empty}</div>`;
+  } catch (err) {
+    // Never let an error leave the Vault blank — render a diagnostic message
+    // so Gabriella sees what's happening instead of a black screen.
+    console.error('[VX] renderVault threw:', err);
+    el.innerHTML = '<div class="welcome-row"><h1 class="fd">The Vault</h1><p style="color:#E97462">Something went wrong rendering the Vault. Check the browser console for details, or refresh the page.</p><p style="font-family:monospace;font-size:.78rem;color:var(--c55);background:rgba(233,116,98,.06);padding:10px 14px;border-radius:4px;margin-top:12px">' + (err && err.message ? err.message : String(err)) + '</p></div>';
   }
-  var mainCats = vxGetMainCategories();
-  if (!vxVaultMainCategory || mainCats.indexOf(vxVaultMainCategory) === -1) vxVaultMainCategory = mainCats[0] || 'The Vault';
-  var allForMain = vxSessionsForMainCategory(vxVaultMainCategory);
-  var subcats = vxSubcategoriesForMainCategory(vxVaultMainCategory);
-  if (vxVaultSubcategory !== 'All' && subcats.indexOf(vxVaultSubcategory) === -1) vxVaultSubcategory = 'All';
-  var filtered = allForMain.filter(function(s){
-    if (vxVaultSubcategory === 'All') return true;
-    return (s.subcategory || s.pressure_type || s.collection || 'Uncategorized') === vxVaultSubcategory;
-  });
-  var shell = vxGetMainCategoryShell(vxVaultMainCategory) || {};
-  var empty = '<div class="empty-state"><p class="fd">This category shell is ready.<br><span style="font-size:.9rem;font-style:normal;color:var(--c35)">Import the titles for this category into Supabase and they will appear here automatically.</span></p></div>';
-
-  // v7.0: breadcrumb gives users a one-tap exit at every level — no back-button trips,
-  // no nested clicks. Tapping "The Vault" clears all filters; tapping the main cat
-  // resets the subcategory; tapping the subcat does nothing (it's the active leaf).
-  var crumbHtml = '<div class="vx-breadcrumb">' +
-    '<button class="vx-crumb" onclick="clearVaultFilters()">The Vault</button>' +
-    '<span class="vx-crumb-sep">/</span>' +
-    '<button class="vx-crumb' + (vxVaultSubcategory==='All' ? ' active' : '') + '" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')">' + vxVaultMainCategory + '</button>' +
-    (vxVaultSubcategory !== 'All'
-      ? '<span class="vx-crumb-sep">/</span><span class="vx-crumb active leaf">' + vxVaultSubcategory + '</span>' +
-        '<button class="vx-clear-filter" onclick="showVaultMainCategory(\'' + vxSafeOnclickArg(vxVaultMainCategory) + '\')" title="Clear subcategory filter">&times; Clear filter</button>'
-      : '') +
-    '</div>';
-
-  el.innerHTML = `
-    <div class="welcome-row">
-      <h1 class="fd">The Vault</h1>
-      <p>Switch between main categories, then narrow into subcategories inside each category.</p>
-    </div>
-    ${crumbHtml}
-    ${vxMainCategoryTabs(vxVaultMainCategory)}
-    <div class="vx-category-summary"><p>${vxVaultMainCategory}</p><p>${shell.desc || 'Guided experiences grouped around this part of the VisualizeX library.'}</p></div>
-    ${vxSubcategoryTabs(vxVaultMainCategory, vxVaultSubcategory)}
-    <p class="vx-vault-filter-note">${filtered.length} experience${filtered.length===1?'':'s'} ${vxVaultSubcategory==='All' ? 'across all subcategories in ' + vxVaultMainCategory : 'in ' + vxVaultSubcategory}.</p>
-    <div class="session-list">${filtered.length ? filtered.map(s=>sessionCard(s)).join('') : empty}</div>`;
 }
 
 // v7.0: full reset — user lands on the first main category, no subcategory filter,
